@@ -1,0 +1,133 @@
+# 多Cookie配置示例文件
+# 复制此文件为 daily_task_config.yaml 并填入真实Cookie
+
+# 任务配置
+daily_task:
+  # UP主ID（必填）
+  up_id: "1140672573"
+  
+  # 时间范围配置
+  time_range:
+    # 采集天数（从今天往前推算）
+    days: 28
+
+  # UP主信息字段控制（只在开头出现一次）
+  up_fields:
+    enabled: true          # 是否收集UP主信息
+    mid: true              # UP主ID
+    name: true             # UP主昵称
+    fans: true             # 粉丝数
+    up_video_count: true   # 视频总数
+
+  # 视频信息字段控制（每个视频的字段）
+  video_fields:
+    enabled: true          # 是否收集视频信息
+    title: true            # 视频标题
+    description: true      # 视频描述
+    duration: true         # 视频时长
+    category: true         # 分区名称
+    publish_time: true     # 发布时间
+    
+    # 统计数据字段
+    stats_fields:
+      enabled: true        # 是否收集统计数据
+      view: true           # 播放量
+      like: true           # 点赞数
+      coin: true           # 投币数
+      favorite: true       # 收藏数
+      reply: true          # 评论数
+
+  # 热门评论配置
+  hot_comments_json:
+    enabled: true          # 是否生成热门评论JSON
+    max_count: 10          # 最多10条热评
+    fields:                # JSON中包含的字段
+      - "message"          # 评论内容
+      - "mid"              # 评论者ID
+      - "ctime"            # 评论时间
+      - "like"             # 点赞数
+      - "rcount"           # 回复数
+
+# 系统配置
+system:
+  log_level: "INFO"
+  request_delay: 2
+  retry:
+    max_attempts: 3
+    delay_between_retries: 5
+  browser:
+    headless: false
+    timeout: 30
+
+# 存储配置
+storage:
+  # 数据存储目录（已自动分类：日任务存储到data/daily/周文件夹，月任务存储到data/monthly）
+  # data_dir: "data"  # 已废弃，存储路径由任务类型自动决定
+  # filename_format: "daily_task_{timestamp}_{up_id}.json"  # 已废弃，由任务配置决定
+
+# 多Cookie登录配置
+login:
+  # 多个Cookie配置（支持多账号轮换）
+  cookies:
+    # 单个Cookie字符串（向后兼容）
+    raw_cookie: ""
+    
+    # 多个Cookie池（优先级高于raw_cookie）
+    cookie_pool:
+      enabled: true         # 启用Cookie池
+      selection_mode: "random"  # 选择模式：random(随机), round_robin(轮询), priority(优先级)
+      cookies:
+        - name: "account1"
+          cookie: "SESSDATA=your_sessdata1; bili_jct=your_bili_jct1; DedeUserID=your_userid1; DedeUserID__ckMd5=your_md5_1"
+          priority: 1       # 优先级（数字越小优先级越高）
+          enabled: true     # 是否启用此Cookie
+          last_used: ""     # 最后使用时间（自动更新）
+          failure_count: 0  # 失败次数（自动更新）
+          max_failures: 3   # 最大失败次数，超过后自动禁用
+          
+        - name: "account2"
+          cookie: "SESSDATA=your_sessdata2; bili_jct=your_bili_jct2; DedeUserID=your_userid2; DedeUserID__ckMd5=your_md5_2"
+          priority: 2
+          enabled: true
+          last_used: ""
+          failure_count: 0
+          max_failures: 3
+          
+        - name: "account3"
+          cookie: "SESSDATA=your_sessdata3; bili_jct=your_bili_jct3; DedeUserID=your_userid3; DedeUserID__ckMd5=your_md5_3"
+          priority: 3
+          enabled: true
+          last_used: ""
+          failure_count: 0
+          max_failures: 3
+  
+  # 智能过期检测配置
+  smart_expiry_detection:
+    enabled: true           # 是否启用智能检测
+    check_interval_hours: 6 # 检查间隔（小时）
+    auto_switch_on_failure: true  # 失败时自动切换Cookie
+    auto_disable_failed: true     # 自动禁用失败的Cookie
+    health_check_endpoints:       # 健康检查端点
+      - "https://api.bilibili.com/x/web-interface/nav"
+      - "https://api.bilibili.com/x/space/myinfo"
+  
+  # 备用Cookie存储目录
+  backup_cookies_dir: "cookies/backup_cookies"
+  
+  # Cookie过期检查间隔（小时）- 向后兼容
+  cookie_check_interval: 24
+  
+  # 自动登录配置
+  auto_login:
+    enabled: true
+    timeout: 300
+
+# 使用说明：
+# 1. 将此文件复制为 daily_task_config.yaml
+# 2. 填入真实的Cookie字符串到 cookies.cookie_pool.cookies[].cookie 字段
+# 3. 根据需要调整选择模式：
+#    - random: 随机选择Cookie（推荐，避免检测）
+#    - round_robin: 轮询选择Cookie（均匀使用）
+#    - priority: 按优先级选择Cookie（优先使用高优先级）
+# 4. 系统会自动进行健康检查和故障切换
+# 5. 失败的Cookie会自动禁用，避免重复使用无效Cookie
