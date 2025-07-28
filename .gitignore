@@ -53,9 +53,15 @@ Thumbs.db
 data/output/
 data/logs/
 *.log
-*.db
-*.sqlite
-*.sqlite3
+
+# Database files - Allow tracking of main database
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# But allow the main tracking database
+!data/bilibili_tracking.db
+!data/**/*.db
 
 # MediaCrawler specific (从 MediaCrawler_test 继承)
 cache/
