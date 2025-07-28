@@ -41,6 +41,23 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
         
+    - name: Debug environment and configuration
+      env:
+        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
+        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
+        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
+        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
+        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
+        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
+        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
+        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
+        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
+        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
+        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
+      run: |
+        echo "🔍 Running environment debug check"
+        python .github/scripts/debug_data_collection.py
+        
     - name: Enhanced cookie rotation and selection
       env:
         BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
@@ -148,6 +165,7 @@ jobs:
         name: weekly-report-${{ github.run_number }}
         path: |
           weekly_report.md
+          debug_report.json
           cookie_management_report.json
           cookie_cleanup_report.json
           failed_cookies_report.json
