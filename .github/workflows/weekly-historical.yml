@@ -82,14 +82,39 @@ jobs:
         fi
         
     - name: Generate data summary report
+      if: always()
       run: |
         echo "## Weekly Data Processing Report - $(date +'%Y-%m-%d')" > weekly_report.md
         echo "### Processing Summary" >> weekly_report.md
-        echo "- Full historical data collection completed" >> weekly_report.md
-        echo "- 28-day segmentation applied" >> weekly_report.md
-        echo "- Database baseline established" >> weekly_report.md
+        
+        # Check if the main process succeeded
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "- ✅ Full historical data collection completed" >> weekly_report.md
+          echo "- ✅ 28-day segmentation applied" >> weekly_report.md
+          echo "- ✅ Database baseline established" >> weekly_report.md
+        else
+          echo "- ❌ Historical data processing encountered errors" >> weekly_report.md
+          echo "- ⚠️ Check workflow logs for details" >> weekly_report.md
+        fi
+        
         echo "### File Structure" >> weekly_report.md
-        find data/ -name "*.json" | head -10 >> weekly_report.md
+        if [ -d "data/" ]; then
+          find data/ -name "*.json" | head -10 >> weekly_report.md || echo "No JSON files found" >> weekly_report.md
+        else
+          echo "Data directory not found" >> weekly_report.md
+        fi
+        
+        # Create placeholder files if they don't exist
+        touch cookie_management_report.json
+        touch cookie_cleanup_report.json  
+        touch failed_cookies_report.json
+        touch cleanup_cookies.sh
+        
+        # Add basic content to empty files
+        [ ! -s cookie_management_report.json ] && echo '{"status": "no_report_generated"}' > cookie_management_report.json
+        [ ! -s cookie_cleanup_report.json ] && echo '{"status": "no_cleanup_performed"}' > cookie_cleanup_report.json
+        [ ! -s failed_cookies_report.json ] && echo '{"failed_cookies": []}' > failed_cookies_report.json
+        [ ! -s cleanup_cookies.sh ] && echo '#!/bin/bash\necho "No cleanup script generated"' > cleanup_cookies.sh
         
     - name: Upload report and cookie reports
       if: always()

@@ -81,6 +81,21 @@ jobs:
           echo "No changes to commit"
         fi
         
+    - name: Prepare and upload cookie management reports
+      if: always()
+      run: |
+        # Create placeholder files if they don't exist
+        touch cookie_management_report.json
+        touch cookie_cleanup_report.json  
+        touch failed_cookies_report.json
+        touch cleanup_cookies.sh
+        
+        # Add basic content to empty files
+        [ ! -s cookie_management_report.json ] && echo '{"status": "no_report_generated", "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > cookie_management_report.json
+        [ ! -s cookie_cleanup_report.json ] && echo '{"status": "no_cleanup_performed", "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > cookie_cleanup_report.json
+        [ ! -s failed_cookies_report.json ] && echo '{"failed_cookies": [], "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > failed_cookies_report.json
+        [ ! -s cleanup_cookies.sh ] && echo '#!/bin/bash\necho "No cleanup script generated - '$(date)'"' > cleanup_cookies.sh
+        
     - name: Upload cookie management reports
       if: always()
       uses: actions/upload-artifact@v4
