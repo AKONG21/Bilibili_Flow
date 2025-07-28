@@ -73,12 +73,18 @@ jobs:
         
     - name: Commit and push data
       run: |
-        git add data/
-        if ! git diff --staged --quiet; then
-          git commit -m "🌙 Evening data collection - $(date +'%Y-%m-%d %H:%M:%S')"
-          git push
+        # Check if data directory exists and has files
+        if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
+          git add data/
+          if ! git diff --staged --quiet; then
+            git commit -m "🌙 Evening data collection - $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+            echo "✅ Data committed and pushed successfully"
+          else
+            echo "ℹ️ No changes to commit in data directory"
+          fi
         else
-          echo "No changes to commit"
+          echo "⚠️ Data directory is empty or doesn't exist - no data to commit"
         fi
         
     - name: Prepare and upload cookie management reports
