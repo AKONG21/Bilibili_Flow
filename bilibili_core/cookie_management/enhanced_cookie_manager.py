@@ -167,12 +167,23 @@ class EnhancedCookieManager:
     
     def save_backup_cookie_file(self, cookies: List[Dict]) -> str:
         """
-        保存Cookie到备用文件
+        保存Cookie到备用文件（GitHub Actions环境中跳过）
         Args:
             cookies: Cookie列表
         Returns:
-            str: 保存的文件路径
+            str: 保存的文件路径或空字符串
         """
+        # 检查是否在GitHub Actions环境中
+        is_github_actions = (
+            os.environ.get('GITHUB_ACTIONS') == 'true' or
+            os.environ.get('CI') == 'true' or
+            os.environ.get('GITHUB_WORKFLOW') is not None
+        )
+        
+        if is_github_actions:
+            logger.info("🎭 GitHub Actions环境：跳过本地Cookie备份文件保存")
+            return ""  # 返回空字符串表示未保存文件
+        
         try:
             # 生成文件名：cookies_YYYYMMDD_HHMMSS.json
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -327,23 +338,30 @@ class EnhancedCookieManager:
 
     def save_cookies_after_login(self, cookies: List[Dict]) -> str:
         """
-        登录后保存Cookie
+        登录后保存Cookie（GitHub Actions环境中仅更新内存）
         Args:
             cookies: 从浏览器获取的Cookie列表
         Returns:
-            str: 保存的文件路径
+            str: 保存的文件路径或空字符串
         """
         try:
-            # 保存到备用文件
+            # 尝试保存到备用文件（GitHub Actions环境中会跳过）
             filepath = self.save_backup_cookie_file(cookies)
 
-            # 更新当前Cookie
+            # 更新当前Cookie（无论是否保存文件都需要更新）
             self.cookies = cookies
             self.cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
             self.last_check_time = time.time()
-            self.current_source = f"backup_file:{os.path.basename(filepath)}"
-
-            logger.info(f"登录后Cookie已保存: {len(cookies)}个")
+            
+            if filepath:
+                # 本地环境：文件保存成功
+                self.current_source = f"backup_file:{os.path.basename(filepath)}"
+                logger.info(f"登录后Cookie已保存到文件: {len(cookies)}个")
+            else:
+                # GitHub Actions环境：仅内存更新
+                self.current_source = "github_actions_memory"
+                logger.info(f"登录后Cookie已更新到内存: {len(cookies)}个（GitHub Actions环境）")
+            
             return filepath
 
         except Exception as e:
@@ -352,10 +370,21 @@ class EnhancedCookieManager:
 
     def cleanup_old_backup_files(self, keep_count: int = 5):
         """
-        清理旧的备用Cookie文件，只保留最新的几个
+        清理旧的备用Cookie文件，只保留最新的几个（GitHub Actions环境中跳过）
         Args:
             keep_count: 保留的文件数量
         """
+        # 检查是否在GitHub Actions环境中
+        is_github_actions = (
+            os.environ.get('GITHUB_ACTIONS') == 'true' or
+            os.environ.get('CI') == 'true' or
+            os.environ.get('GITHUB_WORKFLOW') is not None
+        )
+        
+        if is_github_actions:
+            logger.info("🎭 GitHub Actions环境：跳过备份文件清理")
+            return
+        
         try:
             pattern = os.path.join(self.backup_cookies_dir, "cookies_*.json")
             cookie_files = glob.glob(pattern)

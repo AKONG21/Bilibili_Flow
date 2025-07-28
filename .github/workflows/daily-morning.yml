@@ -1,0 +1,94 @@
+name: Daily Data Collection - Morning (8:00)
+
+on:
+  schedule:
+    # UTC 时间 00:00 = 北京时间 08:00
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  morning-data-collection:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Playwright browsers
+      run: |
+        playwright install chromium
+        
+    - name: Configure git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        
+    - name: Enhanced cookie rotation and selection
+      env:
+        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
+        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
+        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
+        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
+        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
+        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
+        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
+        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
+        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
+        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
+        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
+      run: |
+        echo "🔄 Starting enhanced cookie rotation with fallback mechanism"
+        python .github/scripts/enhanced_cookie_rotation.py
+        
+    - name: Cookie cleanup check
+      if: always()
+      run: |
+        echo "🗑️ Checking for failed cookies cleanup"
+        python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
+        
+    - name: Run morning data collection with enhanced notification
+      env:
+        FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+      run: |
+        echo "Starting morning data collection with enhanced notification"
+        python .github/scripts/feishu_notifier.py "🌅 晨间数据采集" python run_daily_task.py
+        
+    - name: Commit and push data
+      run: |
+        git add data/
+        if ! git diff --staged --quiet; then
+          git commit -m "🌅 Morning data collection - $(date +'%Y-%m-%d %H:%M:%S')"
+          git push
+        else
+          echo "No changes to commit"
+        fi
+        
+    - name: Upload cookie management reports
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: cookie-reports-morning-${{ github.run_number }}
+        path: |
+          cookie_management_report.json
+          cookie_cleanup_report.json
+          failed_cookies_report.json
+          cleanup_cookies.sh
+        retention-days: 30

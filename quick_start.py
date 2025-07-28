@@ -92,7 +92,6 @@ def check_directories():
         'data/daily',
         'data/monthly',
         'data/cache',
-        'logs',
         'cookies'
     ]
     

@@ -2,16 +2,16 @@ login:
   auto_login:
     enabled: true
     timeout: 300
-  backup_cookies_dir: ''
+  backup_cookies_dir: cookies/backup_cookies
   cookie_check_interval: 24
   cookies:
     cookie_pool:
       cookies: []
       enabled: false
       selection_mode: random
-    raw_cookie: SESSDATA=af85e5e6%2C1769140577%2C7f2d7%2A71CjBDiyHcX0Zv2s1U38j1aJeA0CRJhJrgkd7t_yK-lnlsN_izlTqgO3i62RTp8WFvqIASVkpzNWlFaVNSeGJ3YUt1RVgzVVFaMTktcG94ZUMxaVdHUTVEaGJ0YlpxZWx6TkdENjBTU0pyeUZzRHp0YVItbldnaEtGcDdmUEZQMk5TVFVOdVdEVDRBIIEC;
-      bili_jct=8ddcc1c1c027458c1eb8829b65a68e26; DedeUserID=173534909; DedeUserID__ckMd5=8e4a65ec54c18a89;
-      sid=qfwwycab
+    raw_cookie: SESSDATA=4c7d2a5e%2C1769030963%2C05e69%2A72CjCRR1SJtHVR6vRLXJ9b18f-rCMTUh0HJtlxHskpK37gfeE7IZSbawOg8O5bGTMNIOwSVnhJSXVlUnY0RUlzOU5ZdTRBY3BVdWJhMFZkR3AzSlQzbWZaM2tYcDFJZHJuUjlQMURPRTNyamgybS1JaVBJM2lURVNwYUVEM2ZtTXFGdWp1QXFRNWRnIIEC;
+      bili_jct=4d19a30f61e2119432d744abd0ddd112; DedeUserID=173534909; DedeUserID__ckMd5=8e4a65ec54c18a89;
+      sid=n351pbl2
   smart_expiry_detection:
     auto_disable_failed: true
     auto_switch_on_failure: true

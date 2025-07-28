@@ -28,12 +28,17 @@ ENV/
 .venv/
 .env
 
-# IDE
+# IDE and development tools
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# Claude Code and AI tools
+.claude/
+.augment/
+.kiro/
 
 # OS
 .DS_Store
