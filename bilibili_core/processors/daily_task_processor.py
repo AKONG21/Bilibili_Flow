@@ -100,7 +100,7 @@ class DailyTaskProcessor:
         )
 
         # 初始化数据库存储
-        self.db_path = "data/bilibili_tracking.db"
+        self.db_path = "data/database/bilibili_tracking.db"
         self._init_database()
 
         self.logger.info("统一存储模式初始化完成：JSON + 数据库")

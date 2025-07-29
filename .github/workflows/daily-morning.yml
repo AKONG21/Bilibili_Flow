@@ -69,7 +69,10 @@ jobs:
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
       run: |
         echo "Starting morning data collection with enhanced notification"
-        python .github/scripts/feishu_notifier.py "🌅 晨间数据采集" python run_daily_task.py || echo "Task completed with errors"
+        if ! python .github/scripts/feishu_notifier.py "🌅 晨间数据采集" python run_daily_task.py; then
+          echo "❌ Morning data collection failed"
+          exit 1
+        fi
         
     - name: Commit and push data
       run: |

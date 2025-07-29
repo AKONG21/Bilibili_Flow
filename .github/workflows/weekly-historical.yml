@@ -86,7 +86,10 @@ jobs:
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
       run: |
         echo "Starting weekly historical data processing with enhanced notification"
-        python .github/scripts/feishu_notifier.py "📊 历史数据处理" python run_monthly_task.py || echo "Task completed with errors"
+        if ! python .github/scripts/feishu_notifier.py "📊 历史数据处理" python run_monthly_task.py; then
+          echo "❌ Monthly task execution failed"
+          exit 1
+        fi
         
     - name: Commit and push data
       run: |
