@@ -9,9 +9,7 @@ login:
       cookies: []
       enabled: false
       selection_mode: random
-    raw_cookie: SESSDATA=af85e5e6%2C1769140577%2C7f2d7%2A71CjBDiyHcX0Zv2s1U38j1aJeA0CRJhJrgkd7t_yK-lnlsN_izlTqgO3i62RTp8WFvqIASVkpzNWlFaVNSeGJ3YUt1RVgzVVFaMTktcG94ZUMxaVdHUTVEaGJ0YlpxZWx6TkdENjBTU0pyeUZzRHp0YVItbldnaEtGcDdmUEZQMk5TVFVOdVdEVDRBIIEC;
-      bili_jct=8ddcc1c1c027458c1eb8829b65a68e26; DedeUserID=173534909; DedeUserID__ckMd5=8e4a65ec54c18a89;
-      sid=qfwwycab
+    raw_cookie: ""
   smart_expiry_detection:
     auto_disable_failed: true
     auto_switch_on_failure: true
