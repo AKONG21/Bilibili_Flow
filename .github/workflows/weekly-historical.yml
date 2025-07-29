@@ -93,9 +93,13 @@ jobs:
         
     - name: Commit and push data
       run: |
-        # Check if data directory exists and has files
-        if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
-          git add data/
+        echo "🔍 Checking for changes in data directory"
+        
+        # Force add all data subdirectories to ensure new files are tracked
+        if [ -d "data/" ]; then
+          git add -A data/
+          
+          # Check if there are changes to commit
           if ! git diff --staged --quiet; then
             git commit -m "📊 Weekly historical data processing - $(date +'%Y-%m-%d %H:%M:%S')"
             git push
@@ -104,7 +108,7 @@ jobs:
             echo "ℹ️ No changes to commit in data directory"
           fi
         else
-          echo "⚠️ Data directory is empty or doesn't exist - no data to commit"
+          echo "⚠️ Data directory doesn't exist - no data to commit"
         fi
         
     - name: Generate data summary report
