@@ -67,11 +67,22 @@ jobs:
     - name: Run evening data collection with enhanced notification
       env:
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         echo "Starting evening data collection with enhanced notification"
-        if ! python .github/scripts/feishu_notifier.py "🌙 晚间数据采集" python run_daily_task.py; then
+        echo "Current working directory: $(pwd)"
+        echo "Python path: $PYTHONPATH"
+        
+        # 直接运行日任务
+        if ! python run_daily_task.py; then
           echo "❌ Evening data collection failed"
+          echo "Checking for any generated files:"
+          find . -name "*.json" -o -name "*.db" | head -10
           exit 1
+        else
+          echo "✅ Evening data collection completed"
+          echo "Checking generated data files:"
+          find data/ -type f | head -10
         fi
         
     - name: Commit and push data

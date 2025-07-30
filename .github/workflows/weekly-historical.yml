@@ -84,10 +84,24 @@ jobs:
     - name: Run monthly historical data processing with enhanced notification
       env:
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         echo "Starting weekly historical data processing with enhanced notification"
-        if ! python .github/scripts/feishu_notifier.py "📊 历史数据处理" python run_monthly_task.py; then
+        echo "Current working directory: $(pwd)"
+        echo "Python path: $PYTHONPATH"
+        echo "Contents of current directory:"
+        ls -la
+        
+        # 直接运行月任务，不通过 feishu_notifier
+        if ! python run_monthly_task.py; then
           echo "❌ Monthly task execution failed"
+          echo "Checking for any generated files:"
+          find . -name "*.json" -o -name "*.db" | head -10
+        else
+          echo "✅ Monthly task execution completed"
+          echo "Checking generated data files:"
+          find data/ -type f | head -10
+        fi
           exit 1
         fi
         
