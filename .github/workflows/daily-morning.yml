@@ -79,16 +79,56 @@ jobs:
         echo "Current working directory: $(pwd)"
         echo "Python path: $PYTHONPATH"
         
-        # 直接运行日任务
+        # 发送开始通知
+        if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+          echo "📤 发送早晨任务开始通知..."
+          curl -X POST -H "Content-Type: application/json" -d '{
+            "msg_type": "text",
+            "content": {
+              "text": "🌅 早晨数据采集开始\n时间: '$(date '+%Y-%m-%d %H:%M:%S')'\n运行: #${{ github.run_number }}\n分支: ${{ github.ref_name }}"
+            }
+          }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
+        fi
+        
+        # 运行日任务并记录结果
+        TASK_START_TIME=$(date +%s)
         if ! python run_daily_task.py; then
+          TASK_END_TIME=$(date +%s)
+          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
           echo "❌ Morning data collection failed"
           echo "Checking for any generated files:"
           find . -name "*.json" -o -name "*.db" | head -10
+          
+          # 发送失败通知
+          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            curl -X POST -H "Content-Type: application/json" -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "❌ 早晨数据采集失败\n时间: '$(date '+%Y-%m-%d %H:%M:%S')'\n运行: #${{ github.run_number }}\n执行时长: '$(($TASK_DURATION / 60))' 分钟\n请查看工作流日志"
+              }
+            }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+          fi
           exit 1
         else
+          TASK_END_TIME=$(date +%s)
+          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
           echo "✅ Morning data collection completed"
           echo "Checking generated data files:"
           find data/ -type f | head -10
+          
+          # 统计生成的文件
+          JSON_COUNT=$(find data/ -name "*.json" | wc -l)
+          TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "未知")
+          
+          # 发送成功通知
+          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            curl -X POST -H "Content-Type: application/json" -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "✅ 早晨数据采集成功\n时间: '$(date '+%Y-%m-%d %H:%M:%S')'\n运行: #${{ github.run_number }}\n执行时长: '$(($TASK_DURATION / 60))' 分钟\nJSON文件: '$JSON_COUNT' 个\n数据大小: '$TOTAL_SIZE'"
+              }
+            }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+          fi
         fi
         
     - name: Commit and push data
