@@ -594,8 +594,13 @@ class DailyTaskProcessor:
             return {}
 
         try:
+            # 确保up_id是整数
+            try:
+                up_id_int = int(up_id)
+            except ValueError:
+                raise ValueError(f"无效的UP主ID: {up_id}，必须是整数")
             # 获取UP主基础信息
-            creator_info = await self.bili_client.get_creator_info(int(up_id))
+            creator_info = await self.bili_client.get_creator_info(up_id_int)
 
             if not creator_info:
                 raise Exception("获取UP主信息失败")
@@ -603,13 +608,13 @@ class DailyTaskProcessor:
             # 获取粉丝数（通过关系接口）
             up_fans = None
             try:
-                relation_response = await self.bili_client.get(f"/x/relation/stat?vmid={up_id}", enable_params_sign=False)
+                relation_response = await self.bili_client.get(f"/x/relation/stat?vmid={up_id_int}", enable_params_sign=False)
                 up_fans = relation_response.get("follower")
             except Exception as e:
                 self.logger.warning(f"获取粉丝数失败，尝试备用方法: {e}")
                 # 备用方法：使用卡片接口
                 try:
-                    card_response = await self.bili_client.get(f"/x/web-interface/card?mid={up_id}", enable_params_sign=False)
+                    card_response = await self.bili_client.get(f"/x/web-interface/card?mid={up_id_int}", enable_params_sign=False)
                     up_fans = card_response.get("card", {}).get("fans")
                 except Exception as e2:
                     self.logger.warning(f"备用方法也失败: {e2}")
@@ -617,7 +622,7 @@ class DailyTaskProcessor:
             # 获取视频总数（通过视频列表接口）
             up_video_count = None
             videos_response = await self.bili_client.get_creator_videos(
-                creator_id=up_id, pn=1, ps=1
+                creator_id=up_id_int, pn=1, ps=1
             )
             if videos_response and videos_response.get("page"):
                 up_video_count = videos_response["page"].get("count")
@@ -1063,6 +1068,13 @@ class DailyTaskProcessor:
             up_id = self.config.get("task_config", {}).get("up_id")
             if not up_id:
                 raise ValueError("未配置UP主ID")
+                
+            # 处理环境变量占位符
+            if isinstance(up_id, str) and "${" in up_id and "}" in up_id:
+                env_var = up_id.strip("${}")
+                up_id = os.environ.get(env_var)
+                if not up_id:
+                    raise ValueError(f"环境变量 {env_var} 未设置或为空")
 
             task_name = "月任务" if self.task_type == "monthly" else "日任务"
             self.logger.info(f"开始执行{task_name}，UP主ID: {up_id}")
