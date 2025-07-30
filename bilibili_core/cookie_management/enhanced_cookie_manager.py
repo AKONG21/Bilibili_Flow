@@ -39,8 +39,9 @@ class EnhancedCookieManager:
         # 初始化智能Cookie池
         self.cookie_pool = SmartCookiePool(self.config) if self.config else None
 
-        # 确保备用Cookie目录存在
-        os.makedirs(backup_cookies_dir, exist_ok=True)
+        # 确保备用Cookie目录存在（仅在路径非空时创建）
+        if backup_cookies_dir and backup_cookies_dir.strip():
+            os.makedirs(backup_cookies_dir, exist_ok=True)
         
     def parse_raw_cookie(self, raw_cookie: str) -> List[Dict]:
         """
@@ -119,7 +120,9 @@ class EnhancedCookieManager:
             Optional[str]: 最新的Cookie文件路径
         """
         try:
-            # 查找所有备用Cookie文件
+            # 查找所有备用Cookie文件（仅在备份目录存在时）
+            if not self.backup_cookies_dir or not self.backup_cookies_dir.strip():
+                return []
             pattern = os.path.join(self.backup_cookies_dir, "cookies_*.json")
             cookie_files = glob.glob(pattern)
             
@@ -186,6 +189,11 @@ class EnhancedCookieManager:
         
         try:
             # 生成文件名：cookies_YYYYMMDD_HHMMSS.json
+            # 仅在备份目录存在时保存
+            if not self.backup_cookies_dir or not self.backup_cookies_dir.strip():
+                self.logger.info("备份目录未配置，跳过Cookie备份")
+                return True
+                
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"cookies_{timestamp}.json"
             filepath = os.path.join(self.backup_cookies_dir, filename)
@@ -386,6 +394,9 @@ class EnhancedCookieManager:
             return
         
         try:
+            # 仅在备份目录存在时清理
+            if not self.backup_cookies_dir or not self.backup_cookies_dir.strip():
+                return 0
             pattern = os.path.join(self.backup_cookies_dir, "cookies_*.json")
             cookie_files = glob.glob(pattern)
 
@@ -418,6 +429,6 @@ class EnhancedCookieManager:
             "cookie_count": len(self.cookies),
             "current_source": self.current_source,
             "last_check_time": datetime.fromtimestamp(self.last_check_time).isoformat() if self.last_check_time else None,
-            "backup_files_count": len(glob.glob(os.path.join(self.backup_cookies_dir, "cookies_*.json"))),
+            "backup_files_count": len(glob.glob(os.path.join(self.backup_cookies_dir, "cookies_*.json"))) if self.backup_cookies_dir and self.backup_cookies_dir.strip() else 0,
             "has_raw_cookie": bool(self.raw_cookie)
         }

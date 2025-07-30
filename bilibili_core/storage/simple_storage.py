@@ -148,14 +148,13 @@ class SimpleStorage:
             # 日任务：按周分文件夹存储
             now = datetime.now()
             year, week_num, _ = now.isocalendar()
-            weekly_dir = f"{self.data_dir}/daily/{year}-W{week_num:02d}"
+            weekly_dir = f"{self.data_dir}/{year}-W{week_num:02d}"
             os.makedirs(weekly_dir, exist_ok=True)
             filepath = os.path.join(weekly_dir, filename)
         else:
-            # 月任务：存储到月任务目录
-            monthly_dir = f"{self.data_dir}/monthly"
-            os.makedirs(monthly_dir, exist_ok=True)
-            filepath = os.path.join(monthly_dir, filename)
+            # 月任务：直接使用配置的目录，避免重复添加 monthly 路径
+            os.makedirs(self.data_dir, exist_ok=True)
+            filepath = os.path.join(self.data_dir, filename)
         
         # 保存数据
         try:
