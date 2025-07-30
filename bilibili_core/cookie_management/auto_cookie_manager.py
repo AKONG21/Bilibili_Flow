@@ -27,12 +27,34 @@ class AutoCookieManager:
         self.config_file = config_file
         self.config = None
         
+    def _substitute_env_vars(self, obj):
+        """递归替换配置中的环境变量"""
+        if isinstance(obj, dict):
+            return {key: self._substitute_env_vars(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._substitute_env_vars(item) for item in obj]
+        elif isinstance(obj, str):
+            # 替换 ${VAR_NAME} 格式的环境变量
+            import re
+            def replace_env_var(match):
+                var_name = match.group(1)
+                env_value = os.environ.get(var_name)
+                if env_value is None:
+                    return match.group(0)  # 保持原样
+                return env_value
+            
+            return re.sub(r'\$\{([^}]+)\}', replace_env_var, obj)
+        else:
+            return obj
+
     def load_config(self) -> bool:
         """加载配置文件"""
         try:
             if os.path.exists(self.config_file):
                 with open(self.config_file, 'r', encoding='utf-8') as f:
                     self.config = yaml.safe_load(f)
+                    # 替换环境变量
+                    self.config = self._substitute_env_vars(self.config)
                 return True
             else:
                 logger.error(f"配置文件不存在: {self.config_file}")
