@@ -1,56 +1,13 @@
-name: Weekly Historical Data Processing
+name: Monthly Historical Data Processing (02:07)
 
 on:
   schedule:
-    # UTC 时间 18:07 每月第四个周四 = 北京时间每月第四个周五凌晨2:07 (避免冲突)
-    - cron: '7 18 * * 4#4'
+    # UTC 时间 18:07 每月第四个周四 = 北京时间 02:07 每月第四个周五 (避免冲突)
+    - cron: '7 18 22-28 * 4'
   workflow_dispatch:
 
 jobs:
-  check-run-week:
-    runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.check-week.outputs.should_run }}
-    steps:
-      - name: Check if this is the 4th Thursday of the month (UTC)
-        id: check-week
-        run: |
-          # 获取当前日期信息
-          CURRENT_MONTH=$(date +'%m')
-          CURRENT_YEAR=$(date +'%Y')
-          CURRENT_DAY=$(date +'%d')
-          
-          # 计算当前是本月的第几个周四
-          # 获取本月1号是周几 (0=周日,1=周一,...,6=周六)
-          FIRST_DAY_OF_MONTH=$(date -d "$CURRENT_YEAR-$CURRENT_MONTH-01" +'%w' 2>/dev/null || date -j -f "%Y-%m-%d" "$CURRENT_YEAR-$CURRENT_MONTH-01" +'%w')
-          
-          # 计算本月第一个周四是几号
-          DAYS_UNTIL_FIRST_THURSDAY=$((4 - FIRST_DAY_OF_MONTH))
-          if [ $DAYS_UNTIL_FIRST_THURSDAY -le 0 ]; then
-            DAYS_UNTIL_FIRST_THURSDAY=$((DAYS_UNTIL_FIRST_THURSDAY + 7))
-          fi
-          FIRST_THURSDAY=$((1 + DAYS_UNTIL_FIRST_THURSDAY))
-          
-          # 计算本月第四个周四是几号
-          FOURTH_THURSDAY=$((FIRST_THURSDAY + 21))
-          
-          # 检查当前日期是否是本月第四个周四
-          if [ "$CURRENT_DAY" -eq "$FOURTH_THURSDAY" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "This is the 4th Thursday of the month or manual trigger, should run"
-            echo "should_run=true" >> $GITHUB_OUTPUT
-          else
-            echo "Not the 4th Thursday of the month, skipping run"
-            echo "should_run=false" >> $GITHUB_OUTPUT
-          fi
-          
-          echo "Current date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DAY"
-          echo "First Thursday: $FIRST_THURSDAY, Fourth Thursday: $FOURTH_THURSDAY"
-          
-          echo "Current Year-Week: $YEAR_WEEK, Week number: $WEEK_NUM, Remainder: $REMAINDER"
-  
-  weekly-historical-processing:
-    needs: check-run-week
-    if: ${{ needs.check-run-week.outputs.should_run == 'true' }}
+  monthly-historical-processing:
     runs-on: ubuntu-latest
     
     steps:
