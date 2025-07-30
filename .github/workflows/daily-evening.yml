@@ -47,6 +47,7 @@ jobs:
         
     - name: Enhanced cookie rotation and selection
       env:
+        UP_ID: ${{ secrets.UP_ID }}
         BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
         BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
         BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
@@ -70,6 +71,7 @@ jobs:
         
     - name: Run evening data collection with enhanced notification
       env:
+        UP_ID: ${{ secrets.UP_ID }}
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         PYTHONPATH: ${{ github.workspace }}
       run: |

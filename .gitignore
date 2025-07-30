@@ -50,18 +50,13 @@ ehthumbs.db
 Thumbs.db
 
 # Project specific
-data/output/
-data/logs/
+data/
 *.log
 
-# Database files - Allow tracking of main database
-# *.db
-# *.sqlite
-# *.sqlite3
-
-# But allow the main tracking database
-!data/bilibili_tracking.db
-!data/**/*.db
+# Database files
+*.db
+*.sqlite
+*.sqlite3
 
 # MediaCrawler specific (从 MediaCrawler_test 继承)
 cache/
