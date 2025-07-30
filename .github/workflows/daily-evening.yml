@@ -6,6 +6,10 @@ on:
     - cron: '7 12 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   evening-data-collection:
     runs-on: ubuntu-latest

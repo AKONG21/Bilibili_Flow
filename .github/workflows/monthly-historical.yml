@@ -6,6 +6,10 @@ on:
     - cron: '7 18 22-28 * 4'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   monthly-historical-processing:
     runs-on: ubuntu-latest
