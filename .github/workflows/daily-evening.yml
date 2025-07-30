@@ -2,8 +2,8 @@ name: Daily Data Collection - Evening (20:00)
 
 on:
   schedule:
-    # UTC 时间 12:00 = 北京时间 20:00
-    - cron: '0 12 * * *'
+    # UTC 时间 12:07 = 北京时间 20:07 (避免冲突)
+    - cron: '7 12 * * *'
   workflow_dispatch:
 
 jobs:

@@ -2,8 +2,8 @@ name: Weekly Historical Data Processing
 
 on:
   schedule:
-    # UTC 时间 00:00 每周五 = 北京时间 08:00 每周五
-    - cron: '0 0 * * 5'
+    # UTC 时间 18:07 每周五 = 北京时间 02:07 每周六 (避免冲突)
+    - cron: '7 18 * * 5'
   workflow_dispatch:
 
 jobs:
