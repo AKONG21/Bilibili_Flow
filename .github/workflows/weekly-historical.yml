@@ -97,12 +97,11 @@ jobs:
           echo "❌ Monthly task execution failed"
           echo "Checking for any generated files:"
           find . -name "*.json" -o -name "*.db" | head -10
+          exit 1
         else
           echo "✅ Monthly task execution completed"
           echo "Checking generated data files:"
           find data/ -type f | head -10
-        fi
-          exit 1
         fi
         
     - name: Commit and push data
