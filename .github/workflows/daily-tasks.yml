@@ -139,11 +139,14 @@ jobs:
         if [ "$TASK_EXIT_CODE" -ne 0 ]; then
           echo "Sending failure notification..."
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            ERROR_MSG="❌ ${TASK_TYPE} Daily Data Collection Failed\\n\\nTime: $(date '+%Y-%m-%d %H:%M:%S')\\nRun: #${{ github.run_number }}\\nBranch: ${{ github.ref_name }}\\n\\n📊 Cookie Status:\\nTotal: ${TOTAL_COOKIES}\\nUseable: ${USEABLE_COOKIES}\\nActive: ${ACTIVE_COOKIE}\\nInfo: ${COOKIE_INFO}\\n\\n📈 Task Stats:\\nUP: ${UP_NAME}\\nVideos: ${TOTAL_VIDEOS}\\nComments: ${TOTAL_COMMENTS}\\nErrors: ${ERRORS_COUNT}\\nDuration: ${TASK_DURATION}s\\n\\n🔗 Check workflow logs for details"
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
-              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$ERROR_MSG\"}}" \
-              || echo "Failed to send Feishu notification"
+              -d '{
+                "msg_type": "text",
+                "content": {
+                  "text": "❌ '"$TASK_TYPE"' Daily Data Collection Failed\n\n⏰ Time: '"$(date '+%Y-%m-%d %H:%M:%S')"'\n🔄 Run: #'"${{ github.run_number }}"'\n🌿 Branch: '"${{ github.ref_name }}"'\n\n📊 Cookie Status:\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n📈 Task Statistics:\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n🔗 Check workflow logs for details"
+                }
+              }' || echo "Failed to send Feishu notification"
           fi
           exit 1
         else
@@ -153,11 +156,14 @@ jobs:
           TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "Unknown")
           
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            SUCCESS_MSG="✅ ${TASK_TYPE} Daily Data Collection Success\\n\\nTime: $(date '+%Y-%m-%d %H:%M:%S')\\nRun: #${{ github.run_number }}\\nBranch: ${{ github.ref_name }}\\n\\n📊 Cookie Status:\\nTotal: ${TOTAL_COOKIES}\\nUseable: ${USEABLE_COOKIES}\\nActive: ${ACTIVE_COOKIE}\\nInfo: ${COOKIE_INFO}\\n\\n📈 Task Stats:\\nUP: ${UP_NAME}\\nVideos: ${TOTAL_VIDEOS}\\nComments: ${TOTAL_COMMENTS}\\nErrors: ${ERRORS_COUNT}\\nDuration: ${TASK_DURATION}s\\n\\n📁 Generated Files:\\nJSON files: ${JSON_COUNT}\\nData size: ${TOTAL_SIZE}"
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
-              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$SUCCESS_MSG\"}}" \
-              || echo "Failed to send Feishu notification"
+              -d '{
+                "msg_type": "text",
+                "content": {
+                  "text": "✅ '"$TASK_TYPE"' Daily Data Collection Success\n\n⏰ Time: '"$(date '+%Y-%m-%d %H:%M:%S')"'\n🔄 Run: #'"${{ github.run_number }}"'\n🌿 Branch: '"${{ github.ref_name }}"'\n\n📊 Cookie Status:\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n📈 Task Statistics:\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n📁 Generated Files:\n• JSON files: '"$JSON_COUNT"'\n• Data size: '"$TOTAL_SIZE"'"
+                }
+              }' || echo "Failed to send Feishu notification"
           fi
         fi
         
