@@ -141,7 +141,7 @@ jobs:
         
     - name: Commit and push data
       run: |
-        # 重新定义时间相关变量
+        # Redefine time variables for commit message
         CURRENT_HOUR=$(date -u +%H)
         if [ "$CURRENT_HOUR" = "00" ]; then
           TASK_TYPE="早晨"
