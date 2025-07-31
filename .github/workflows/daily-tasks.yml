@@ -91,15 +91,6 @@ jobs:
           TASK_EMOJI="🌙"
         fi
         
-        # 发送开始通知
-        if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-          echo "📤 发送${TASK_TYPE}任务开始通知..."
-          NOTIFICATION_TEXT="${TASK_EMOJI} ${TASK_TYPE}数据采集开始\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}"
-          curl -X POST -H "Content-Type: application/json" \
-            -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$NOTIFICATION_TEXT\"}}" \
-            "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
-        fi
-        
         # 运行日任务并记录结果
         TASK_START_TIME=$(date +%s)
         TASK_OUTPUT=$(python run_daily_task.py 2>&1)
