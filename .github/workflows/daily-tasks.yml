@@ -90,14 +90,22 @@ jobs:
       run: |
         echo "Starting daily data collection"
         
-        # Determine task type based on UTC time
-        CURRENT_HOUR=$(date -u +%H)
-        if [ "$CURRENT_HOUR" = "00" ]; then
-          TASK_TYPE="Morning"
-          TASK_EMOJI="🌅"
+        # Determine task type based on trigger method
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # Manual trigger - use Manual type
+          TASK_TYPE="Manual"
+          TASK_EMOJI="🔧"
+          echo "Manual execution detected"
         else
-          TASK_TYPE="Evening"
-          TASK_EMOJI="🌙"
+          # Scheduled trigger - determine by UTC time
+          CURRENT_HOUR=$(date -u +%H)
+          if [ "$CURRENT_HOUR" = "00" ]; then
+            TASK_TYPE="Morning"
+            TASK_EMOJI="🌅"
+          else
+            TASK_TYPE="Evening"
+            TASK_EMOJI="🌙"
+          fi
         fi
         
         echo "Task type: $TASK_TYPE ($TASK_EMOJI)"
@@ -140,14 +148,19 @@ jobs:
         
     - name: Commit and push data
       run: |
-        # Determine task type for commit message
-        CURRENT_HOUR=$(date -u +%H)
-        if [ "$CURRENT_HOUR" = "00" ]; then
-          TASK_EMOJI="🌅"
-          TASK_TYPE="Morning"
+        # Determine task type for commit message (same logic as above)
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          TASK_EMOJI="🔧"
+          TASK_TYPE="Manual"
         else
-          TASK_EMOJI="🌙"
-          TASK_TYPE="Evening"
+          CURRENT_HOUR=$(date -u +%H)
+          if [ "$CURRENT_HOUR" = "00" ]; then
+            TASK_EMOJI="🌅"
+            TASK_TYPE="Morning"
+          else
+            TASK_EMOJI="🌙"
+            TASK_TYPE="Evening"
+          fi
         fi
         
         # Check if data directory exists and has files
