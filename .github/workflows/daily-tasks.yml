@@ -142,9 +142,27 @@ jobs:
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
               -d '{
-                "msg_type": "text",
-                "content": {
-                  "text": "❌ '"$TASK_TYPE"' Daily Data Collection Failed\n\n⏰ Time: '"$(date '+%Y-%m-%d %H:%M:%S')"'\n🔄 Run: #'"${{ github.run_number }}"'\n🌿 Branch: '"${{ github.ref_name }}"'\n\n📊 Cookie Status:\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n📈 Task Statistics:\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n🔗 Check workflow logs for details"
+                "msg_type": "interactive",
+                "card": {
+                  "config": {
+                    "wide_screen_mode": true
+                  },
+                  "elements": [
+                    {
+                      "tag": "div",
+                      "text": {
+                        "content": "**⏰ Time:** '"$(date '+%Y-%m-%d %H:%M:%S')"'\n**🔄 Run:** #'"${{ github.run_number }}"'\n**🌿 Branch:** '"${{ github.ref_name }}"'\n\n**📊 Cookie Status:**\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n**📈 Task Statistics:**\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n🔗 Check workflow logs for details",
+                        "tag": "lark_md"
+                      }
+                    }
+                  ],
+                  "header": {
+                    "title": {
+                      "content": "❌ '"$TASK_TYPE"' Daily Data Collection Failed",
+                      "tag": "plain_text"
+                    },
+                    "template": "red"
+                  }
                 }
               }' || echo "Failed to send Feishu notification"
           fi
@@ -159,9 +177,27 @@ jobs:
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
               -d '{
-                "msg_type": "text",
-                "content": {
-                  "text": "✅ '"$TASK_TYPE"' Daily Data Collection Success\n\n⏰ Time: '"$(date '+%Y-%m-%d %H:%M:%S')"'\n🔄 Run: #'"${{ github.run_number }}"'\n🌿 Branch: '"${{ github.ref_name }}"'\n\n📊 Cookie Status:\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n📈 Task Statistics:\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n📁 Generated Files:\n• JSON files: '"$JSON_COUNT"'\n• Data size: '"$TOTAL_SIZE"'"
+                "msg_type": "interactive",
+                "card": {
+                  "config": {
+                    "wide_screen_mode": true
+                  },
+                  "elements": [
+                    {
+                      "tag": "div",
+                      "text": {
+                        "content": "**⏰ Time:** '"$(date '+%Y-%m-%d %H:%M:%S')"'\n**🔄 Run:** #'"${{ github.run_number }}"'\n**🌿 Branch:** '"${{ github.ref_name }}"'\n\n**📊 Cookie Status:**\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n**📈 Task Statistics:**\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n**📁 Generated Files:**\n• JSON files: '"$JSON_COUNT"'\n• Data size: '"$TOTAL_SIZE"'",
+                        "tag": "lark_md"
+                      }
+                    }
+                  ],
+                  "header": {
+                    "title": {
+                      "content": "✅ '"$TASK_TYPE"' Daily Data Collection Success",
+                      "tag": "plain_text"
+                    },
+                    "template": "green"
+                  }
                 }
               }' || echo "Failed to send Feishu notification"
           fi
