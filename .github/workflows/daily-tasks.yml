@@ -24,6 +24,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
       
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
@@ -281,6 +284,11 @@ Data size: ${TOTAL_SIZE}"
         
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
+          # First, pull any remote changes to avoid conflicts
+          echo "🔄 Checking for remote changes..."
+          git fetch origin sync-current-files
+          git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
+          
           git add data/
           if ! git diff --staged --quiet; then
             # Create unique commit message with run number to avoid conflicts
