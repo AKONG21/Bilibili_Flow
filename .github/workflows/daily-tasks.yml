@@ -12,7 +12,7 @@ permissions:
   contents: write
   actions: read
 
-# 防止并发执行 - 取消正在进行的任务
+# 防止并发执行
 concurrency:
   group: daily-data-collection-${{ github.ref }}
   cancel-in-progress: true
@@ -79,15 +79,16 @@ jobs:
         echo "🗑️ Checking for failed cookies cleanup"
         python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
         
-    - name: Run daily data collection
+    - name: Run daily data collection with notification
       env:
         UP_ID: ${{ secrets.UP_ID }}
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         PYTHONPATH: ${{ github.workspace }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
       run: |
         echo "Starting daily data collection"
-        echo "Current working directory: $(pwd)"
-        echo "Python path: $PYTHONPATH"
         
         # Determine task type based on UTC time
         CURRENT_HOUR=$(date -u +%H)
@@ -101,176 +102,43 @@ jobs:
         
         echo "Task type: $TASK_TYPE ($TASK_EMOJI)"
         
-        # Run daily task and capture output
+        # Run daily task and capture all output
         echo "Running daily task..."
-        TASK_START_TIME=$(date +%s)
+        TASK_OUTPUT_FILE="task_output_$(date +%s).log"
         
-        if python run_daily_task.py > task_output.log 2>&1; then
+        if python run_daily_task.py > "$TASK_OUTPUT_FILE" 2>&1; then
           TASK_EXIT_CODE=0
           echo "✅ Daily task completed successfully"
+          
+          # Send success notification with extracted data
+          echo "Sending success notification..."
+          python .github/scripts/feishu_notifier.py "$TASK_TYPE Daily Data Collection" "success" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed but task succeeded"
+          
         else
           TASK_EXIT_CODE=1
           echo "❌ Daily task failed"
+          
+          # Send failure notification with extracted data
+          echo "Sending failure notification..."
+          python .github/scripts/feishu_notifier.py "$TASK_TYPE Daily Data Collection" "failure" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed and task failed"
+          
+          # Display output for debugging
+          echo "=== Task Output ==="
+          cat "$TASK_OUTPUT_FILE"
+          echo "=================="
+          
+          exit 1
         fi
         
-        TASK_END_TIME=$(date +%s)
-        TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
-        
-        # Ensure minimum duration of 1 second for display
-        if [ "$TASK_DURATION" -lt 1 ]; then
-          TASK_DURATION=1
-        fi
-        
-        # Display task output for debugging
+        # Display output for debugging (success case)
         echo "=== Task Output ==="
-        cat task_output.log
+        cat "$TASK_OUTPUT_FILE"
         echo "=================="
         
-        # Extract information from task output using simpler regex
-        TASK_OUTPUT=$(cat task_output.log)
-        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -o 'total_cookies.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
-        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -o 'useable_cookies.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
-        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -o 'active_cookie.*' | sed 's/.*active_cookie[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
-        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -o 'cookie_info.*' | sed 's/.*cookie_info[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
-        UP_NAME=$(echo "$TASK_OUTPUT" | grep -o 'up_name.*' | sed 's/.*up_name[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
-        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -o 'total_videos.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
-        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -o 'total_comments.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
-        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -o 'errors_count.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
-        
-        # Set defaults for empty values
-        TOTAL_COOKIES=${TOTAL_COOKIES:-0}
-        USEABLE_COOKIES=${USEABLE_COOKIES:-0}
-        ACTIVE_COOKIE=${ACTIVE_COOKIE:-"Unknown"}
-        COOKIE_INFO=${COOKIE_INFO:-"Unknown"}
-        UP_NAME=${UP_NAME:-"Unknown"}
-        TOTAL_VIDEOS=${TOTAL_VIDEOS:-0}
-        TOTAL_COMMENTS=${TOTAL_COMMENTS:-0}
-        ERRORS_COUNT=${ERRORS_COUNT:-0}
-        
-        echo "Extracted metrics:"
-        echo "- Total cookies: $TOTAL_COOKIES"
-        echo "- Useable cookies: $USEABLE_COOKIES"
-        echo "- Active cookie: $ACTIVE_COOKIE"
-        echo "- Cookie info: $COOKIE_INFO"
-        echo "- UP name: $UP_NAME"
-        echo "- Total videos: $TOTAL_VIDEOS"
-        echo "- Total comments: $TOTAL_COMMENTS"
-        echo "- Errors count: $ERRORS_COUNT"
-        echo "- Duration: $TASK_DURATION seconds"
-        
-        # Send notification based on task result
-        if [ "$TASK_EXIT_CODE" -ne 0 ]; then
-          echo "Sending failure notification..."
-          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            # Create notification content
-            NOTIFICATION_CONTENT="Time: $(date '+%Y-%m-%d %H:%M:%S')
-Run: #${{ github.run_number }}
-Branch: ${{ github.ref_name }}
-
-Cookie Status:
-Total: ${TOTAL_COOKIES}
-Useable: ${USEABLE_COOKIES}
-Active: ${ACTIVE_COOKIE}
-Info: ${COOKIE_INFO}
-
-Task Statistics:
-UP: ${UP_NAME}
-Videos: ${TOTAL_VIDEOS}
-Comments: ${TOTAL_COMMENTS}
-Errors: ${ERRORS_COUNT}
-Duration: ${TASK_DURATION}s
-
-Check workflow logs for details"
-            
-            curl -X POST "$FEISHU_WEBHOOK_URL" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"msg_type\": \"interactive\",
-                \"card\": {
-                  \"config\": {
-                    \"wide_screen_mode\": true
-                  },
-                  \"elements\": [
-                    {
-                      \"tag\": \"div\",
-                      \"text\": {
-                        \"content\": \"${NOTIFICATION_CONTENT}\",
-                        \"tag\": \"lark_md\"
-                      }
-                    }
-                  ],
-                  \"header\": {
-                    \"title\": {
-                      \"content\": \"❌ ${TASK_TYPE} Daily Data Collection Failed\",
-                      \"tag\": \"plain_text\"
-                    },
-                    \"template\": \"red\"
-                  }
-                }
-              }" || echo "Failed to send Feishu notification"
-          fi
-          exit 1
-        else
-          echo "Sending success notification..."
-          # Count generated files
-          JSON_COUNT=$(find data/ -name "*.json" 2>/dev/null | wc -l || echo "0")
-          TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "Unknown")
-          
-          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            # Create notification content
-            NOTIFICATION_CONTENT="Time: $(date '+%Y-%m-%d %H:%M:%S')
-Run: #${{ github.run_number }}
-Branch: ${{ github.ref_name }}
-
-Cookie Status:
-Total: ${TOTAL_COOKIES}
-Useable: ${USEABLE_COOKIES}
-Active: ${ACTIVE_COOKIE}
-Info: ${COOKIE_INFO}
-
-Task Statistics:
-UP: ${UP_NAME}
-Videos: ${TOTAL_VIDEOS}
-Comments: ${TOTAL_COMMENTS}
-Errors: ${ERRORS_COUNT}
-Duration: ${TASK_DURATION}s
-
-Generated Files:
-JSON files: ${JSON_COUNT}
-Data size: ${TOTAL_SIZE}"
-            
-            curl -X POST "$FEISHU_WEBHOOK_URL" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"msg_type\": \"interactive\",
-                \"card\": {
-                  \"config\": {
-                    \"wide_screen_mode\": true
-                  },
-                  \"elements\": [
-                    {
-                      \"tag\": \"div\",
-                      \"text\": {
-                        \"content\": \"${NOTIFICATION_CONTENT}\",
-                        \"tag\": \"lark_md\"
-                      }
-                    }
-                  ],
-                  \"header\": {
-                    \"title\": {
-                      \"content\": \"✅ ${TASK_TYPE} Daily Data Collection Success\",
-                      \"tag\": \"plain_text\"
-                    },
-                    \"template\": \"green\"
-                  }
-                }
-              }" || echo "Failed to send Feishu notification"
-          fi
-        fi
+        # Cleanup
+        rm -f "$TASK_OUTPUT_FILE"
         
     - name: Commit and push data
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Determine task type for commit message
         CURRENT_HOUR=$(date -u +%H)
@@ -284,55 +152,15 @@ Data size: ${TOTAL_SIZE}"
         
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
-          # First, pull any remote changes to avoid conflicts
-          echo "🔄 Checking for remote changes..."
+          # Pull any remote changes first
           git fetch origin sync-current-files
           git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
           
           git add data/
           if ! git diff --staged --quiet; then
-            # Create unique commit message with run number to avoid conflicts
-            COMMIT_MSG="${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S') [run-${{ github.run_number }}]"
-            git commit -m "$COMMIT_MSG"
-            
-            # Use GitHub CLI for more reliable pushing
-            echo "🔄 Using GitHub CLI to push changes..."
-            
-            # Install GitHub CLI if not available
-            if ! command -v gh &> /dev/null; then
-              echo "Installing GitHub CLI..."
-              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-              sudo apt update
-              sudo apt install gh -y
-            fi
-            
-            # Authenticate with GitHub CLI
-            echo "$GITHUB_TOKEN" | gh auth login --with-token
-            
-            # Try to push using git first, fallback to GitHub CLI
-            if git push origin sync-current-files; then
-              echo "✅ Git push successful"
-            else
-              echo "⚠️ Git push failed, trying alternative method..."
-              
-              # Get current commit hash
-              COMMIT_HASH=$(git rev-parse HEAD)
-              
-              # Update branch reference using GitHub API
-              curl -X PATCH \
-                -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/git/refs/heads/sync-current-files" \
-                -d "{\"sha\":\"$COMMIT_HASH\",\"force\":true}"
-              
-              if [ $? -eq 0 ]; then
-                echo "✅ GitHub API push successful"
-              else
-                echo "❌ All push methods failed"
-                exit 1
-              fi
-            fi
+            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
+            git push origin sync-current-files
+            echo "✅ Data committed and pushed successfully"
           else
             echo "ℹ️ No changes to commit in data directory"
           fi

@@ -27,7 +27,7 @@ class EnhancedFeishuNotifier:
         })
     
     def parse_terminal_output(self, output: str) -> Dict:
-        """解析终端输出，提取关键信息"""
+        """解析终端输出，提取关键信息 - 兼容interactive卡片格式"""
         extracted_data = {
             'cookie_status': {},
             'task_statistics': {},
@@ -40,29 +40,47 @@ class EnhancedFeishuNotifier:
         for line in lines:
             line = line.strip()
             
+            # 使用JSON格式解析（与工作流中的正则保持一致）
             # Cookie状态解析
+            total_cookies_match = re.search(r'total_cookies["\s]*:["\s]*(\d+)', line)
+            if total_cookies_match:
+                extracted_data['cookie_status']['total_cookies'] = int(total_cookies_match.group(1))
+            
+            useable_cookies_match = re.search(r'useable_cookies["\s]*:["\s]*(\d+)', line)
+            if useable_cookies_match:
+                extracted_data['cookie_status']['useable_cookies'] = int(useable_cookies_match.group(1))
+            
+            active_cookie_match = re.search(r'active_cookie["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if active_cookie_match:
+                extracted_data['cookie_status']['active_cookie'] = active_cookie_match.group(1)
+            
+            cookie_info_match = re.search(r'cookie_info["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if cookie_info_match:
+                extracted_data['cookie_status']['cookie_info'] = cookie_info_match.group(1)
+            
+            # 任务统计解析
+            up_name_match = re.search(r'up_name["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if up_name_match:
+                extracted_data['task_statistics']['up_name'] = up_name_match.group(1)
+            
+            total_videos_match = re.search(r'total_videos["\s]*:["\s]*(\d+)', line)
+            if total_videos_match:
+                extracted_data['task_statistics']['total_videos'] = int(total_videos_match.group(1))
+            
+            total_comments_match = re.search(r'total_comments["\s]*:["\s]*(\d+)', line)
+            if total_comments_match:
+                extracted_data['task_statistics']['total_comments'] = int(total_comments_match.group(1))
+            
+            errors_count_match = re.search(r'errors_count["\s]*:["\s]*(\d+)', line)
+            if errors_count_match:
+                extracted_data['task_statistics']['errors_count'] = int(errors_count_match.group(1))
+            
+            # 旧格式兼容（保留中文匹配作为后备）
             if '发现' in line and '个Cookie配置' in line:
                 match = re.search(r'发现 (\d+) 个Cookie配置', line)
                 if match:
                     extracted_data['cookie_status']['total_cookies'] = int(match.group(1))
             
-            if '随机选择了' in line and '个Cookie进行轮换' in line:
-                match = re.search(r'随机选择了 (\d+) 个Cookie进行轮换', line)
-                if match:
-                    extracted_data['cookie_status']['selected_cookies'] = int(match.group(1))
-            
-            if 'Cookie' in line and '测试成功' in line:
-                match = re.search(r'Cookie ([^\s]+) 测试成功: (.+)', line)
-                if match:
-                    extracted_data['cookie_status']['active_cookie'] = match.group(1)
-                    extracted_data['cookie_status']['cookie_info'] = match.group(2)
-            
-            if 'Cookie' in line and '测试失败' in line:
-                match = re.search(r'Cookie ([^\s]+) 测试失败: (.+)', line)
-                if match:
-                    extracted_data['errors'].append(f"Cookie {match.group(1)} 失败: {match.group(2)}")
-            
-            # 任务统计解析
             if 'UP主:' in line:
                 match = re.search(r'UP主: (.+)', line)
                 if match:
@@ -78,21 +96,6 @@ class EnhancedFeishuNotifier:
                 if match:
                     extracted_data['task_statistics']['total_comments'] = int(match.group(1))
             
-            if '错误次数:' in line:
-                match = re.search(r'错误次数: (\d+)', line)
-                if match:
-                    extracted_data['task_statistics']['errors_count'] = int(match.group(1))
-            
-            if '重试次数:' in line:
-                match = re.search(r'重试次数: (\d+)', line)
-                if match:
-                    extracted_data['task_statistics']['retries_count'] = int(match.group(1))
-            
-            if '执行时长:' in line:
-                match = re.search(r'执行时长: ([\d.]+) 秒', line)
-                if match:
-                    extracted_data['task_statistics']['duration_seconds'] = float(match.group(1))
-            
             # 执行信息解析
             if '任务执行完成' in line:
                 extracted_data['execution_info']['status'] = 'completed'
@@ -102,7 +105,7 @@ class EnhancedFeishuNotifier:
                 
             # 错误信息收集
             if '❌' in line or 'ERROR' in line or '失败' in line:
-                if line not in extracted_data['errors']:
+                if line not in extracted_data['errors'] and len(extracted_data['errors']) < 5:
                     extracted_data['errors'].append(line)
         
         return extracted_data
@@ -139,7 +142,7 @@ class EnhancedFeishuNotifier:
             return f"命令执行异常: {e}", 1, {'execution_info': {'status': 'error'}}
     
     def format_extracted_data(self, data: Dict) -> str:
-        """格式化提取的数据为markdown"""
+        """格式化提取的数据为markdown - 兼容interactive卡片格式"""
         sections = []
         
         # Cookie状态部分
@@ -148,16 +151,16 @@ class EnhancedFeishuNotifier:
             cs = data['cookie_status']
             
             if cs.get('total_cookies'):
-                cookie_info.append(f"🍪 **总Cookie数**: {cs['total_cookies']}")
-            if cs.get('selected_cookies'):
-                cookie_info.append(f"🎲 **已选择**: {cs['selected_cookies']} 个")
+                cookie_info.append(f"• Total: {cs['total_cookies']}")
+            if cs.get('useable_cookies'):
+                cookie_info.append(f"• Useable: {cs['useable_cookies']}")
             if cs.get('active_cookie'):
-                cookie_info.append(f"✅ **当前Cookie**: {cs['active_cookie']}")
+                cookie_info.append(f"• Active: {cs['active_cookie']}")
             if cs.get('cookie_info'):
-                cookie_info.append(f"ℹ️ **Cookie信息**: {cs['cookie_info']}")
+                cookie_info.append(f"• Info: {cs['cookie_info']}")
             
             if cookie_info:
-                sections.append("**🔐 Cookie状态**\n" + "\n".join(cookie_info))
+                sections.append("**📊 Cookie Status:**\n" + "\n".join(cookie_info))
         
         # 任务统计部分
         if data.get('task_statistics'):
@@ -165,21 +168,16 @@ class EnhancedFeishuNotifier:
             ts = data['task_statistics']
             
             if ts.get('up_name'):
-                task_info.append(f"👤 **UP主**: {ts['up_name']}")
+                task_info.append(f"• UP: {ts['up_name']}")
             if ts.get('total_videos') is not None:
-                task_info.append(f"🎬 **处理视频**: {ts['total_videos']} 个")
+                task_info.append(f"• Videos: {ts['total_videos']}")
             if ts.get('total_comments') is not None:
-                task_info.append(f"💬 **收集评论**: {ts['total_comments']} 条")
+                task_info.append(f"• Comments: {ts['total_comments']}")
             if ts.get('errors_count') is not None:
-                task_info.append(f"❌ **错误次数**: {ts['errors_count']}")
-            if ts.get('retries_count') is not None:
-                task_info.append(f"🔄 **重试次数**: {ts['retries_count']}")
-            if ts.get('duration_seconds') is not None:
-                duration_min = ts['duration_seconds'] / 60
-                task_info.append(f"⏱️ **执行时长**: {duration_min:.1f} 分钟")
+                task_info.append(f"• Errors: {ts['errors_count']}")
             
             if task_info:
-                sections.append("**📊 任务统计**\n" + "\n".join(task_info))
+                sections.append("**📈 Task Statistics:**\n" + "\n".join(task_info))
         
         # 执行信息部分
         if data.get('execution_info'):
@@ -187,23 +185,17 @@ class EnhancedFeishuNotifier:
             ei = data['execution_info']
             
             if ei.get('total_duration'):
-                total_min = ei['total_duration'] / 60
-                exec_info.append(f"⏰ **总执行时间**: {total_min:.1f} 分钟")
+                duration_display = f"{ei['total_duration']:.0f}s" if ei['total_duration'] < 60 else f"{ei['total_duration']/60:.1f}m"
+                exec_info.append(f"• Duration: {duration_display}")
             
             if ei.get('return_code') is not None:
                 status_icon = "✅" if ei['return_code'] == 0 else "❌"
-                exec_info.append(f"{status_icon} **退出码**: {ei['return_code']}")
+                exec_info.append(f"• Status: {status_icon} Code {ei['return_code']}")
             
             if exec_info:
-                sections.append("**🚀 执行信息**\n" + "\n".join(exec_info))
+                sections.append("**⏱️ Execution Info:**\n" + "\n".join(exec_info))
         
-        # 错误信息部分
-        if data.get('errors'):
-            error_list = data['errors'][:5]  # 只显示前5个错误
-            if error_list:
-                sections.append("**⚠️ 错误信息**\n" + "\n".join([f"- {err}" for err in error_list]))
-        
-        return "\n\n".join(sections) if sections else "无详细信息可显示"
+        return "\n\n".join(sections) if sections else ""
     
     def send_enhanced_notification(self, 
                                  workflow_name: str,
@@ -272,15 +264,43 @@ class EnhancedFeishuNotifier:
                     print(f"✅ 飞书增强通知发送成功")
                     return True
                 else:
-                    print(f"❌ 飞书通知发送失败: {result.get('msg', 'Unknown error')}")
+                    print(f"⚠️ 飞书通知发送失败: {result.get('msg', 'Unknown error')}")
                     return False
             else:
-                print(f"❌ 飞书通知HTTP错误: {response.status_code}")
+                print(f"⚠️ 飞书通知HTTP错误: {response.status_code}")
                 return False
                 
         except Exception as e:
-            print(f"❌ 飞书通知异常: {e}")
+            print(f"⚠️ 飞书通知异常: {e}")
             return False
+
+def safe_send_notification(workflow_name: str, status: str, output: str = "") -> bool:
+    """安全发送通知 - 确保错误不影响后续执行"""
+    try:
+        webhook_url = os.environ.get('FEISHU_WEBHOOK_URL')
+        if not webhook_url:
+            print("⚠️ FEISHU_WEBHOOK_URL环境变量未设置，跳过飞书通知")
+            return False
+        
+        notifier = EnhancedFeishuNotifier(webhook_url)
+        
+        # 解析输出数据
+        extracted_data = notifier.parse_terminal_output(output) if output else {}
+        
+        # 添加执行时间信息
+        extracted_data['execution_info'] = extracted_data.get('execution_info', {})
+        extracted_data['execution_info']['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        return notifier.send_enhanced_notification(
+            workflow_name=workflow_name,
+            status=status,
+            extracted_data=extracted_data,
+            repository=os.environ.get('GITHUB_REPOSITORY', 'Bilibili_Flow').split('/')[-1]
+        )
+        
+    except Exception as e:
+        print(f"⚠️ 通知发送过程中出现异常，但不影响主流程: {e}")
+        return False
 
 def send_enhanced_workflow_notification(workflow_name: str, 
                                       command: List[str], 
@@ -327,19 +347,21 @@ def send_enhanced_workflow_notification(workflow_name: str,
 def main():
     """主函数 - 用于命令行调用"""
     if len(sys.argv) < 3:
-        print("用法: python enhanced_feishu_notifier.py <workflow_name> <command> [args...]")
-        print("示例: python enhanced_feishu_notifier.py '每日数据采集' python run_daily_task.py")
+        print("用法: python feishu_notifier.py <workflow_name> <status> [< input_file]")
+        print("示例: python feishu_notifier.py '每日数据采集' success < task_output.log")
         sys.exit(1)
     
     workflow_name = sys.argv[1]
-    command = sys.argv[2:]
+    status = sys.argv[2]
     
-    webhook_url = os.environ.get('FEISHU_WEBHOOK_URL')
-    if not webhook_url:
-        print("❌ 错误: FEISHU_WEBHOOK_URL环境变量未设置")
-        sys.exit(1)
+    # 从stdin读取输出数据
+    if not sys.stdin.isatty():
+        output = sys.stdin.read()
+    else:
+        output = ""
     
-    success = send_enhanced_workflow_notification(workflow_name, command)
+    # 发送通知
+    success = safe_send_notification(workflow_name, status, output)
     sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
