@@ -101,9 +101,9 @@ jobs:
         # 从输出中提取信息
         TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'total_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
         USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'useable_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
-        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oP 'active_cookie["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
-        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oP 'cookie_info["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
-        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oP 'up_name["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
+        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oP 'active_cookie["\s]*:["\s]*["'"'"']\K[^"'"'"']+' | tail -1 || echo "未知")
+        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oP 'cookie_info["\s]*:["\s]*["'"'"']\K[^"'"'"']+' | tail -1 || echo "未知")
+        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oP 'up_name["\s]*:["\s]*["'"'"']\K[^"'"'"']+' | tail -1 || echo "未知")
         TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -oP 'total_videos["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
         TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -oP 'total_comments["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
         ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oP 'errors_count["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
