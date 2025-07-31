@@ -12,6 +12,11 @@ permissions:
   contents: write
   actions: read
 
+# 防止并发执行
+concurrency:
+  group: daily-data-collection
+  cancel-in-progress: false
+
 jobs:
   daily-data-collection:
     runs-on: ubuntu-latest
@@ -261,6 +266,8 @@ Data size: ${TOTAL_SIZE}"
         fi
         
     - name: Commit and push data
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Determine task type for commit message
         CURRENT_HOUR=$(date -u +%H)
@@ -276,50 +283,47 @@ Data size: ${TOTAL_SIZE}"
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
           git add data/
           if ! git diff --staged --quiet; then
-            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
+            # Create unique commit message with run number to avoid conflicts
+            COMMIT_MSG="${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S') [run-${{ github.run_number }}]"
+            git commit -m "$COMMIT_MSG"
             
-            # Robust push with retry mechanism
-            MAX_RETRIES=5
-            RETRY_COUNT=0
+            # Use GitHub CLI for more reliable pushing
+            echo "🔄 Using GitHub CLI to push changes..."
             
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-              echo "🔄 Push attempt $((RETRY_COUNT + 1))/$MAX_RETRIES"
+            # Install GitHub CLI if not available
+            if ! command -v gh &> /dev/null; then
+              echo "Installing GitHub CLI..."
+              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+              sudo apt update
+              sudo apt install gh -y
+            fi
+            
+            # Authenticate with GitHub CLI
+            echo "$GITHUB_TOKEN" | gh auth login --with-token
+            
+            # Try to push using git first, fallback to GitHub CLI
+            if git push origin sync-current-files; then
+              echo "✅ Git push successful"
+            else
+              echo "⚠️ Git push failed, trying alternative method..."
               
-              # Fetch latest changes
-              git fetch origin sync-current-files
+              # Get current commit hash
+              COMMIT_HASH=$(git rev-parse HEAD)
               
-              # Check if we need to rebase
-              if ! git merge-base --is-ancestor origin/sync-current-files HEAD; then
-                echo "📥 Rebasing with remote changes..."
-                if git rebase origin/sync-current-files; then
-                  echo "✅ Rebase successful"
-                else
-                  echo "❌ Rebase failed, trying merge strategy..."
-                  git rebase --abort
-                  git merge origin/sync-current-files -m "🔀 Merge remote changes during data collection"
-                fi
-              fi
+              # Update branch reference using GitHub API
+              curl -X PATCH \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/git/refs/heads/sync-current-files" \
+                -d "{\"sha\":\"$COMMIT_HASH\",\"force\":true}"
               
-              # Attempt to push
-              if git push origin sync-current-files; then
-                echo "✅ Data committed and pushed successfully"
-                break
+              if [ $? -eq 0 ]; then
+                echo "✅ GitHub API push successful"
               else
-                echo "⚠️ Push failed, retrying in 10 seconds..."
-                RETRY_COUNT=$((RETRY_COUNT + 1))
-                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                  sleep 10
-                fi
+                echo "❌ All push methods failed"
+                exit 1
               fi
-            done
-            
-            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-              echo "❌ Failed to push after $MAX_RETRIES attempts"
-              echo "📋 Current git status:"
-              git status
-              echo "📋 Recent commits:"
-              git log --oneline -5
-              exit 1
             fi
           else
             echo "ℹ️ No changes to commit in data directory"
