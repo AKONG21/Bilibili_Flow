@@ -104,27 +104,27 @@ jobs:
         # 发送开始通知
         if [ -n "$FEISHU_WEBHOOK_URL" ]; then
           echo "📤 发送任务开始通知..."
-          curl -X POST -H "Content-Type: application/json" -d '{
-            "msg_type": "interactive",
-            "card": {
-              "elements": [
+          curl -X POST -H "Content-Type: application/json" -d "{
+            \"msg_type\": \"interactive\",
+            \"card\": {
+              \"elements\": [
                 {
-                  "tag": "div",
-                  "text": {
-                    "content": "**📦 仓库**: Bilibili_Flow\n**🔄 工作流**: Monthly Historical Data Processing\n**📅 时间**: '$(date '+%Y-%m-%d %H:%M:%S')'\n**🏷️ 运行**: #${{ github.run_number }}\n**🌿 分支**: ${{ github.ref_name }}\n**🚀 状态**: 开始执行月度历史数据处理",
-                    "tag": "lark_md"
+                  \"tag\": \"div\",
+                  \"text\": {
+                    \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**🚀 状态**: 开始执行月度历史数据处理\",
+                    \"tag\": \"lark_md\"
                   }
                 }
               ],
-              "header": {
-                "title": {
-                  "content": "🚀 月度数据处理开始",
-                  "tag": "plain_text"
+              \"header\": {
+                \"title\": {
+                  \"content\": \"🚀 月度数据处理开始\",
+                  \"tag\": \"plain_text\"
                 },
-                "template": "blue"
+                \"template\": \"blue\"
               }
             }
-          }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
+          }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
         fi
         
         # 运行月任务并记录结果
@@ -139,27 +139,27 @@ jobs:
           # 发送失败通知
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
             echo "📤 发送任务失败通知..."
-            curl -X POST -H "Content-Type: application/json" -d '{
-              "msg_type": "interactive",
-              "card": {
-                "elements": [
+            curl -X POST -H "Content-Type: application/json" -d "{
+              \"msg_type\": \"interactive\",
+              \"card\": {
+                \"elements\": [
                   {
-                    "tag": "div",
-                    "text": {
-                      "content": "**📦 仓库**: Bilibili_Flow\n**🔄 工作流**: Monthly Historical Data Processing\n**📅 时间**: '$(date '+%Y-%m-%d %H:%M:%S')'\n**🏷️ 运行**: #${{ github.run_number }}\n**🌿 分支**: ${{ github.ref_name }}\n**⏱️ 执行时长**: '$(($TASK_DURATION / 60))' 分钟\n**❌ 状态**: 任务执行失败\n\n**错误信息**: 请查看工作流日志获取详细信息",
-                      "tag": "lark_md"
+                    \"tag\": \"div\",
+                    \"text\": {
+                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**❌ 状态**: 任务执行失败\\n\\n**错误信息**: 请查看工作流日志获取详细信息\",
+                      \"tag\": \"lark_md\"
                     }
                   }
                 ],
-                "header": {
-                  "title": {
-                    "content": "❌ 月度数据处理失败",
-                    "tag": "plain_text"
+                \"header\": {
+                  \"title\": {
+                    \"content\": \"❌ 月度数据处理失败\",
+                    \"tag\": \"plain_text\"
                   },
-                  "template": "red"
+                  \"template\": \"red\"
                 }
               }
-            }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+            }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
           exit 1
         else
@@ -177,27 +177,27 @@ jobs:
           # 发送成功通知
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
             echo "📤 发送任务成功通知..."
-            curl -X POST -H "Content-Type: application/json" -d '{
-              "msg_type": "interactive",
-              "card": {
-                "elements": [
+            curl -X POST -H "Content-Type: application/json" -d "{
+              \"msg_type\": \"interactive\",
+              \"card\": {
+                \"elements\": [
                   {
-                    "tag": "div",
-                    "text": {
-                      "content": "**📦 仓库**: Bilibili_Flow\n**🔄 工作流**: Monthly Historical Data Processing\n**📅 时间**: '$(date '+%Y-%m-%d %H:%M:%S')'\n**🏷️ 运行**: #${{ github.run_number }}\n**🌿 分支**: ${{ github.ref_name }}\n**⏱️ 执行时长**: '$(($TASK_DURATION / 60))' 分钟\n**✅ 状态**: 任务执行成功\n\n**📊 数据统计**\n📄 JSON文件: '$JSON_COUNT' 个\n🗄️ 数据库文件: '$DB_COUNT' 个\n💾 数据总大小: '$TOTAL_SIZE'\n\n**🎯 任务完成**: 月度历史数据处理完成，数据已保存到仓库",
-                      "tag": "lark_md"
+                    \"tag\": \"div\",
+                    \"text\": {
+                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**✅ 状态**: 任务执行成功\\n\\n**📊 数据统计**\\n📄 JSON文件: $JSON_COUNT 个\\n🗄️ 数据库文件: $DB_COUNT 个\\n💾 数据总大小: $TOTAL_SIZE\\n\\n**🎯 任务完成**: 月度历史数据处理完成，数据已保存到仓库\",
+                      \"tag\": \"lark_md\"
                     }
                   }
                 ],
-                "header": {
-                  "title": {
-                    "content": "✅ 月度数据处理成功",
-                    "tag": "plain_text"
+                \"header\": {
+                  \"title\": {
+                    \"content\": \"✅ 月度数据处理成功\",
+                    \"tag\": \"plain_text\"
                   },
-                  "template": "green"
+                  \"template\": \"green\"
                 }
               }
-            }' "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+            }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
         fi
         
