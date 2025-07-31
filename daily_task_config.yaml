@@ -117,4 +117,4 @@ task_config:
         view: true
       title: true
       video_url: true
-  up_id: ${UP_ID}
+  up_id: 1140672573

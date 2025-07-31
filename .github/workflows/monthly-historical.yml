@@ -101,6 +101,13 @@ jobs:
         echo "Contents of current directory:"
         ls -la
         
+        # 提取执行环境信息
+        EXECUTION_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+        WORKFLOW_NAME="Monthly Historical Data Processing"
+        RUN_NUMBER="${{ github.run_number }}"
+        BRANCH_NAME="${{ github.ref_name }}"
+        RETURN_CODE="0"
+        
         # 发送开始通知
         if [ -n "$FEISHU_WEBHOOK_URL" ]; then
           echo "📤 发送任务开始通知..."
@@ -111,7 +118,7 @@ jobs:
                 {
                   \"tag\": \"div\",
                   \"text\": {
-                    \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**🚀 状态**: 开始执行月度历史数据处理\",
+                    \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🚀 状态**: 开始执行月度历史数据处理\",
                     \"tag\": \"lark_md\"
                   }
                 }
@@ -132,6 +139,7 @@ jobs:
         if ! python run_monthly_task.py; then
           TASK_END_TIME=$(date +%s)
           TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
+          RETURN_CODE="1"
           echo "❌ Monthly task execution failed"
           echo "Checking for any generated files:"
           find . -name "*.json" -o -name "*.db" | head -10
@@ -146,7 +154,7 @@ jobs:
                   {
                     \"tag\": \"div\",
                     \"text\": {
-                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**❌ 状态**: 任务执行失败\\n\\n**错误信息**: 请查看工作流日志获取详细信息\",
+                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🔢 返回码**: ${RETURN_CODE}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**❌ 状态**: 任务执行失败\\n\\n**错误信息**: 请查看工作流日志获取详细信息\",
                       \"tag\": \"lark_md\"
                     }
                   }
@@ -165,6 +173,7 @@ jobs:
         else
           TASK_END_TIME=$(date +%s)
           TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
+          RETURN_CODE="0"
           echo "✅ Monthly task execution completed"
           echo "Checking generated data files:"
           find data/ -type f | head -10
@@ -184,7 +193,7 @@ jobs:
                   {
                     \"tag\": \"div\",
                     \"text\": {
-                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: Monthly Historical Data Processing\\n**📅 时间**: $(date '+%Y-%m-%d %H:%M:%S')\\n**🏷️ 运行**: #${{ github.run_number }}\\n**🌿 分支**: ${{ github.ref_name }}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**✅ 状态**: 任务执行成功\\n\\n**📊 数据统计**\\n📄 JSON文件: $JSON_COUNT 个\\n🗄️ 数据库文件: $DB_COUNT 个\\n💾 数据总大小: $TOTAL_SIZE\\n\\n**🎯 任务完成**: 月度历史数据处理完成，数据已保存到仓库\",
+                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🔢 返回码**: ${RETURN_CODE}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**✅ 状态**: 任务执行成功\\n\\n**📊 数据统计**\\n📄 JSON文件: $JSON_COUNT 个\\n🗄️ 数据库文件: $DB_COUNT 个\\n💾 数据总大小: $TOTAL_SIZE\\n\\n**🎯 任务完成**: 月度历史数据处理完成，数据已保存到仓库\",
                       \"tag\": \"lark_md\"
                     }
                   }

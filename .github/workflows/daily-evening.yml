@@ -92,9 +92,22 @@ jobs:
         
         # 运行日任务并记录结果
         TASK_START_TIME=$(date +%s)
-        if ! python run_daily_task.py; then
-          TASK_END_TIME=$(date +%s)
-          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
+        TASK_OUTPUT=$(python run_daily_task.py 2>&1)
+        TASK_EXIT_CODE=$?
+        TASK_END_TIME=$(date +%s)
+        TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
+        
+        # 从输出中提取信息
+        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'total_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'useable_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oP 'active_cookie["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
+        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oP 'cookie_info["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
+        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oP 'up_name["\s]*:["\s]*["\']\K[^"\']+'| tail -1 || echo "未知")
+        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -oP 'total_videos["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -oP 'total_comments["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oP 'errors_count["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        
+        if [ $TASK_EXIT_CODE -ne 0 ]; then
           echo "❌ Evening data collection failed"
           echo "Checking for any generated files:"
           find . -name "*.json" -o -name "*.db" | head -10
@@ -104,14 +117,12 @@ jobs:
             curl -X POST -H "Content-Type: application/json" -d "{
               \"msg_type\": \"text\",
               \"content\": {
-                \"text\": \"❌ 晚间数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n执行时长: $(($TASK_DURATION / 60)) 分钟\\n请查看工作流日志\"
+                \"text\": \"❌ 晚间数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n请查看工作流日志\"
               }
             }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
           exit 1
         else
-          TASK_END_TIME=$(date +%s)
-          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
           echo "✅ Evening data collection completed"
           echo "Checking generated data files:"
           find data/ -type f | head -10
@@ -125,7 +136,7 @@ jobs:
             curl -X POST -H "Content-Type: application/json" -d "{
               \"msg_type\": \"text\",
               \"content\": {
-                \"text\": \"✅ 晚间数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n执行时长: $(($TASK_DURATION / 60)) 分钟\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE\"
+                \"text\": \"✅ 晚间数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n📁 文件信息:\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE\"
               }
             }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
