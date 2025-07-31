@@ -1,9 +1,11 @@
-name: Daily Data Collection - Morning (08:07)
+name: Daily Data Collection (08:07 & 20:07)
 
 on:
   schedule:
-    # UTC 时间 00:07 = 北京时间 08:07 (避免冲突)
+    # UTC 时间 00:07 = 北京时间 08:07
     - cron: '7 0 * * *'
+    # UTC 时间 12:07 = 北京时间 20:07
+    - cron: '7 12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -11,7 +13,7 @@ permissions:
   actions: read
 
 jobs:
-  morning-data-collection:
+  daily-data-collection:
     runs-on: ubuntu-latest
     
     steps:
@@ -69,23 +71,33 @@ jobs:
         echo "🗑️ Checking for failed cookies cleanup"
         python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
         
-    - name: Run morning data collection with enhanced notification
+    - name: Run daily data collection with enhanced notification
       env:
         UP_ID: ${{ secrets.UP_ID }}
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         PYTHONPATH: ${{ github.workspace }}
       run: |
-        echo "Starting morning data collection with enhanced notification"
+        echo "Starting daily data collection with enhanced notification"
         echo "Current working directory: $(pwd)"
         echo "Python path: $PYTHONPATH"
         
+        # 根据时间判断是早晨还是晚间任务
+        CURRENT_HOUR=$(date -u +%H)
+        if [ "$CURRENT_HOUR" = "00" ]; then
+          TASK_TYPE="早晨"
+          TASK_EMOJI="🌅"
+        else
+          TASK_TYPE="晚间"  
+          TASK_EMOJI="🌙"
+        fi
+        
         # 发送开始通知
         if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-          echo "📤 发送早晨任务开始通知..."
+          echo "📤 发送${TASK_TYPE}任务开始通知..."
           curl -X POST -H "Content-Type: application/json" -d "{
             \"msg_type\": \"text\",
             \"content\": {
-              \"text\": \"🌅 早晨数据采集开始\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\"
+              \"text\": \"${TASK_EMOJI} ${TASK_TYPE}数据采集开始\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\"
             }
           }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
         fi
@@ -108,7 +120,7 @@ jobs:
         ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oP 'errors_count["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
         
         if [ $TASK_EXIT_CODE -ne 0 ]; then
-          echo "❌ Morning data collection failed"
+          echo "❌ ${TASK_TYPE} data collection failed"
           echo "Checking for any generated files:"
           find . -name "*.json" -o -name "*.db" | head -10
           
@@ -117,13 +129,13 @@ jobs:
             curl -X POST -H "Content-Type: application/json" -d "{
               \"msg_type\": \"text\",
               \"content\": {
-                \"text\": \"❌ 早晨数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n请查看工作流日志\"
+                \"text\": \"❌ ${TASK_TYPE}数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n请查看工作流日志\"
               }
             }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
           exit 1
         else
-          echo "✅ Morning data collection completed"
+          echo "✅ ${TASK_TYPE} data collection completed"
           echo "Checking generated data files:"
           find data/ -type f | head -10
           
@@ -136,7 +148,7 @@ jobs:
             curl -X POST -H "Content-Type: application/json" -d "{
               \"msg_type\": \"text\",
               \"content\": {
-                \"text\": \"✅ 早晨数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n📁 文件信息:\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE\"
+                \"text\": \"✅ ${TASK_TYPE}数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n📁 文件信息:\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE\"
               }
             }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
@@ -148,7 +160,7 @@ jobs:
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
           git add data/
           if ! git diff --staged --quiet; then
-            git commit -m "🌅 Morning data collection - $(date +'%Y-%m-%d %H:%M:%S')"
+            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date +'%Y-%m-%d %H:%M:%S')"
             git push
             echo "✅ Data committed and pushed successfully"
           else
@@ -177,7 +189,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: cookie-reports-morning-${{ github.run_number }}
+        name: cookie-reports-daily-${{ github.run_number }}
         path: |
           cookie_management_report.json
           cookie_cleanup_report.json
