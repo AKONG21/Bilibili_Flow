@@ -12,10 +12,10 @@ permissions:
   contents: write
   actions: read
 
-# 防止并发执行
+# 防止并发执行 - 取消正在进行的任务
 concurrency:
-  group: daily-data-collection
-  cancel-in-progress: false
+  group: daily-data-collection-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   daily-data-collection:
