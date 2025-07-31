@@ -1,7 +1,7 @@
 {
   "task_info": {
-    "up_id": "1140672573",
-    "collection_time": "2025-07-31T03:10:33.761146",
+    "up_id": 1140672573,
+    "collection_time": "2025-07-31T08:34:15.448384",
     "time_range": {
       "start_date": "2025-07-03",
       "end_date": "2025-07-31"
@@ -17,7 +17,7 @@
     }
   },
   "up_info": {
-    "fans": 4150320,
+    "fans": 4150459,
     "mid": 1140672573,
     "name": "小王Albert",
     "up_video_count": 243
@@ -33,13 +33,13 @@
       "publish_time": "2025-07-30T15:16:18",
       "title": "成功干掉0个政敌，赖清德为何搬起石头砸自己的脚？【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1xT8qzME6V",
-      "coin": 5903,
-      "danmaku": 1383,
-      "favorite": 3832,
-      "like": 16632,
-      "reply": 1097,
-      "share": 342,
-      "view": 263640
+      "coin": 8543,
+      "danmaku": 0,
+      "favorite": 4568,
+      "like": 22133,
+      "reply": 1453,
+      "share": 517,
+      "view": 369824
     },
     {
       "aid": 114913863340281,
@@ -51,13 +51,13 @@
       "publish_time": "2025-07-26T01:00:00",
       "title": "老爸战死，法资吸血，小妈握权，乍得少主能逆天改命吗【中非01丨乍得】",
       "video_url": "https://www.bilibili.com/video/BV1PubQzgE5K",
-      "coin": 8276,
-      "danmaku": 2856,
-      "favorite": 5854,
-      "like": 35709,
-      "reply": 877,
-      "share": 375,
-      "view": 701992
+      "coin": 8347,
+      "danmaku": 2864,
+      "favorite": 5845,
+      "like": 35938,
+      "reply": 884,
+      "share": 379,
+      "view": 708848
     },
     {
       "aid": 114872222293935,
@@ -69,13 +69,13 @@
       "publish_time": "2025-07-18T04:05:13",
       "title": "外长的欧盟东盟之旅，看中国如何在对手里头交朋友【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1GugGzwE65",
-      "coin": 19254,
-      "danmaku": 3675,
-      "favorite": 5316,
-      "like": 33433,
-      "reply": 1005,
-      "share": 718,
-      "view": 568837
+      "coin": 19305,
+      "danmaku": 3693,
+      "favorite": 5324,
+      "like": 33514,
+      "reply": 1000,
+      "share": 721,
+      "view": 571451
     },
     {
       "aid": 114835782114945,
@@ -87,13 +87,13 @@
       "publish_time": "2025-07-12T01:00:00",
       "title": "“国家级超级学习计划”提前交卷，“十四五”规划为我们带来了什么？",
       "video_url": "https://www.bilibili.com/video/BV16Su5zmEj5",
-      "coin": 38691,
-      "danmaku": 12118,
-      "favorite": 22786,
-      "like": 91590,
-      "reply": 6694,
-      "share": 5580,
-      "view": 1509392
+      "coin": 38765,
+      "danmaku": 12150,
+      "favorite": 22825,
+      "like": 91741,
+      "reply": 6702,
+      "share": 5589,
+      "view": 1512339
     },
     {
       "aid": 114828987342285,
@@ -105,13 +105,13 @@
       "publish_time": "2025-07-10T13:29:18",
       "title": "玩弄民粹、煽动对立、损公肥私、漏洞百出，赖桑又在整什么烂活？【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV15FG3zKEgg",
-      "coin": 21363,
-      "danmaku": 3632,
-      "favorite": 6536,
-      "like": 39690,
-      "reply": 1481,
-      "share": 1262,
-      "view": 711955
+      "coin": 21385,
+      "danmaku": 3642,
+      "favorite": 6543,
+      "like": 39744,
+      "reply": 1483,
+      "share": 1265,
+      "view": 713636
     },
     {
       "aid": 114794711488834,
@@ -123,13 +123,13 @@
       "publish_time": "2025-07-05T01:00:00",
       "title": "世界乱成一锅粥，东亚凭啥稳如狗？达沃斯揭秘亚洲世纪密码",
       "video_url": "https://www.bilibili.com/video/BV1sw37zNEiA",
-      "coin": 27698,
-      "danmaku": 7380,
-      "favorite": 17931,
-      "like": 104825,
-      "reply": 2747,
-      "share": 2036,
-      "view": 2423869
+      "coin": 27718,
+      "danmaku": 7389,
+      "favorite": 17959,
+      "like": 104919,
+      "reply": 2748,
+      "share": 2038,
+      "view": 2427269
     },
     {
       "aid": 114787866514369,
@@ -141,13 +141,13 @@
       "publish_time": "2025-07-03T10:00:00",
       "title": "要推荐、要面试、要联考，台湾高考跟大陆有多不一样【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV11s3TzzEJG",
-      "coin": 7686,
-      "danmaku": 1779,
-      "favorite": 2780,
-      "like": 23324,
-      "reply": 927,
-      "share": 316,
-      "view": 354357
+      "coin": 7694,
+      "danmaku": 1785,
+      "favorite": 2785,
+      "like": 23344,
+      "reply": 928,
+      "share": 317,
+      "view": 355030
     },
     {
       "aid": 114754328796157,
@@ -159,13 +159,13 @@
       "publish_time": "2025-06-28T01:00:00",
       "title": "0资源缺水土的非洲国家，愣是靠社会主义翻身了【西非15丨佛得角】",
       "video_url": "https://www.bilibili.com/video/BV1VrKBzhEmp",
-      "coin": 24463,
-      "danmaku": 7186,
-      "favorite": 12278,
-      "like": 74797,
-      "reply": 2343,
+      "coin": 24473,
+      "danmaku": 7187,
+      "favorite": 12281,
+      "like": 74824,
+      "reply": 2344,
       "share": 1458,
-      "view": 1436523
+      "view": 1437113
     },
     {
       "aid": 114715070108672,
@@ -177,13 +177,13 @@
       "publish_time": "2025-06-20T09:58:10",
       "title": "美伊核谈判，以色列下死手，伊朗扛得住吗？",
       "video_url": "https://www.bilibili.com/video/BV1cwKAz3EmJ",
-      "coin": 58389,
-      "danmaku": 15679,
-      "favorite": 23704,
-      "like": 145315,
+      "coin": 58391,
+      "danmaku": 15680,
+      "favorite": 23702,
+      "like": 145322,
       "reply": 3353,
-      "share": 6504,
-      "view": 3529769
+      "share": 6505,
+      "view": 3530021
     },
     {
       "aid": 114704936605544,
@@ -195,13 +195,13 @@
       "publish_time": "2025-06-18T23:00:00",
       "title": "台湾网红馆长大陆行，绿营破大防？我接待馆长的考量【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1HxNnz9EcH",
-      "coin": 22494,
-      "danmaku": 10182,
-      "favorite": 6444,
-      "like": 45236,
+      "coin": 22502,
+      "danmaku": 10193,
+      "favorite": 6447,
+      "like": 45259,
       "reply": 3878,
       "share": 1455,
-      "view": 857419
+      "view": 858381
     },
     {
       "aid": 114674989276283,
@@ -213,13 +213,13 @@
       "publish_time": "2025-06-14T01:00:00",
       "title": "军阀创业大奖赛，足球先生当总统，无脑cos美国下场怎么样？【西非14丨利比里亚】",
       "video_url": "https://www.bilibili.com/video/BV1fLMgzhEjb",
-      "coin": 16401,
-      "danmaku": 8773,
+      "coin": 16404,
+      "danmaku": 8774,
       "favorite": 7818,
-      "like": 58045,
+      "like": 58054,
       "reply": 1505,
       "share": 772,
-      "view": 1201952
+      "view": 1202399
     },
     {
       "aid": 114664855837401,
@@ -231,13 +231,13 @@
       "publish_time": "2025-06-11T14:25:55",
       "title": "特朗普和马斯克掰了？权力的友谊为何如此抽象？【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV16uMJz4E15",
-      "coin": 24655,
+      "coin": 24659,
       "danmaku": 3063,
-      "favorite": 7646,
-      "like": 44437,
+      "favorite": 7648,
+      "like": 44443,
       "reply": 1288,
-      "share": 2113,
-      "view": 891500
+      "share": 2114,
+      "view": 891809
     },
     {
       "aid": 114625295225867,
@@ -249,13 +249,13 @@
       "publish_time": "2025-06-04T13:26:18",
       "title": "韩国总统8年换4个！内斗、财阀、中美博弈，李在明能抗住吗？",
       "video_url": "https://www.bilibili.com/video/BV1daTJzmELE",
-      "coin": 45925,
-      "danmaku": 14683,
-      "favorite": 24521,
-      "like": 151162,
-      "reply": 3303,
+      "coin": 45931,
+      "danmaku": 14684,
+      "favorite": 24519,
+      "like": 151174,
+      "reply": 3302,
       "share": 6345,
-      "view": 4054066
+      "view": 4054666
     },
     {
       "aid": 114592378264939,
@@ -267,13 +267,13 @@
       "publish_time": "2025-05-30T01:00:00",
       "title": "上任一周年赖清德也要爱国了？绿营狗咬狗，派系大梳理【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1AY7jz2E1P",
-      "coin": 28755,
-      "danmaku": 2556,
+      "coin": 28763,
+      "danmaku": 2559,
       "favorite": 8035,
-      "like": 59792,
+      "like": 59802,
       "reply": 2013,
       "share": 1429,
-      "view": 1137217
+      "view": 1137746
     },
     {
       "aid": 114557414612375,
@@ -285,13 +285,13 @@
       "publish_time": "2025-05-24T01:00:00",
       "title": "印度大翻车，莫迪露底牌，自以为的外交大师如何沦为大国炮灰？",
       "video_url": "https://www.bilibili.com/video/BV19QjJzTEMn",
-      "coin": 56599,
-      "danmaku": 19914,
-      "favorite": 21607,
-      "like": 143853,
-      "reply": 3524,
-      "share": 3257,
-      "view": 3600631
+      "coin": 56604,
+      "danmaku": 19922,
+      "favorite": 21606,
+      "like": 143865,
+      "reply": 3525,
+      "share": 3258,
+      "view": 3601714
     },
     {
       "aid": 114524464093072,
@@ -303,13 +303,13 @@
       "publish_time": "2025-05-18T01:00:00",
       "title": "印巴冲突神剧情，莫迪法术现眼了，台湾一堆幻影2000怎么办？【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1H7JTzXEEt",
-      "coin": 18538,
-      "danmaku": 5824,
-      "favorite": 8017,
-      "like": 58029,
+      "coin": 18540,
+      "danmaku": 5826,
+      "favorite": 8015,
+      "like": 58042,
       "reply": 1969,
       "share": 928,
-      "view": 1364583
+      "view": 1365133
     },
     {
       "aid": 114517266731746,
@@ -321,13 +321,13 @@
       "publish_time": "2025-05-16T11:36:05",
       "title": "中美瑞士声明，30%vs10%是输是赢？数字背后的超级博弈",
       "video_url": "https://www.bilibili.com/video/BV1s6E4z1EG7",
-      "coin": 47321,
+      "coin": 47323,
       "danmaku": 9561,
-      "favorite": 16341,
-      "like": 98747,
+      "favorite": 16340,
+      "like": 98749,
       "reply": 3843,
       "share": 3695,
-      "view": 1737232
+      "view": 1737353
     },
     {
       "aid": 114507066184908,
@@ -339,13 +339,13 @@
       "publish_time": "2025-05-15T00:00:00",
       "title": "中美关税战休兵，赖清德压力大了，要上菜单了？【岛岛连线】",
       "video_url": "https://www.bilibili.com/video/BV1toEzzpEFy",
-      "coin": 19555,
-      "danmaku": 2400,
-      "favorite": 7283,
-      "like": 59665,
+      "coin": 19559,
+      "danmaku": 2402,
+      "favorite": 7282,
+      "like": 59680,
       "reply": 2084,
-      "share": 1175,
-      "view": 1169978
+      "share": 1176,
+      "view": 1171097
     },
     {
       "aid": 114495288512713,
@@ -357,13 +357,13 @@
       "publish_time": "2025-05-12T14:22:49",
       "title": "历史性成果！硬刚霸凌，逼美谈判，这才是正确的姿势！",
       "video_url": "https://www.bilibili.com/video/BV18S79z8ExG",
-      "coin": 40063,
+      "coin": 40068,
       "danmaku": 8485,
-      "favorite": 16699,
-      "like": 125672,
+      "favorite": 16700,
+      "like": 125681,
       "reply": 6005,
       "share": 8117,
-      "view": 2083697
+      "view": 2084070
     },
     {
       "aid": 114478360301716,
@@ -381,7 +381,7 @@
       "like": 32848,
       "reply": 808,
       "share": 1007,
-      "view": 718233
+      "view": 718256
     },
     {
       "aid": 114427324013491,
@@ -393,13 +393,13 @@
       "publish_time": "2025-05-01T01:00:00",
       "title": "探险家的好奇心，如何打开非洲地狱之门？【中非01丨柏林会议】",
       "video_url": "https://www.bilibili.com/video/BV1LbGtznEsb",
-      "coin": 20663,
+      "coin": 20664,
       "danmaku": 5146,
-      "favorite": 11860,
-      "like": 75558,
+      "favorite": 11861,
+      "like": 75562,
       "reply": 1024,
       "share": 1028,
-      "view": 1493155
+      "view": 1493407
     },
     {
       "aid": 114402426884244,
@@ -417,7 +417,7 @@
       "like": 96922,
       "reply": 2640,
       "share": 5055,
-      "view": 1853954
+      "view": 1853980
     },
     {
       "aid": 114312282707547,
@@ -431,11 +431,11 @@
       "video_url": "https://www.bilibili.com/video/BV1P4d3YnExz",
       "coin": 239424,
       "danmaku": 32035,
-      "favorite": 84776,
-      "like": 364900,
+      "favorite": 84774,
+      "like": 364903,
       "reply": 9699,
-      "share": 39517,
-      "view": 6545639
+      "share": 39518,
+      "view": 6545893
     },
     {
       "aid": 114274986956845,
@@ -448,12 +448,12 @@
       "title": "2亿人口非洲第一GDP超级民主大国，穷到全民摆烂【西非13丨尼日利亚】",
       "video_url": "https://www.bilibili.com/video/BV1stZUYwER9",
       "coin": 25184,
-      "danmaku": 8357,
+      "danmaku": 8358,
       "favorite": 11404,
-      "like": 77733,
+      "like": 77735,
       "reply": 1556,
-      "share": 2157,
-      "view": 2063085
+      "share": 2158,
+      "view": 2063436
     },
     {
       "aid": 114239469522946,
@@ -467,11 +467,11 @@
       "video_url": "https://www.bilibili.com/video/BV1J7oXYhE9N",
       "coin": 32488,
       "danmaku": 8358,
-      "favorite": 16414,
-      "like": 107611,
+      "favorite": 16417,
+      "like": 107620,
       "reply": 2305,
-      "share": 1668,
-      "view": 2698112
+      "share": 1670,
+      "view": 2698533
     },
     {
       "aid": 114200160508858,
@@ -485,11 +485,11 @@
       "video_url": "https://www.bilibili.com/video/BV1fbXCY4EeJ",
       "coin": 25105,
       "danmaku": 7683,
-      "favorite": 9687,
-      "like": 68492,
+      "favorite": 9685,
+      "like": 68496,
       "reply": 1551,
       "share": 1310,
-      "view": 1516501
+      "view": 1516727
     },
     {
       "aid": 114160247512731,
@@ -504,10 +504,10 @@
       "coin": 21234,
       "danmaku": 6271,
       "favorite": 11719,
-      "like": 76602,
+      "like": 76607,
       "reply": 1692,
       "share": 1306,
-      "view": 1779708
+      "view": 1780054
     },
     {
       "aid": 114120753945599,
@@ -522,10 +522,10 @@
       "coin": 22115,
       "danmaku": 4899,
       "favorite": 9570,
-      "like": 73836,
+      "like": 73841,
       "reply": 1184,
-      "share": 1051,
-      "view": 1676572
+      "share": 1053,
+      "view": 1676823
     },
     {
       "aid": 114075472239054,
@@ -537,13 +537,13 @@
       "publish_time": "2025-02-27T11:09:58",
       "title": "特朗普加速调停俄乌，两个时间穷鬼的豪赌",
       "video_url": "https://www.bilibili.com/video/BV1eR9AY3EeL",
-      "coin": 100021,
+      "coin": 100022,
       "danmaku": 18579,
-      "favorite": 33380,
-      "like": 183011,
+      "favorite": 33378,
+      "like": 183010,
       "reply": 3822,
       "share": 11346,
-      "view": 3434361
+      "view": 3434421
     },
     {
       "aid": 114042404345442,
@@ -556,12 +556,12 @@
       "title": "3年！朔尔茨把默克尔的欧洲老大干成“欧洲病夫”",
       "video_url": "https://www.bilibili.com/video/BV1fAPceeEdc",
       "coin": 41064,
-      "danmaku": 13259,
-      "favorite": 16884,
-      "like": 125908,
+      "danmaku": 13260,
+      "favorite": 16882,
+      "like": 125909,
       "reply": 4245,
       "share": 5813,
-      "view": 2719496
+      "view": 2719651
     },
     {
       "aid": 114001367342808,
@@ -576,10 +576,10 @@
       "coin": 25014,
       "danmaku": 5967,
       "favorite": 10133,
-      "like": 73579,
+      "like": 73580,
       "reply": 1742,
       "share": 1268,
-      "view": 1685267
+      "view": 1685462
     },
     {
       "aid": 113989539337188,
@@ -594,10 +594,10 @@
       "coin": 10081,
       "danmaku": 2863,
       "favorite": 6243,
-      "like": 68275,
+      "like": 68277,
       "reply": 2078,
       "share": 640,
-      "view": 1406028
+      "view": 1406098
     },
     {
       "aid": 113968634992290,
@@ -611,11 +611,11 @@
       "video_url": "https://www.bilibili.com/video/BV1bRNGepEeL",
       "coin": 68889,
       "danmaku": 12002,
-      "favorite": 29720,
-      "like": 173189,
+      "favorite": 29717,
+      "like": 173190,
       "reply": 3740,
       "share": 8973,
-      "view": 3384664
+      "view": 3384704
     },
     {
       "aid": 113899462465385,
@@ -627,13 +627,13 @@
       "publish_time": "2025-01-31T01:00:00",
       "title": "中国的西非老战友，如何靠着一带一路摆脱动荡【西非07｜几内亚比绍】",
       "video_url": "https://www.bilibili.com/video/BV12RfUYiE4E",
-      "coin": 20589,
+      "coin": 20591,
       "danmaku": 6014,
-      "favorite": 8802,
-      "like": 70120,
+      "favorite": 8801,
+      "like": 70122,
       "reply": 1012,
       "share": 1233,
-      "view": 1506359
+      "view": 1506420
     },
     {
       "aid": 113882198708758,
@@ -648,10 +648,10 @@
       "coin": 18761,
       "danmaku": 4550,
       "favorite": 8469,
-      "like": 61569,
+      "like": 61570,
       "reply": 1309,
       "share": 867,
-      "view": 1366705
+      "view": 1366761
     },
     {
       "aid": 113865706705823,
@@ -665,11 +665,11 @@
       "video_url": "https://www.bilibili.com/video/BV1uAwheFEFj",
       "coin": 8767,
       "danmaku": 2728,
-      "favorite": 8571,
+      "favorite": 8570,
       "like": 90476,
       "reply": 1396,
       "share": 2928,
-      "view": 1565134
+      "view": 1565144
     },
     {
       "aid": 113864532367363,
@@ -687,7 +687,7 @@
       "like": 108587,
       "reply": 1681,
       "share": 2736,
-      "view": 1820255
+      "view": 1820261
     },
     {
       "aid": 113855623598323,
@@ -702,10 +702,10 @@
       "coin": 14756,
       "danmaku": 6143,
       "favorite": 9249,
-      "like": 84367,
+      "like": 84368,
       "reply": 1234,
       "share": 2643,
-      "view": 1707293
+      "view": 1707301
     },
     {
       "aid": 113842302491277,
@@ -719,11 +719,11 @@
       "video_url": "https://www.bilibili.com/video/BV1FFwneHEen",
       "coin": 11082,
       "danmaku": 6039,
-      "favorite": 14691,
+      "favorite": 14688,
       "like": 94767,
       "reply": 3177,
       "share": 2577,
-      "view": 2736278
+      "view": 2736293
     },
     {
       "aid": 113804436312549,
@@ -741,7 +741,7 @@
       "like": 78276,
       "reply": 1434,
       "share": 1499,
-      "view": 1906866
+      "view": 1906927
     },
     {
       "aid": 113773985667908,
@@ -755,11 +755,11 @@
       "video_url": "https://www.bilibili.com/video/BV18WrPYME2k",
       "coin": 13460,
       "danmaku": 6155,
-      "favorite": 8457,
+      "favorite": 8458,
       "like": 65286,
       "reply": 1808,
       "share": 1524,
-      "view": 1474563
+      "view": 1474577
     },
     {
       "aid": 113745514733342,
@@ -771,13 +771,13 @@
       "publish_time": "2024-12-31T04:25:46",
       "title": "王骁年度分享：中美变革和AI革命，如何定义下一个文明时代？",
       "video_url": "https://www.bilibili.com/video/BV1JJ67YsEz2",
-      "coin": 205671,
+      "coin": 205673,
       "danmaku": 37073,
-      "favorite": 77612,
-      "like": 211488,
+      "favorite": 77613,
+      "like": 211489,
       "reply": 7575,
       "share": 30419,
-      "view": 2730470
+      "view": 2730503
     },
     {
       "aid": 113736287260920,
@@ -795,7 +795,7 @@
       "like": 23113,
       "reply": 1294,
       "share": 958,
-      "view": 1521546
+      "view": 1521551
     },
     {
       "aid": 113646512378647,
@@ -807,13 +807,13 @@
       "publish_time": "2024-12-14T01:00:00",
       "title": "韩国法国叙利亚，一个周末崩了仨，这个世界怎么了？",
       "video_url": "https://www.bilibili.com/video/BV1sJBuYvEaK",
-      "coin": 186642,
+      "coin": 186644,
       "danmaku": 21227,
-      "favorite": 73816,
-      "like": 333427,
+      "favorite": 73813,
+      "like": 333428,
       "reply": 7674,
       "share": 21909,
-      "view": 6554355
+      "view": 6554412
     },
     {
       "aid": 113565528758699,
@@ -828,10 +828,10 @@
       "coin": 26197,
       "danmaku": 8435,
       "favorite": 9159,
-      "like": 75543,
+      "like": 75544,
       "reply": 1509,
       "share": 1283,
-      "view": 1651688
+      "view": 1651780
     },
     {
       "aid": 113536034544681,
@@ -846,10 +846,10 @@
       "coin": 31102,
       "danmaku": 6885,
       "favorite": 12238,
-      "like": 98833,
+      "like": 98834,
       "reply": 1986,
       "share": 1573,
-      "view": 2106952
+      "view": 2107025
     },
     {
       "aid": 113463858827729,
@@ -863,11 +863,11 @@
       "video_url": "https://www.bilibili.com/video/BV1KWmUYBEF4",
       "coin": 21605,
       "danmaku": 2353,
-      "favorite": 38085,
-      "like": 113503,
+      "favorite": 38084,
+      "like": 113502,
       "reply": 2602,
       "share": 6869,
-      "view": 2852449
+      "view": 2852461
     },
     {
       "aid": 113456275526254,
@@ -881,11 +881,11 @@
       "video_url": "https://www.bilibili.com/video/BV1iAmqYpEFk",
       "coin": 69070,
       "danmaku": 16588,
-      "favorite": 29132,
-      "like": 188732,
+      "favorite": 29131,
+      "like": 188733,
       "reply": 5414,
       "share": 13723,
-      "view": 3319743
+      "view": 3319753
     },
     {
       "aid": 113435639549977,
@@ -899,11 +899,11 @@
       "video_url": "https://www.bilibili.com/video/BV16zD5YgE5C",
       "coin": 28224,
       "danmaku": 12543,
-      "favorite": 26781,
-      "like": 236891,
+      "favorite": 26780,
+      "like": 236892,
       "reply": 7873,
       "share": 22701,
-      "view": 4129635
+      "view": 4129649
     },
     {
       "aid": 113430690340526,
@@ -921,7 +921,7 @@
       "like": 159713,
       "reply": 4332,
       "share": 18389,
-      "view": 3072101
+      "view": 3072142
     },
     {
       "aid": 113410742165152,
@@ -939,7 +939,7 @@
       "like": 156915,
       "reply": 3242,
       "share": 7435,
-      "view": 3517062
+      "view": 3517071
     },
     {
       "aid": 113401598582739,
@@ -953,11 +953,11 @@
       "video_url": "https://www.bilibili.com/video/BV1LUSJY1Ecw",
       "coin": 63369,
       "danmaku": 12304,
-      "favorite": 30785,
+      "favorite": 30783,
       "like": 162027,
       "reply": 5113,
       "share": 14677,
-      "view": 3625632
+      "view": 3625634
     },
     {
       "aid": 113373932951181,
@@ -971,11 +971,11 @@
       "video_url": "https://www.bilibili.com/video/BV1Qe1xYyE7G",
       "coin": 179607,
       "danmaku": 29222,
-      "favorite": 65755,
-      "like": 269580,
+      "favorite": 65754,
+      "like": 269582,
       "reply": 3916,
       "share": 18495,
-      "view": 4778540
+      "view": 4778676
     },
     {
       "aid": 113338835017547,
@@ -989,11 +989,11 @@
       "video_url": "https://www.bilibili.com/video/BV1QoyaYFEh1",
       "coin": 59287,
       "danmaku": 16301,
-      "favorite": 26140,
-      "like": 121325,
+      "favorite": 26139,
+      "like": 121327,
       "reply": 2860,
       "share": 5908,
-      "view": 2169732
+      "view": 2169790
     },
     {
       "aid": 113283084393113,
@@ -1025,11 +1025,11 @@
       "video_url": "https://www.bilibili.com/video/BV1iQxxesEfQ",
       "coin": 48583,
       "danmaku": 10377,
-      "favorite": 16366,
-      "like": 88163,
+      "favorite": 16367,
+      "like": 88166,
       "reply": 2596,
       "share": 2562,
-      "view": 1806710
+      "view": 1806784
     },
     {
       "aid": 113175693369259,
@@ -1044,10 +1044,10 @@
       "coin": 14685,
       "danmaku": 2274,
       "favorite": 5960,
-      "like": 50638,
+      "like": 50639,
       "reply": 851,
       "share": 860,
-      "view": 1145484
+      "view": 1145566
     },
     {
       "aid": 113123767883703,
@@ -1065,7 +1065,7 @@
       "like": 72446,
       "reply": 2027,
       "share": 2031,
-      "view": 1518202
+      "view": 1518205
     },
     {
       "aid": 113094340706687,
@@ -1083,7 +1083,7 @@
       "like": 28933,
       "reply": 1831,
       "share": 730,
-      "view": 705696
+      "view": 705699
     },
     {
       "aid": 1706702612,
@@ -1096,12 +1096,12 @@
       "title": "帝国主义囚笼中的非洲，离自由还有多远？【电子地图册】",
       "video_url": "https://www.bilibili.com/video/BV12T421z7wT",
       "coin": 35141,
-      "danmaku": 9268,
-      "favorite": 19103,
-      "like": 103677,
+      "danmaku": 9271,
+      "favorite": 19102,
+      "like": 103679,
       "reply": 3423,
       "share": 3658,
-      "view": 2006759
+      "view": 2006813
     },
     {
       "aid": 1106727854,
@@ -1119,7 +1119,7 @@
       "like": 23200,
       "reply": 433,
       "share": 383,
-      "view": 763231
+      "view": 763233
     },
     {
       "aid": 1856302569,
@@ -1137,7 +1137,7 @@
       "like": 62445,
       "reply": 909,
       "share": 1260,
-      "view": 1278695
+      "view": 1278697
     },
     {
       "aid": 1806313879,
@@ -1151,11 +1151,11 @@
       "video_url": "https://www.bilibili.com/video/BV13b421J7Yr",
       "coin": 22556,
       "danmaku": 10105,
-      "favorite": 11419,
-      "like": 106443,
+      "favorite": 11418,
+      "like": 106444,
       "reply": 2714,
       "share": 4107,
-      "view": 2178899
+      "view": 2178908
     },
     {
       "aid": 1606309763,
@@ -1169,11 +1169,11 @@
       "video_url": "https://www.bilibili.com/video/BV1fm421g7Nv",
       "coin": 25335,
       "danmaku": 9439,
-      "favorite": 13842,
-      "like": 88629,
+      "favorite": 13841,
+      "like": 88631,
       "reply": 2123,
       "share": 2179,
-      "view": 2313954
+      "view": 2314018
     },
     {
       "aid": 1756142922,
@@ -1188,10 +1188,10 @@
       "coin": 22043,
       "danmaku": 11700,
       "favorite": 10098,
-      "like": 74427,
+      "like": 74428,
       "reply": 1550,
-      "share": 2213,
-      "view": 1897619
+      "share": 2214,
+      "view": 1897664
     },
     {
       "aid": 1005993971,
@@ -1203,13 +1203,13 @@
       "publish_time": "2024-06-22T01:00:00",
       "title": "去瑞士见到活的了！美国一言堂的G7，没有和平的乌克兰和平峰会",
       "video_url": "https://www.bilibili.com/video/BV1sx4y1t7XE",
-      "coin": 35994,
+      "coin": 35995,
       "danmaku": 12172,
       "favorite": 8822,
-      "like": 81942,
+      "like": 81943,
       "reply": 1836,
       "share": 1587,
-      "view": 1307944
+      "view": 1307949
     },
     {
       "aid": 1905774668,
@@ -1239,13 +1239,13 @@
       "publish_time": "2024-06-13T10:00:00",
       "title": "世界最长雷区，2700公里隔离墙，被世人遗忘的北非巴勒斯坦【马格里布04丨西撒哈拉】",
       "video_url": "https://www.bilibili.com/video/BV1Pf42197m2",
-      "coin": 21736,
+      "coin": 21737,
       "danmaku": 6483,
       "favorite": 10523,
-      "like": 70920,
+      "like": 70922,
       "reply": 1442,
       "share": 1763,
-      "view": 1549086
+      "view": 1549129
     },
     {
       "aid": 1755514325,
@@ -1263,7 +1263,7 @@
       "like": 77507,
       "reply": 1640,
       "share": 1463,
-      "view": 1901216
+      "view": 1901250
     },
     {
       "aid": 1405368002,
@@ -1281,7 +1281,7 @@
       "like": 10836,
       "reply": 207,
       "share": 175,
-      "view": 228535
+      "view": 228538
     },
     {
       "aid": 1955281003,
@@ -1299,7 +1299,7 @@
       "like": 9106,
       "reply": 158,
       "share": 195,
-      "view": 181271
+      "view": 181275
     },
     {
       "aid": 1005348915,
@@ -1313,11 +1313,11 @@
       "video_url": "https://www.bilibili.com/video/BV1vx4y1E7WC",
       "coin": 25434,
       "danmaku": 11882,
-      "favorite": 11449,
-      "like": 82269,
+      "favorite": 11448,
+      "like": 82270,
       "reply": 2062,
       "share": 1755,
-      "view": 1826567
+      "view": 1826614
     },
     {
       "aid": 1454770614,
@@ -1332,10 +1332,10 @@
       "coin": 23628,
       "danmaku": 6056,
       "favorite": 11183,
-      "like": 100221,
+      "like": 100222,
       "reply": 2201,
       "share": 4982,
-      "view": 1913003
+      "view": 1913007
     },
     {
       "aid": 1204404580,
@@ -1353,7 +1353,7 @@
       "like": 221968,
       "reply": 4027,
       "share": 18036,
-      "view": 3432718
+      "view": 3432745
     },
     {
       "aid": 1404167996,
@@ -1371,7 +1371,7 @@
       "like": 12966,
       "reply": 300,
       "share": 400,
-      "view": 299789
+      "view": 299791
     },
     {
       "aid": 1703965673,
@@ -1389,7 +1389,7 @@
       "like": 11116,
       "reply": 271,
       "share": 250,
-      "view": 236196
+      "view": 236197
     },
     {
       "aid": 1753912339,
@@ -1403,11 +1403,11 @@
       "video_url": "https://www.bilibili.com/video/BV1Kt421w7tQ",
       "coin": 30202,
       "danmaku": 12147,
-      "favorite": 13127,
-      "like": 85993,
+      "favorite": 13129,
+      "like": 85994,
       "reply": 1720,
-      "share": 1766,
-      "view": 2037713
+      "share": 1767,
+      "view": 2037794
     },
     {
       "aid": 1103419858,
@@ -1419,13 +1419,13 @@
       "publish_time": "2024-04-21T01:00:00",
       "title": "纳赛尔失败以后，中东反帝靠什么？【中东20】",
       "video_url": "https://www.bilibili.com/video/BV19w4m117oA",
-      "coin": 29915,
+      "coin": 29917,
       "danmaku": 7206,
       "favorite": 10299,
-      "like": 66086,
+      "like": 66087,
       "reply": 1745,
       "share": 1692,
-      "view": 1689972
+      "view": 1690018
     },
     {
       "aid": 1353049775,
@@ -1440,10 +1440,10 @@
       "coin": 20006,
       "danmaku": 5600,
       "favorite": 8568,
-      "like": 60634,
+      "like": 60636,
       "reply": 1711,
       "share": 1194,
-      "view": 1628450
+      "view": 1628507
     },
     {
       "aid": 1002060730,
@@ -1457,11 +1457,11 @@
       "video_url": "https://www.bilibili.com/video/BV1vx4y1U7NU",
       "coin": 61016,
       "danmaku": 16421,
-      "favorite": 19497,
+      "favorite": 19495,
       "like": 112902,
       "reply": 3136,
       "share": 4309,
-      "view": 2451184
+      "view": 2451248
     },
     {
       "aid": 1251856877,
@@ -1473,13 +1473,13 @@
       "publish_time": "2024-03-16T01:00:00",
       "title": "土耳其掌握了什么流量密码，成为地区话事人？【中东17丨土耳其】",
       "video_url": "https://www.bilibili.com/video/BV17J4m187U9",
-      "coin": 39540,
-      "danmaku": 15111,
-      "favorite": 15142,
-      "like": 84878,
+      "coin": 39542,
+      "danmaku": 15113,
+      "favorite": 15141,
+      "like": 84880,
       "reply": 1843,
       "share": 2610,
-      "view": 2137928
+      "view": 2138064
     },
     {
       "aid": 1100272167,
@@ -1497,7 +1497,7 @@
       "like": 147742,
       "reply": 3270,
       "share": 21835,
-      "view": 1983399
+      "view": 1983408
     },
     {
       "aid": 836842429,
@@ -1511,11 +1511,11 @@
       "video_url": "https://www.bilibili.com/video/BV13g4y1e7Cm",
       "coin": 17571,
       "danmaku": 5041,
-      "favorite": 8029,
+      "favorite": 8030,
       "like": 58165,
       "reply": 978,
       "share": 1189,
-      "view": 1703610
+      "view": 1703663
     },
     {
       "aid": 369080292,
@@ -1527,13 +1527,13 @@
       "publish_time": "2024-01-20T01:00:00",
       "title": "守着金山吃大饼，初代王者为何苟延残喘？【中东15丨埃及】",
       "video_url": "https://www.bilibili.com/video/BV1c94y1T7d6",
-      "coin": 49215,
+      "coin": 49217,
       "danmaku": 13855,
-      "favorite": 16853,
-      "like": 98267,
+      "favorite": 16854,
+      "like": 98268,
       "reply": 2269,
       "share": 3030,
-      "view": 2561629
+      "view": 2561692
     },
     {
       "aid": 878861686,
@@ -1547,11 +1547,11 @@
       "video_url": "https://www.bilibili.com/video/BV1xN4y1p7pV",
       "coin": 5626,
       "danmaku": 3486,
-      "favorite": 3604,
+      "favorite": 3605,
       "like": 22773,
       "reply": 1176,
       "share": 1292,
-      "view": 516978
+      "view": 516986
     },
     {
       "aid": 580166586,
@@ -1566,10 +1566,10 @@
       "coin": 32187,
       "danmaku": 10300,
       "favorite": 11800,
-      "like": 80512,
+      "like": 80514,
       "reply": 1966,
       "share": 2079,
-      "view": 2196581
+      "view": 2196635
     },
     {
       "aid": 964793200,
@@ -1582,12 +1582,12 @@
       "title": "有事他真上？中东最强激进武装真主党，为何敢硬刚以色列？【中东13丨真主党】",
       "video_url": "https://www.bilibili.com/video/BV1tp4y1f7aD",
       "coin": 30394,
-      "danmaku": 10816,
+      "danmaku": 10827,
       "favorite": 12664,
       "like": 89610,
       "reply": 1346,
       "share": 2577,
-      "view": 2630992
+      "view": 2631025
     },
     {
       "aid": 536989418,
@@ -1602,10 +1602,10 @@
       "coin": 63483,
       "danmaku": 12279,
       "favorite": 23578,
-      "like": 110800,
+      "like": 110801,
       "reply": 1878,
       "share": 4698,
-      "view": 1551977
+      "view": 1552018
     },
     {
       "aid": 281515672,
@@ -1618,12 +1618,12 @@
       "title": "中东小巴黎，如何自己把自己打烂？【中东12丨黎巴嫩】",
       "video_url": "https://www.bilibili.com/video/BV1fc411z7Wu",
       "coin": 27315,
-      "danmaku": 6405,
+      "danmaku": 6411,
       "favorite": 9150,
-      "like": 74371,
+      "like": 74372,
       "reply": 1304,
       "share": 1515,
-      "view": 1892693
+      "view": 1892734
     },
     {
       "aid": 921390487,
@@ -1641,7 +1641,7 @@
       "like": 15166,
       "reply": 871,
       "share": 354,
-      "view": 330489
+      "view": 330494
     },
     {
       "aid": 748857855,
@@ -1656,10 +1656,10 @@
       "coin": 45754,
       "danmaku": 11877,
       "favorite": 16755,
-      "like": 103536,
+      "like": 103537,
       "reply": 2917,
       "share": 3872,
-      "view": 2637443
+      "view": 2637503
     },
     {
       "aid": 621241248,
@@ -1677,7 +1677,7 @@
       "like": 17454,
       "reply": 860,
       "share": 1086,
-      "view": 318933
+      "view": 318934
     },
     {
       "aid": 748677445,
@@ -1695,7 +1695,7 @@
       "like": 12558,
       "reply": 361,
       "share": 361,
-      "view": 250128
+      "view": 250129
     },
     {
       "aid": 833612647,
@@ -1710,10 +1710,10 @@
       "coin": 44686,
       "danmaku": 12492,
       "favorite": 15678,
-      "like": 107345,
+      "like": 107346,
       "reply": 2856,
       "share": 4917,
-      "view": 2338738
+      "view": 2338790
     },
     {
       "aid": 963365396,
@@ -1731,7 +1731,7 @@
       "like": 153345,
       "reply": 3413,
       "share": 5807,
-      "view": 2488139
+      "view": 2488160
     },
     {
       "aid": 705097370,
@@ -1749,7 +1749,7 @@
       "like": 74568,
       "reply": 1636,
       "share": 2350,
-      "view": 1452692
+      "view": 1452698
     },
     {
       "aid": 364785592,
@@ -1763,11 +1763,11 @@
       "video_url": "https://www.bilibili.com/video/BV1f94y1t7CA",
       "coin": 192960,
       "danmaku": 53637,
-      "favorite": 61542,
-      "like": 255753,
+      "favorite": 61541,
+      "like": 255755,
       "reply": 9465,
       "share": 38483,
-      "view": 4389642
+      "view": 4389711
     },
     {
       "aid": 962074250,
@@ -1781,11 +1781,11 @@
       "video_url": "https://www.bilibili.com/video/BV1uH4y1R7Ec",
       "coin": 119138,
       "danmaku": 24224,
-      "favorite": 42595,
+      "favorite": 42592,
       "like": 267981,
       "reply": 12500,
       "share": 25185,
-      "view": 4753405
+      "view": 4753423
     },
     {
       "aid": 873758369,
@@ -1800,10 +1800,10 @@
       "coin": 37862,
       "danmaku": 9992,
       "favorite": 12186,
-      "like": 97871,
+      "like": 97873,
       "reply": 1714,
       "share": 2348,
-      "view": 2489379
+      "view": 2489406
     },
     {
       "aid": 746098384,
@@ -1817,11 +1817,11 @@
       "video_url": "https://www.bilibili.com/video/BV1pk4y1F74a",
       "coin": 62191,
       "danmaku": 7668,
-      "favorite": 15433,
+      "favorite": 15434,
       "like": 121163,
       "reply": 1718,
       "share": 2316,
-      "view": 2300156
+      "view": 2300187
     },
     {
       "aid": 363203221,
@@ -1839,7 +1839,7 @@
       "like": 238734,
       "reply": 8542,
       "share": 23147,
-      "view": 2458995
+      "view": 2459011
     },
     {
       "aid": 447808986,
@@ -1857,7 +1857,7 @@
       "like": 106939,
       "reply": 3262,
       "share": 2070,
-      "view": 1793982
+      "view": 1793993
     },
     {
       "aid": 660113132,
@@ -1870,12 +1870,12 @@
       "title": "政变一年，第二共和，中亚最大国家现在怎么样？【中亚五国05丨哈萨克斯坦】",
       "video_url": "https://www.bilibili.com/video/BV1Vh4y1U78f",
       "coin": 27440,
-      "danmaku": 11726,
+      "danmaku": 11728,
       "favorite": 10644,
-      "like": 82877,
+      "like": 82878,
       "reply": 2397,
       "share": 2278,
-      "view": 1972008
+      "view": 1972092
     },
     {
       "aid": 914813022,
@@ -1887,13 +1887,13 @@
       "publish_time": "2023-08-19T01:00:00",
       "title": "坐拥油田，债务爆炸，最脆弱的白袍子是谁？【中东06丨巴林】",
       "video_url": "https://www.bilibili.com/video/BV1hu4y1q7XU",
-      "coin": 26617,
+      "coin": 26619,
       "danmaku": 11780,
-      "favorite": 11912,
-      "like": 91667,
+      "favorite": 11911,
+      "like": 91669,
       "reply": 1925,
       "share": 2475,
-      "view": 2472093
+      "view": 2472142
     },
     {
       "aid": 999475535,
@@ -1906,12 +1906,12 @@
       "title": "爆锤白人，殖民非洲，不爱造奇观的土豪有多横【中东05丨阿曼】",
       "video_url": "https://www.bilibili.com/video/BV1w44y1A7xC",
       "coin": 23590,
-      "danmaku": 8179,
-      "favorite": 9420,
-      "like": 77687,
+      "danmaku": 8180,
+      "favorite": 9419,
+      "like": 77690,
       "reply": 1671,
       "share": 1839,
-      "view": 2053375
+      "view": 2053414
     },
     {
       "aid": 999488553,
@@ -1929,7 +1929,7 @@
       "like": 29467,
       "reply": 1729,
       "share": 1492,
-      "view": 535490
+      "view": 535492
     },
     {
       "aid": 446564360,
@@ -1943,11 +1943,11 @@
       "video_url": "https://www.bilibili.com/video/BV1hj41197wT",
       "coin": 26578,
       "danmaku": 12139,
-      "favorite": 10370,
+      "favorite": 10369,
       "like": 87005,
       "reply": 2342,
-      "share": 1927,
-      "view": 2036531
+      "share": 1928,
+      "view": 2036597
     },
     {
       "aid": 744290273,
@@ -1965,7 +1965,7 @@
       "like": 19434,
       "reply": 1098,
       "share": 380,
-      "view": 346251
+      "view": 346255
     },
     {
       "aid": 316200949,
@@ -1979,11 +1979,11 @@
       "video_url": "https://www.bilibili.com/video/BV19P41167bm",
       "coin": 25013,
       "danmaku": 9869,
-      "favorite": 9743,
+      "favorite": 9742,
       "like": 89119,
       "reply": 2043,
       "share": 1442,
-      "view": 2169095
+      "view": 2169138
     },
     {
       "aid": 828412693,
@@ -2001,7 +2001,7 @@
       "like": 85128,
       "reply": 1645,
       "share": 1450,
-      "view": 1675405
+      "view": 1675450
     },
     {
       "aid": 828215881,
@@ -2016,10 +2016,10 @@
       "coin": 35669,
       "danmaku": 11860,
       "favorite": 12937,
-      "like": 105764,
+      "like": 105765,
       "reply": 2667,
       "share": 3439,
-      "view": 2559311
+      "view": 2559366
     },
     {
       "aid": 870406123,
@@ -2037,7 +2037,7 @@
       "like": 157394,
       "reply": 6120,
       "share": 4405,
-      "view": 2622949
+      "view": 2622974
     },
     {
       "aid": 572504747,
@@ -2055,7 +2055,7 @@
       "like": 114474,
       "reply": 3125,
       "share": 2858,
-      "view": 2132222
+      "view": 2132276
     },
     {
       "aid": 402427698,
@@ -2073,7 +2073,7 @@
       "like": 107475,
       "reply": 3916,
       "share": 2658,
-      "view": 1940189
+      "view": 1940259
     },
     {
       "aid": 402153927,
@@ -2086,12 +2086,12 @@
       "title": "中东和解、联合舰队、引入大国，沙特在下什么棋？【中东02丨沙特】",
       "video_url": "https://www.bilibili.com/video/BV1Po4y1N774",
       "coin": 64037,
-      "danmaku": 18454,
-      "favorite": 21309,
+      "danmaku": 18455,
+      "favorite": 21308,
       "like": 157337,
       "reply": 4563,
       "share": 4444,
-      "view": 3264589
+      "view": 3264645
     },
     {
       "aid": 954499845,
@@ -2109,7 +2109,7 @@
       "like": 48449,
       "reply": 1331,
       "share": 546,
-      "view": 982713
+      "view": 982740
     },
     {
       "aid": 656800244,
@@ -2139,13 +2139,13 @@
       "publish_time": "2023-05-27T01:00:00",
       "title": "政治内斗、部落分裂、经济崩溃，巴基斯坦的失败如何影响中国？【南亚1|巴基斯坦】",
       "video_url": "https://www.bilibili.com/video/BV1Xo4y1g7qj",
-      "coin": 61535,
+      "coin": 61537,
       "danmaku": 15918,
       "favorite": 19965,
-      "like": 128618,
+      "like": 128619,
       "reply": 5824,
       "share": 5164,
-      "view": 2189148
+      "view": 2189171
     },
     {
       "aid": 911252413,
@@ -2157,13 +2157,13 @@
       "publish_time": "2023-05-20T01:00:00",
       "title": "【东盟十国丨番外】都讲中文，东南亚华人和我们有何不同？",
       "video_url": "https://www.bilibili.com/video/BV1TM4y1q7M4",
-      "coin": 43237,
-      "danmaku": 12527,
+      "coin": 43238,
+      "danmaku": 12530,
       "favorite": 16104,
-      "like": 113779,
+      "like": 113781,
       "reply": 6733,
       "share": 3705,
-      "view": 2284369
+      "view": 2284417
     },
     {
       "aid": 953829354,
@@ -2181,7 +2181,7 @@
       "like": 27972,
       "reply": 1779,
       "share": 2033,
-      "view": 574023
+      "view": 574027
     },
     {
       "aid": 996016192,
@@ -2199,7 +2199,7 @@
       "like": 79497,
       "reply": 1906,
       "share": 1293,
-      "view": 1248808
+      "view": 1248824
     },
     {
       "aid": 313096863,
@@ -2211,13 +2211,13 @@
       "publish_time": "2023-04-29T00:00:00",
       "title": "【东盟十国11丨新加坡】李家坡？东盟首都？中国时代依旧躺赢？",
       "video_url": "https://www.bilibili.com/video/BV1bP41127FG",
-      "coin": 47037,
-      "danmaku": 13644,
-      "favorite": 17126,
-      "like": 114326,
+      "coin": 47039,
+      "danmaku": 13649,
+      "favorite": 17125,
+      "like": 114327,
       "reply": 4453,
       "share": 6301,
-      "view": 2274396
+      "view": 2274458
     },
     {
       "aid": 740466507,
@@ -2235,7 +2235,7 @@
       "like": 27734,
       "reply": 3156,
       "share": 662,
-      "view": 591311
+      "view": 591314
     },
     {
       "aid": 227226363,
@@ -2252,8 +2252,8 @@
       "favorite": 15516,
       "like": 119948,
       "reply": 5579,
-      "share": 4254,
-      "view": 2657670
+      "share": 4256,
+      "view": 2657749
     },
     {
       "aid": 867091627,
@@ -2271,7 +2271,7 @@
       "like": 137795,
       "reply": 4491,
       "share": 7117,
-      "view": 1993894
+      "view": 1993897
     },
     {
       "aid": 611202282,
@@ -2289,7 +2289,7 @@
       "like": 46677,
       "reply": 2314,
       "share": 2820,
-      "view": 895937
+      "view": 895939
     },
     {
       "aid": 353390186,
@@ -2307,7 +2307,7 @@
       "like": 253055,
       "reply": 4501,
       "share": 14433,
-      "view": 4078157
+      "view": 4078166
     },
     {
       "aid": 225753088,
@@ -2322,10 +2322,10 @@
       "coin": 44595,
       "danmaku": 17200,
       "favorite": 19698,
-      "like": 142499,
-      "reply": 4103,
-      "share": 5712,
-      "view": 3729027
+      "like": 142502,
+      "reply": 4101,
+      "share": 5713,
+      "view": 3729235
     },
     {
       "aid": 525741488,
@@ -2343,7 +2343,7 @@
       "like": 94326,
       "reply": 2239,
       "share": 1359,
-      "view": 1122153
+      "view": 1122156
     },
     {
       "aid": 992518712,
@@ -2358,10 +2358,10 @@
       "coin": 42740,
       "danmaku": 16100,
       "favorite": 15385,
-      "like": 125632,
+      "like": 125636,
       "reply": 2291,
       "share": 3747,
-      "view": 2967045
+      "view": 2967282
     },
     {
       "aid": 737009708,
@@ -2375,11 +2375,11 @@
       "video_url": "https://www.bilibili.com/video/BV19D4y1w7yk",
       "coin": 45167,
       "danmaku": 14370,
-      "favorite": 18442,
+      "favorite": 18441,
       "like": 133563,
       "reply": 4079,
       "share": 4868,
-      "view": 3023223
+      "view": 3023256
     },
     {
       "aid": 821749833,
@@ -2393,11 +2393,11 @@
       "video_url": "https://www.bilibili.com/video/BV1LG4y1K7gv",
       "coin": 24852,
       "danmaku": 6698,
-      "favorite": 9422,
-      "like": 87555,
+      "favorite": 9420,
+      "like": 87556,
       "reply": 1427,
       "share": 1738,
-      "view": 1477603
+      "view": 1477622
     },
     {
       "aid": 435646557,
@@ -2415,7 +2415,7 @@
       "like": 116158,
       "reply": 828,
       "share": 659,
-      "view": 1435435
+      "view": 1435451
     },
     {
       "aid": 435661404,
@@ -2428,12 +2428,12 @@
       "title": "【东盟十国07丨老挝】东南亚最穷国，被美法轮流伺候，如何借东风？",
       "video_url": "https://www.bilibili.com/video/BV1a3411o7vU",
       "coin": 45193,
-      "danmaku": 13487,
+      "danmaku": 13488,
       "favorite": 16408,
-      "like": 131585,
+      "like": 131588,
       "reply": 2532,
       "share": 4218,
-      "view": 2500660
+      "view": 2500773
     },
     {
       "aid": 777687181,
@@ -2447,11 +2447,11 @@
       "video_url": "https://www.bilibili.com/video/BV1U14y1u7pd",
       "coin": 190830,
       "danmaku": 26685,
-      "favorite": 71630,
+      "favorite": 71627,
       "like": 244277,
       "reply": 3610,
       "share": 39282,
-      "view": 3720983
+      "view": 3720991
     },
     {
       "aid": 989291840,
@@ -2469,7 +2469,7 @@
       "like": 48171,
       "reply": 735,
       "share": 767,
-      "view": 635294
+      "view": 635296
     },
     {
       "aid": 818756060,
@@ -2487,7 +2487,7 @@
       "like": 89580,
       "reply": 2180,
       "share": 4067,
-      "view": 1472763
+      "view": 1472773
     },
     {
       "aid": 988572570,
@@ -2505,7 +2505,7 @@
       "like": 54139,
       "reply": 2749,
       "share": 1805,
-      "view": 1101621
+      "view": 1101622
     },
     {
       "aid": 520750111,
@@ -2523,7 +2523,7 @@
       "like": 88631,
       "reply": 1814,
       "share": 3616,
-      "view": 1607190
+      "view": 1607207
     },
     {
       "aid": 433124248,
@@ -2538,10 +2538,10 @@
       "coin": 39804,
       "danmaku": 12151,
       "favorite": 15356,
-      "like": 127748,
+      "like": 127749,
       "reply": 2743,
       "share": 6830,
-      "view": 2710879
+      "view": 2710917
     },
     {
       "aid": 860301632,
@@ -2555,11 +2555,11 @@
       "video_url": "https://www.bilibili.com/video/BV1VG4y1Z7MW",
       "coin": 31653,
       "danmaku": 9767,
-      "favorite": 9917,
-      "like": 95290,
+      "favorite": 9918,
+      "like": 95291,
       "reply": 1952,
       "share": 1967,
-      "view": 1774675
+      "view": 1774717
     },
     {
       "aid": 432576924,
@@ -2573,11 +2573,11 @@
       "video_url": "https://www.bilibili.com/video/BV1aG411F7qA",
       "coin": 57183,
       "danmaku": 15114,
-      "favorite": 19977,
+      "favorite": 19976,
       "like": 132591,
       "reply": 3203,
       "share": 7968,
-      "view": 2282813
+      "view": 2282828
     },
     {
       "aid": 559948879,
@@ -2595,7 +2595,7 @@
       "like": 72051,
       "reply": 1373,
       "share": 1846,
-      "view": 1024322
+      "view": 1024323
     },
     {
       "aid": 817451027,
@@ -2607,13 +2607,13 @@
       "publish_time": "2022-11-09T03:30:34",
       "title": "【读报告】国际供应链怎么断了？中国该怎么办？",
       "video_url": "https://www.bilibili.com/video/BV15G4y1t7g9",
-      "coin": 21735,
+      "coin": 21737,
       "danmaku": 1935,
       "favorite": 8873,
-      "like": 66345,
+      "like": 66346,
       "reply": 645,
       "share": 3434,
-      "view": 1012861
+      "view": 1012862
     },
     {
       "aid": 432037754,
@@ -2625,13 +2625,13 @@
       "publish_time": "2022-10-29T01:00:00",
       "title": "被列强反复摩擦的太平洋小国，如何借中国蘑菇找到希望？",
       "video_url": "https://www.bilibili.com/video/BV1ZG411w7C2",
-      "coin": 50249,
+      "coin": 50251,
       "danmaku": 15814,
       "favorite": 15675,
-      "like": 140021,
+      "like": 140022,
       "reply": 6172,
       "share": 3637,
-      "view": 2267194
+      "view": 2267212
     },
     {
       "aid": 731706891,
@@ -2649,7 +2649,7 @@
       "like": 126527,
       "reply": 1904,
       "share": 4621,
-      "view": 1874608
+      "view": 1874610
     },
     {
       "aid": 561020287,
@@ -2662,12 +2662,12 @@
       "title": "【东盟十国05丨文莱】欧洲水手还能当国王？文莱如何成为东南亚石油富国",
       "video_url": "https://www.bilibili.com/video/BV1de4y1q799",
       "coin": 28283,
-      "danmaku": 12163,
+      "danmaku": 12164,
       "favorite": 9621,
       "like": 105925,
       "reply": 1240,
       "share": 2076,
-      "view": 1928694
+      "view": 1928740
     },
     {
       "aid": 516070430,
@@ -2685,7 +2685,7 @@
       "like": 100746,
       "reply": 795,
       "share": 1833,
-      "view": 1762830
+      "view": 1762851
     },
     {
       "aid": 986037488,
@@ -2700,10 +2700,10 @@
       "coin": 38140,
       "danmaku": 11368,
       "favorite": 16693,
-      "like": 106090,
+      "like": 106091,
       "reply": 2627,
       "share": 12453,
-      "view": 1714856
+      "view": 1714860
     },
     {
       "aid": 218487830,
@@ -2717,11 +2717,11 @@
       "video_url": "https://www.bilibili.com/video/BV1b841147pc",
       "coin": 47178,
       "danmaku": 30157,
-      "favorite": 18279,
+      "favorite": 18280,
       "like": 163181,
       "reply": 4394,
       "share": 6848,
-      "view": 3179911
+      "view": 3179936
     },
     {
       "aid": 558172910,
@@ -2735,11 +2735,11 @@
       "video_url": "https://www.bilibili.com/video/BV1Je4y1k7C2",
       "coin": 81355,
       "danmaku": 18545,
-      "favorite": 23472,
-      "like": 165784,
+      "favorite": 23473,
+      "like": 165786,
       "reply": 1215,
       "share": 5503,
-      "view": 2325447
+      "view": 2325545
     },
     {
       "aid": 472932949,
@@ -2754,10 +2754,10 @@
       "coin": 67174,
       "danmaku": 23250,
       "favorite": 24200,
-      "like": 215567,
+      "like": 215568,
       "reply": 7831,
       "share": 8795,
-      "view": 4226311
+      "view": 4226378
     },
     {
       "aid": 345188251,
@@ -2771,11 +2771,11 @@
       "video_url": "https://www.bilibili.com/video/BV1Kd4y1V7jF",
       "coin": 57640,
       "danmaku": 17567,
-      "favorite": 15277,
+      "favorite": 15278,
       "like": 127000,
       "reply": 1658,
       "share": 6526,
-      "view": 1913572
+      "view": 1913577
     },
     {
       "aid": 984959579,
@@ -2787,13 +2787,13 @@
       "publish_time": "2022-08-28T01:00:00",
       "title": "【东盟十国04丨马来西亚】多民族被迫和谐共处，反而成就了东南亚优等生？",
       "video_url": "https://www.bilibili.com/video/BV1xt4y1E7VC",
-      "coin": 32940,
+      "coin": 32944,
       "danmaku": 12713,
-      "favorite": 13060,
-      "like": 111067,
+      "favorite": 13061,
+      "like": 111071,
       "reply": 4288,
       "share": 4914,
-      "view": 2406589
+      "view": 2406667
     },
     {
       "aid": 387366079,
@@ -2808,10 +2808,10 @@
       "coin": 12702,
       "danmaku": 9072,
       "favorite": 6362,
-      "like": 72811,
+      "like": 72812,
       "reply": 1105,
       "share": 1144,
-      "view": 1275291
+      "view": 1275296
     },
     {
       "aid": 899851531,
@@ -2829,7 +2829,7 @@
       "like": 45129,
       "reply": 3058,
       "share": 2212,
-      "view": 727729
+      "view": 727730
     },
     {
       "aid": 514590012,
@@ -2841,13 +2841,13 @@
       "publish_time": "2022-08-15T00:00:00",
       "title": "【东盟十国03丨泰国】灯红酒绿的泰国，为什么是世界最不平等的国家之一？",
       "video_url": "https://www.bilibili.com/video/BV12g41167Gi",
-      "coin": 92355,
+      "coin": 92357,
       "danmaku": 17984,
-      "favorite": 32438,
-      "like": 212067,
+      "favorite": 32440,
+      "like": 212072,
       "reply": 4763,
       "share": 9855,
-      "view": 4456578
+      "view": 4456792
     },
     {
       "aid": 514310193,
@@ -2862,10 +2862,10 @@
       "coin": 59553,
       "danmaku": 19933,
       "favorite": 16576,
-      "like": 143577,
+      "like": 143579,
       "reply": 3019,
       "share": 3646,
-      "view": 2357811
+      "view": 2357863
     },
     {
       "aid": 301188770,
@@ -2879,11 +2879,11 @@
       "video_url": "https://www.bilibili.com/video/BV1QF411K7Lt",
       "coin": 53136,
       "danmaku": 29086,
-      "favorite": 17055,
+      "favorite": 17053,
       "like": 147714,
       "reply": 4249,
       "share": 5154,
-      "view": 3120781
+      "view": 3120894
     },
     {
       "aid": 643401705,
@@ -2901,7 +2901,7 @@
       "like": 184395,
       "reply": 3410,
       "share": 9030,
-      "view": 3342591
+      "view": 3342604
     },
     {
       "aid": 385827347,
@@ -2915,11 +2915,11 @@
       "video_url": "https://www.bilibili.com/video/BV16Z4y1Y7mF",
       "coin": 94902,
       "danmaku": 26646,
-      "favorite": 28693,
-      "like": 170322,
+      "favorite": 28695,
+      "like": 170324,
       "reply": 3292,
       "share": 10160,
-      "view": 2841831
+      "view": 2841965
     },
     {
       "aid": 428075391,
@@ -2933,11 +2933,11 @@
       "video_url": "https://www.bilibili.com/video/BV16G411x7Kq",
       "coin": 74187,
       "danmaku": 12089,
-      "favorite": 18200,
-      "like": 146050,
+      "favorite": 18199,
+      "like": 146051,
       "reply": 2380,
       "share": 3686,
-      "view": 2142247
+      "view": 2142280
     },
     {
       "aid": 512751369,
@@ -2949,13 +2949,13 @@
       "publish_time": "2022-06-27T12:13:57",
       "title": "堕胎 & 枪，美国的路线斗争",
       "video_url": "https://www.bilibili.com/video/BV16g411X7yF",
-      "coin": 124275,
+      "coin": 124277,
       "danmaku": 21736,
-      "favorite": 35575,
-      "like": 207076,
+      "favorite": 35572,
+      "like": 207078,
       "reply": 5578,
       "share": 15729,
-      "view": 3199203
+      "view": 3199251
     },
     {
       "aid": 555321158,
@@ -2970,10 +2970,10 @@
       "coin": 27340,
       "danmaku": 13452,
       "favorite": 11768,
-      "like": 92180,
+      "like": 92181,
       "reply": 8895,
       "share": 3884,
-      "view": 1370441
+      "view": 1370480
     },
     {
       "aid": 597572399,
@@ -2988,10 +2988,10 @@
       "coin": 38850,
       "danmaku": 12235,
       "favorite": 12085,
-      "like": 106378,
+      "like": 106379,
       "reply": 1220,
       "share": 3333,
-      "view": 1846371
+      "view": 1846410
     },
     {
       "aid": 597487758,
@@ -3004,12 +3004,12 @@
       "title": "【美帝霸权三头犬 01】日本，东亚搅屎棍",
       "video_url": "https://www.bilibili.com/video/BV1EB4y1S7TT",
       "coin": 84805,
-      "danmaku": 19903,
+      "danmaku": 19905,
       "favorite": 26632,
-      "like": 172176,
+      "like": 172179,
       "reply": 2892,
       "share": 12590,
-      "view": 3030468
+      "view": 3030568
     },
     {
       "aid": 854646206,
@@ -3027,7 +3027,7 @@
       "like": 98699,
       "reply": 3256,
       "share": 2068,
-      "view": 2096674
+      "view": 2096738
     },
     {
       "aid": 257009494,
@@ -3045,7 +3045,7 @@
       "like": 63246,
       "reply": 2203,
       "share": 3331,
-      "view": 862768
+      "view": 862772
     },
     {
       "aid": 299442519,
@@ -3058,12 +3058,12 @@
       "title": "被二流人才管理的幸运国家，为什么说澳大利亚是“大号印度”",
       "video_url": "https://www.bilibili.com/video/BV1GF41157zj",
       "coin": 45712,
-      "danmaku": 12195,
-      "favorite": 12369,
-      "like": 106083,
+      "danmaku": 12196,
+      "favorite": 12368,
+      "like": 106085,
       "reply": 3589,
       "share": 2646,
-      "view": 1800314
+      "view": 1800468
     },
     {
       "aid": 511910718,
@@ -3078,10 +3078,10 @@
       "coin": 2296,
       "danmaku": 1464,
       "favorite": 3204,
-      "like": 33976,
+      "like": 33978,
       "reply": 874,
       "share": 1204,
-      "view": 736902
+      "view": 736912
     },
     {
       "aid": 511784765,
@@ -3095,11 +3095,11 @@
       "video_url": "https://www.bilibili.com/video/BV1og411d7rg",
       "coin": 37527,
       "danmaku": 10081,
-      "favorite": 12881,
-      "like": 116525,
+      "favorite": 12882,
+      "like": 116526,
       "reply": 1069,
       "share": 3206,
-      "view": 2753966
+      "view": 2754043
     },
     {
       "aid": 596599450,
@@ -3117,7 +3117,7 @@
       "like": 102462,
       "reply": 3072,
       "share": 2842,
-      "view": 1946518
+      "view": 1946522
     },
     {
       "aid": 468823525,
@@ -3131,11 +3131,11 @@
       "video_url": "https://www.bilibili.com/video/BV1g5411d7Cw",
       "coin": 48108,
       "danmaku": 21848,
-      "favorite": 20984,
-      "like": 139327,
+      "favorite": 20985,
+      "like": 139330,
       "reply": 8239,
-      "share": 5244,
-      "view": 3169546
+      "share": 5245,
+      "view": 3169737
     },
     {
       "aid": 896064139,
@@ -3150,10 +3150,10 @@
       "coin": 9107,
       "danmaku": 3945,
       "favorite": 7016,
-      "like": 56619,
+      "like": 56620,
       "reply": 1471,
       "share": 1832,
-      "view": 944717
+      "view": 944725
     },
     {
       "aid": 340944096,
@@ -3171,7 +3171,7 @@
       "like": 157707,
       "reply": 9628,
       "share": 18332,
-      "view": 2385645
+      "view": 2385662
     },
     {
       "aid": 810618105,
@@ -3185,11 +3185,11 @@
       "video_url": "https://www.bilibili.com/video/BV1V34y1v76s",
       "coin": 58106,
       "danmaku": 17423,
-      "favorite": 16352,
+      "favorite": 16351,
       "like": 139958,
       "reply": 4893,
       "share": 4471,
-      "view": 2355195
+      "view": 2355206
     },
     {
       "aid": 895490056,
@@ -3204,10 +3204,10 @@
       "coin": 18335,
       "danmaku": 1537,
       "favorite": 4921,
-      "like": 153890,
+      "like": 153891,
       "reply": 2058,
       "share": 6922,
-      "view": 2443379
+      "view": 2443389
     },
     {
       "aid": 767636627,
@@ -3219,13 +3219,13 @@
       "publish_time": "2022-03-28T13:18:26",
       "title": "制裁第三年，华为过得如何，下一步怎样破局？",
       "video_url": "https://www.bilibili.com/video/BV1rr4y1W75P",
-      "coin": 61612,
+      "coin": 61614,
       "danmaku": 13189,
       "favorite": 20583,
-      "like": 168749,
+      "like": 168750,
       "reply": 8856,
       "share": 7542,
-      "view": 2464424
+      "view": 2464425
     },
     {
       "aid": 937683178,
@@ -3243,7 +3243,7 @@
       "like": 107835,
       "reply": 4683,
       "share": 6316,
-      "view": 1223762
+      "view": 1223763
     },
     {
       "aid": 552601498,
@@ -3257,11 +3257,11 @@
       "video_url": "https://www.bilibili.com/video/BV1oi4y1D72t",
       "coin": 88584,
       "danmaku": 20744,
-      "favorite": 26573,
+      "favorite": 26572,
       "like": 224387,
       "reply": 7901,
       "share": 9611,
-      "view": 4329388
+      "view": 4329412
     },
     {
       "aid": 682441541,
@@ -3279,7 +3279,7 @@
       "like": 94780,
       "reply": 2835,
       "share": 8239,
-      "view": 1058483
+      "view": 1058486
     },
     {
       "aid": 467045912,
@@ -3291,13 +3291,13 @@
       "publish_time": "2022-03-08T23:24:28",
       "title": "韩国总统大选，文在寅为何带不动自己人？",
       "video_url": "https://www.bilibili.com/video/BV1XL411N7H8",
-      "coin": 168135,
+      "coin": 168137,
       "danmaku": 33727,
       "favorite": 38367,
-      "like": 270196,
+      "like": 270198,
       "reply": 3856,
       "share": 19426,
-      "view": 4371115
+      "view": 4371153
     },
     {
       "aid": 979554451,
@@ -3315,7 +3315,7 @@
       "like": 117080,
       "reply": 1485,
       "share": 3248,
-      "view": 1659390
+      "view": 1659397
     },
     {
       "aid": 509318377,
@@ -3333,7 +3333,7 @@
       "like": 70659,
       "reply": 1451,
       "share": 1276,
-      "view": 874792
+      "view": 874794
     },
     {
       "aid": 979312561,
@@ -3347,11 +3347,11 @@
       "video_url": "https://www.bilibili.com/video/BV1244y1n7Mz",
       "coin": 326030,
       "danmaku": 32540,
-      "favorite": 118465,
-      "like": 532141,
+      "favorite": 118464,
+      "like": 532142,
       "reply": 9564,
-      "share": 108801,
-      "view": 8707054
+      "share": 108802,
+      "view": 8707168
     },
     {
       "aid": 509191305,
@@ -3369,7 +3369,7 @@
       "like": 82102,
       "reply": 1148,
       "share": 1014,
-      "view": 1237089
+      "view": 1237100
     },
     {
       "aid": 809045189,
@@ -3387,7 +3387,7 @@
       "like": 78208,
       "reply": 2744,
       "share": 6003,
-      "view": 918676
+      "view": 918677
     },
     {
       "aid": 936224273,
@@ -3405,7 +3405,7 @@
       "like": 103326,
       "reply": 1861,
       "share": 2311,
-      "view": 1994387
+      "view": 1994401
     },
     {
       "aid": 893296399,
@@ -3419,11 +3419,11 @@
       "video_url": "https://www.bilibili.com/video/BV1aP4y177qM",
       "coin": 88454,
       "danmaku": 25602,
-      "favorite": 26350,
+      "favorite": 26348,
       "like": 186059,
       "reply": 4604,
       "share": 6887,
-      "view": 2943020
+      "view": 2943052
     },
     {
       "aid": 723018442,
@@ -3437,11 +3437,11 @@
       "video_url": "https://www.bilibili.com/video/BV1HS4y1Z7S8",
       "coin": 142524,
       "danmaku": 23354,
-      "favorite": 35134,
+      "favorite": 35133,
       "like": 250294,
       "reply": 5151,
       "share": 7038,
-      "view": 3318229
+      "view": 3318245
     },
     {
       "aid": 253105725,
@@ -3455,11 +3455,11 @@
       "video_url": "https://www.bilibili.com/video/BV1KY411h7cq",
       "coin": 164728,
       "danmaku": 28640,
-      "favorite": 43636,
-      "like": 290130,
+      "favorite": 43635,
+      "like": 290131,
       "reply": 8919,
       "share": 13849,
-      "view": 3608254
+      "view": 3608275
     },
     {
       "aid": 593041794,
@@ -3477,7 +3477,7 @@
       "like": 103760,
       "reply": 3043,
       "share": 3568,
-      "view": 1335400
+      "view": 1335407
     },
     {
       "aid": 549233492,
@@ -3495,7 +3495,7 @@
       "like": 36898,
       "reply": 961,
       "share": 610,
-      "view": 444997
+      "view": 444999
     },
     {
       "aid": 336438355,
@@ -3513,7 +3513,7 @@
       "like": 15736,
       "reply": 514,
       "share": 572,
-      "view": 395081
+      "view": 395083
     },
     {
       "aid": 806444472,
@@ -3531,7 +3531,7 @@
       "like": 86543,
       "reply": 2330,
       "share": 2421,
-      "view": 1625390
+      "view": 1625397
     },
     {
       "aid": 933762454,
@@ -3567,7 +3567,7 @@
       "like": 27575,
       "reply": 519,
       "share": 278,
-      "view": 409214
+      "view": 409216
     },
     {
       "aid": 591057204,
@@ -3621,7 +3621,7 @@
       "like": 45205,
       "reply": 1190,
       "share": 626,
-      "view": 653092
+      "view": 653094
     },
     {
       "aid": 463289425,
@@ -3639,7 +3639,7 @@
       "like": 36560,
       "reply": 1996,
       "share": 1911,
-      "view": 409649
+      "view": 409652
     },
     {
       "aid": 250558145,
@@ -3711,7 +3711,7 @@
       "like": 37417,
       "reply": 573,
       "share": 469,
-      "view": 488741
+      "view": 488743
     },
     {
       "aid": 207648232,
@@ -3729,7 +3729,7 @@
       "like": 34187,
       "reply": 756,
       "share": 304,
-      "view": 477554
+      "view": 477555
     },
     {
       "aid": 207587545,
@@ -3747,7 +3747,7 @@
       "like": 32798,
       "reply": 708,
       "share": 322,
-      "view": 413119
+      "view": 413120
     },
     {
       "aid": 674895324,
@@ -3761,11 +3761,11 @@
       "video_url": "https://www.bilibili.com/video/BV1HU4y1E7HD",
       "coin": 28370,
       "danmaku": 6138,
-      "favorite": 8676,
+      "favorite": 8675,
       "like": 64214,
       "reply": 1487,
       "share": 2893,
-      "view": 872097
+      "view": 872098
     },
     {
       "aid": 847315240,
@@ -3783,7 +3783,7 @@
       "like": 59432,
       "reply": 3414,
       "share": 2505,
-      "view": 2136289
+      "view": 2136291
     },
     {
       "aid": 932201141,
@@ -3801,7 +3801,7 @@
       "like": 89213,
       "reply": 2151,
       "share": 1212,
-      "view": 1106467
+      "view": 1106470
     },
     {
       "aid": 462115398,
@@ -3816,10 +3816,10 @@
       "coin": 52633,
       "danmaku": 14087,
       "favorite": 19894,
-      "like": 118272,
+      "like": 118273,
       "reply": 2681,
       "share": 3611,
-      "view": 1911138
+      "view": 1911176
     },
     {
       "aid": 589265560,
@@ -3837,7 +3837,7 @@
       "like": 58873,
       "reply": 932,
       "share": 1473,
-      "view": 581208
+      "view": 581211
     },
     {
       "aid": 334325651,
@@ -3891,7 +3891,7 @@
       "like": 127620,
       "reply": 2104,
       "share": 2409,
-      "view": 2473074
+      "view": 2473103
     },
     {
       "aid": 206413810,
@@ -3906,10 +3906,10 @@
       "coin": 48748,
       "danmaku": 2846,
       "favorite": 13894,
-      "like": 55808,
+      "like": 55809,
       "reply": 901,
       "share": 4777,
-      "view": 435453
+      "view": 435454
     },
     {
       "aid": 461300271,
@@ -3927,7 +3927,7 @@
       "like": 47198,
       "reply": 777,
       "share": 684,
-      "view": 556823
+      "view": 556824
     },
     {
       "aid": 588625228,
@@ -3945,7 +3945,7 @@
       "like": 41737,
       "reply": 933,
       "share": 1204,
-      "view": 537346
+      "view": 537349
     },
     {
       "aid": 248731061,
@@ -3963,7 +3963,7 @@
       "like": 37571,
       "reply": 847,
       "share": 895,
-      "view": 427536
+      "view": 427537
     },
     {
       "aid": 673634557,
@@ -3977,11 +3977,11 @@
       "video_url": "https://www.bilibili.com/video/BV1sU4y157Nq",
       "coin": 15522,
       "danmaku": 4303,
-      "favorite": 3758,
+      "favorite": 3757,
       "like": 42412,
       "reply": 1297,
       "share": 2143,
-      "view": 564466
+      "view": 564471
     },
     {
       "aid": 758587754,
@@ -3999,7 +3999,7 @@
       "like": 35360,
       "reply": 804,
       "share": 850,
-      "view": 532622
+      "view": 532628
     },
     {
       "aid": 630878579,
@@ -4035,7 +4035,7 @@
       "like": 37914,
       "reply": 1150,
       "share": 613,
-      "view": 594190
+      "view": 594191
     },
     {
       "aid": 888382366,
@@ -4067,11 +4067,11 @@
       "video_url": "https://www.bilibili.com/video/BV1QV411j7EK",
       "coin": 25682,
       "danmaku": 7550,
-      "favorite": 7811,
+      "favorite": 7812,
       "like": 38620,
       "reply": 1300,
       "share": 2117,
-      "view": 380286
+      "view": 380290
     },
     {
       "aid": 630851540,
@@ -4083,13 +4083,13 @@
       "publish_time": "2021-05-26T04:05:09",
       "title": "【人文社科①】b站最全志愿填报专业选择指南！61专业100嘉宾！第1期：历史国际关系政治社会心理英文小语种中文 文科专业高考志愿填报",
       "video_url": "https://www.bilibili.com/video/BV15b4y1Z7r6",
-      "coin": 79616,
-      "danmaku": 15491,
-      "favorite": 141962,
-      "like": 168778,
+      "coin": 79620,
+      "danmaku": 15493,
+      "favorite": 141960,
+      "like": 168781,
       "reply": 6830,
-      "share": 63875,
-      "view": 3124242
+      "share": 63876,
+      "view": 3124346
     },
     {
       "aid": 205744102,
@@ -4125,7 +4125,7 @@
       "like": 44301,
       "reply": 733,
       "share": 548,
-      "view": 539452
+      "view": 539454
     },
     {
       "aid": 248004964,
@@ -4143,7 +4143,7 @@
       "like": 51215,
       "reply": 1248,
       "share": 2828,
-      "view": 511033
+      "view": 511034
     },
     {
       "aid": 845471339,
@@ -4155,13 +4155,13 @@
       "publish_time": "2021-05-05T13:03:26",
       "title": "抗战为什么8年改14年？无名英雄在怎样的绝望中，死命攒出新中国的星星之火？",
       "video_url": "https://www.bilibili.com/video/BV1h54y157FM",
-      "coin": 62498,
+      "coin": 62500,
       "danmaku": 9867,
-      "favorite": 18194,
-      "like": 73755,
+      "favorite": 18193,
+      "like": 73757,
       "reply": 1559,
       "share": 4545,
-      "view": 691631
+      "view": 691641
     },
     {
       "aid": 332805509,
@@ -4179,7 +4179,7 @@
       "like": 63399,
       "reply": 1341,
       "share": 1448,
-      "view": 728135
+      "view": 728136
     },
     {
       "aid": 757679994,
@@ -4193,11 +4193,11 @@
       "video_url": "https://www.bilibili.com/video/BV1i64y1m7X6",
       "coin": 55714,
       "danmaku": 5281,
-      "favorite": 8764,
-      "like": 60614,
+      "favorite": 8763,
+      "like": 60615,
       "reply": 828,
       "share": 604,
-      "view": 525107
+      "view": 525112
     },
     {
       "aid": 332688546,
@@ -4215,7 +4215,7 @@
       "like": 49146,
       "reply": 4618,
       "share": 1707,
-      "view": 586349
+      "view": 586354
     },
     {
       "aid": 972564891,
@@ -4233,7 +4233,7 @@
       "like": 75111,
       "reply": 1390,
       "share": 970,
-      "view": 1203701
+      "view": 1203703
     },
     {
       "aid": 629932429,
@@ -4251,7 +4251,7 @@
       "like": 46798,
       "reply": 993,
       "share": 798,
-      "view": 595632
+      "view": 595634
     },
     {
       "aid": 417479908,
@@ -4269,7 +4269,7 @@
       "like": 77419,
       "reply": 1480,
       "share": 1288,
-      "view": 1391234
+      "view": 1391237
     },
     {
       "aid": 844856546,
@@ -4287,7 +4287,7 @@
       "like": 71237,
       "reply": 1701,
       "share": 7558,
-      "view": 702325
+      "view": 702326
     },
     {
       "aid": 972207868,
@@ -4305,7 +4305,7 @@
       "like": 50753,
       "reply": 1097,
       "share": 797,
-      "view": 706304
+      "view": 706307
     },
     {
       "aid": 289533341,
@@ -4323,7 +4323,7 @@
       "like": 49035,
       "reply": 1082,
       "share": 1005,
-      "view": 594168
+      "view": 594169
     },
     {
       "aid": 417057703,
@@ -4341,7 +4341,7 @@
       "like": 88497,
       "reply": 2430,
       "share": 2920,
-      "view": 1639379
+      "view": 1639383
     },
     {
       "aid": 756938958,
@@ -4359,7 +4359,7 @@
       "like": 50368,
       "reply": 1195,
       "share": 963,
-      "view": 796073
+      "view": 796077
     },
     {
       "aid": 801847573,
@@ -4377,7 +4377,7 @@
       "like": 52097,
       "reply": 1960,
       "share": 1676,
-      "view": 793939
+      "view": 793940
     },
     {
       "aid": 374185127,
@@ -4395,19 +4395,19 @@
       "like": 59082,
       "reply": 2359,
       "share": 2934,
-      "view": 1014112
+      "view": 1014132
     }
   ],
   "statistics": {
     "total_videos": 243,
     "total_comments": 0,
-    "collection_start_time": "2025-07-31T03:10:33.761152",
-    "collection_end_time": "2025-07-31T03:10:33.769695",
+    "collection_start_time": "2025-07-31T08:34:15.448394",
+    "collection_end_time": "2025-07-31T08:34:15.455619",
     "time_range": {
       "start_date": "2025-07-03",
       "end_date": "2025-07-31"
     },
     "errors": [],
-    "duration_seconds": 0.008543
+    "duration_seconds": 0.007225
   }
 }
