@@ -101,7 +101,7 @@ jobs:
               "text": "${TASK_EMOJI} ${TASK_TYPE}数据采集开始\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}"
             }
           }
-          EOF
+EOF
           )" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
         fi
         
@@ -136,7 +136,7 @@ jobs:
                 "text": "❌ ${TASK_TYPE}数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n请查看工作流日志"
               }
             }
-            EOF
+EOF
             )" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
           exit 1
@@ -158,7 +158,7 @@ jobs:
                 "text": "✅ ${TASK_TYPE}数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n📁 文件信息:\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE"
               }
             }
-            EOF
+EOF
             )" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
           fi
         fi
