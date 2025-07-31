@@ -141,6 +141,16 @@ jobs:
         
     - name: Commit and push data
       run: |
+        # 重新定义时间相关变量
+        CURRENT_HOUR=$(date -u +%H)
+        if [ "$CURRENT_HOUR" = "00" ]; then
+          TASK_TYPE="早晨"
+          TASK_EMOJI="🌅"
+        else
+          TASK_TYPE="晚间"  
+          TASK_EMOJI="🌙"
+        fi
+        
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
           git add data/
