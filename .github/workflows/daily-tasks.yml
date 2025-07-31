@@ -108,21 +108,36 @@ jobs:
         TASK_END_TIME=$(date +%s)
         TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
         
+        # Ensure minimum duration of 1 second for display
+        if [ "$TASK_DURATION" -lt 1 ]; then
+          TASK_DURATION=1
+        fi
+        
         # Display task output for debugging
         echo "=== Task Output ==="
         cat task_output.log
         echo "=================="
         
-        # Extract information from task output using regex
+        # Extract information from task output using simpler regex
         TASK_OUTPUT=$(cat task_output.log)
-        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -oE 'total_cookies[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
-        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -oE 'useable_cookies[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
-        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oE 'active_cookie[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
-        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oE 'cookie_info[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
-        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oE 'up_name[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
-        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -oE 'total_videos[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
-        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -oE 'total_comments[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
-        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oE 'errors_count[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -o 'total_cookies.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
+        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -o 'useable_cookies.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
+        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -o 'active_cookie.*' | sed 's/.*active_cookie[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
+        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -o 'cookie_info.*' | sed 's/.*cookie_info[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
+        UP_NAME=$(echo "$TASK_OUTPUT" | grep -o 'up_name.*' | sed 's/.*up_name[^:]*:[[:space:]]*["\x27]\?\([^",}\x27]*\).*/\1/' | tail -1)
+        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -o 'total_videos.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
+        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -o 'total_comments.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
+        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -o 'errors_count.*[0-9]\+' | grep -o '[0-9]\+' | tail -1)
+        
+        # Set defaults for empty values
+        TOTAL_COOKIES=${TOTAL_COOKIES:-0}
+        USEABLE_COOKIES=${USEABLE_COOKIES:-0}
+        ACTIVE_COOKIE=${ACTIVE_COOKIE:-"Unknown"}
+        COOKIE_INFO=${COOKIE_INFO:-"Unknown"}
+        UP_NAME=${UP_NAME:-"Unknown"}
+        TOTAL_VIDEOS=${TOTAL_VIDEOS:-0}
+        TOTAL_COMMENTS=${TOTAL_COMMENTS:-0}
+        ERRORS_COUNT=${ERRORS_COUNT:-0}
         
         echo "Extracted metrics:"
         echo "- Total cookies: $TOTAL_COOKIES"
@@ -139,32 +154,52 @@ jobs:
         if [ "$TASK_EXIT_CODE" -ne 0 ]; then
           echo "Sending failure notification..."
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            # Create notification content
+            NOTIFICATION_CONTENT="Time: $(date '+%Y-%m-%d %H:%M:%S')
+Run: #${{ github.run_number }}
+Branch: ${{ github.ref_name }}
+
+Cookie Status:
+Total: ${TOTAL_COOKIES}
+Useable: ${USEABLE_COOKIES}
+Active: ${ACTIVE_COOKIE}
+Info: ${COOKIE_INFO}
+
+Task Statistics:
+UP: ${UP_NAME}
+Videos: ${TOTAL_VIDEOS}
+Comments: ${TOTAL_COMMENTS}
+Errors: ${ERRORS_COUNT}
+Duration: ${TASK_DURATION}s
+
+Check workflow logs for details"
+            
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
-              -d '{
-                "msg_type": "interactive",
-                "card": {
-                  "config": {
-                    "wide_screen_mode": true
+              -d "{
+                \"msg_type\": \"interactive\",
+                \"card\": {
+                  \"config\": {
+                    \"wide_screen_mode\": true
                   },
-                  "elements": [
+                  \"elements\": [
                     {
-                      "tag": "div",
-                      "text": {
-                        "content": "**⏰ Time:** '"$(date '+%Y-%m-%d %H:%M:%S')"'\n**🔄 Run:** #'"${{ github.run_number }}"'\n**🌿 Branch:** '"${{ github.ref_name }}"'\n\n**📊 Cookie Status:**\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n**📈 Task Statistics:**\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n🔗 Check workflow logs for details",
-                        "tag": "lark_md"
+                      \"tag\": \"div\",
+                      \"text\": {
+                        \"content\": \"${NOTIFICATION_CONTENT}\",
+                        \"tag\": \"lark_md\"
                       }
                     }
                   ],
-                  "header": {
-                    "title": {
-                      "content": "❌ '"$TASK_TYPE"' Daily Data Collection Failed",
-                      "tag": "plain_text"
+                  \"header\": {
+                    \"title\": {
+                      \"content\": \"❌ ${TASK_TYPE} Daily Data Collection Failed\",
+                      \"tag\": \"plain_text\"
                     },
-                    "template": "red"
+                    \"template\": \"red\"
                   }
                 }
-              }' || echo "Failed to send Feishu notification"
+              }" || echo "Failed to send Feishu notification"
           fi
           exit 1
         else
@@ -174,32 +209,54 @@ jobs:
           TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "Unknown")
           
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+            # Create notification content
+            NOTIFICATION_CONTENT="Time: $(date '+%Y-%m-%d %H:%M:%S')
+Run: #${{ github.run_number }}
+Branch: ${{ github.ref_name }}
+
+Cookie Status:
+Total: ${TOTAL_COOKIES}
+Useable: ${USEABLE_COOKIES}
+Active: ${ACTIVE_COOKIE}
+Info: ${COOKIE_INFO}
+
+Task Statistics:
+UP: ${UP_NAME}
+Videos: ${TOTAL_VIDEOS}
+Comments: ${TOTAL_COMMENTS}
+Errors: ${ERRORS_COUNT}
+Duration: ${TASK_DURATION}s
+
+Generated Files:
+JSON files: ${JSON_COUNT}
+Data size: ${TOTAL_SIZE}"
+            
             curl -X POST "$FEISHU_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
-              -d '{
-                "msg_type": "interactive",
-                "card": {
-                  "config": {
-                    "wide_screen_mode": true
+              -d "{
+                \"msg_type\": \"interactive\",
+                \"card\": {
+                  \"config\": {
+                    \"wide_screen_mode\": true
                   },
-                  "elements": [
+                  \"elements\": [
                     {
-                      "tag": "div",
-                      "text": {
-                        "content": "**⏰ Time:** '"$(date '+%Y-%m-%d %H:%M:%S')"'\n**🔄 Run:** #'"${{ github.run_number }}"'\n**🌿 Branch:** '"${{ github.ref_name }}"'\n\n**📊 Cookie Status:**\n• Total: '"$TOTAL_COOKIES"'\n• Useable: '"$USEABLE_COOKIES"'\n• Active: '"$ACTIVE_COOKIE"'\n• Info: '"$COOKIE_INFO"'\n\n**📈 Task Statistics:**\n• UP: '"$UP_NAME"'\n• Videos: '"$TOTAL_VIDEOS"'\n• Comments: '"$TOTAL_COMMENTS"'\n• Errors: '"$ERRORS_COUNT"'\n• Duration: '"$TASK_DURATION"'s\n\n**📁 Generated Files:**\n• JSON files: '"$JSON_COUNT"'\n• Data size: '"$TOTAL_SIZE"'",
-                        "tag": "lark_md"
+                      \"tag\": \"div\",
+                      \"text\": {
+                        \"content\": \"${NOTIFICATION_CONTENT}\",
+                        \"tag\": \"lark_md\"
                       }
                     }
                   ],
-                  "header": {
-                    "title": {
-                      "content": "✅ '"$TASK_TYPE"' Daily Data Collection Success",
-                      "tag": "plain_text"
+                  \"header\": {
+                    \"title\": {
+                      \"content\": \"✅ ${TASK_TYPE} Daily Data Collection Success\",
+                      \"tag\": \"plain_text\"
                     },
-                    "template": "green"
+                    \"template\": \"green\"
                   }
                 }
-              }' || echo "Failed to send Feishu notification"
+              }" || echo "Failed to send Feishu notification"
           fi
         fi
         
@@ -220,6 +277,8 @@ jobs:
           git add data/
           if ! git diff --staged --quiet; then
             git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
+            # Pull before push to handle concurrent updates
+            git pull origin sync-current-files --rebase || git pull origin sync-current-files
             git push
             echo "✅ Data committed and pushed successfully"
           else
