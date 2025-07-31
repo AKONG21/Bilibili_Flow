@@ -71,91 +71,113 @@ jobs:
         echo "🗑️ Checking for failed cookies cleanup"
         python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
         
-    - name: Run daily data collection with enhanced notification
+    - name: Run daily data collection
       env:
         UP_ID: ${{ secrets.UP_ID }}
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         PYTHONPATH: ${{ github.workspace }}
       run: |
-        echo "Starting daily data collection with enhanced notification"
+        echo "Starting daily data collection"
         echo "Current working directory: $(pwd)"
         echo "Python path: $PYTHONPATH"
         
-        # 根据时间判断是早晨还是晚间任务
+        # Determine task type based on UTC time
         CURRENT_HOUR=$(date -u +%H)
         if [ "$CURRENT_HOUR" = "00" ]; then
-          TASK_TYPE="早晨"
+          TASK_TYPE="Morning"
           TASK_EMOJI="🌅"
         else
-          TASK_TYPE="晚间"  
+          TASK_TYPE="Evening"
           TASK_EMOJI="🌙"
         fi
         
-        # 运行日任务并记录结果
+        echo "Task type: $TASK_TYPE ($TASK_EMOJI)"
+        
+        # Run daily task and capture output
+        echo "Running daily task..."
         TASK_START_TIME=$(date +%s)
-        TASK_OUTPUT=$(python run_daily_task.py 2>&1)
-        TASK_EXIT_CODE=$?
+        
+        if python run_daily_task.py > task_output.log 2>&1; then
+          TASK_EXIT_CODE=0
+          echo "✅ Daily task completed successfully"
+        else
+          TASK_EXIT_CODE=1
+          echo "❌ Daily task failed"
+        fi
+        
         TASK_END_TIME=$(date +%s)
         TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
         
-        # 从输出中提取信息
-        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'total_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
-        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -oP 'useable_cookies["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
-        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oP 'active_cookie["\s]*:["\s]*["\x27]\K[^"\x27]+' | tail -1 || echo "未知")
-        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oP 'cookie_info["\s]*:["\s]*["\x27]\K[^"\x27]+' | tail -1 || echo "未知")
-        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oP 'up_name["\s]*:["\s]*["\x27]\K[^"\x27]+' | tail -1 || echo "未知")
-        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -oP 'total_videos["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
-        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -oP 'total_comments["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
-        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oP 'errors_count["\s]*:["\s]*\K\d+' | tail -1 || echo "0")
+        # Display task output for debugging
+        echo "=== Task Output ==="
+        cat task_output.log
+        echo "=================="
         
-        if [ $TASK_EXIT_CODE -ne 0 ]; then
-          echo "❌ ${TASK_TYPE} data collection failed"
-          echo "Checking for any generated files:"
-          find . -name "*.json" -o -name "*.db" | head -10
-          
-          # 发送失败通知
+        # Extract information from task output using regex
+        TASK_OUTPUT=$(cat task_output.log)
+        TOTAL_COOKIES=$(echo "$TASK_OUTPUT" | grep -oE 'total_cookies[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        USEABLE_COOKIES=$(echo "$TASK_OUTPUT" | grep -oE 'useable_cookies[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        ACTIVE_COOKIE=$(echo "$TASK_OUTPUT" | grep -oE 'active_cookie[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
+        COOKIE_INFO=$(echo "$TASK_OUTPUT" | grep -oE 'cookie_info[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
+        UP_NAME=$(echo "$TASK_OUTPUT" | grep -oE 'up_name[[:space:]]*:[[:space:]]*[^,}]+' | sed 's/.*:[[:space:]]*//' | sed 's/[",]//g' | tail -1 || echo "Unknown")
+        TOTAL_VIDEOS=$(echo "$TASK_OUTPUT" | grep -oE 'total_videos[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        TOTAL_COMMENTS=$(echo "$TASK_OUTPUT" | grep -oE 'total_comments[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        ERRORS_COUNT=$(echo "$TASK_OUTPUT" | grep -oE 'errors_count[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | tail -1 || echo "0")
+        
+        echo "Extracted metrics:"
+        echo "- Total cookies: $TOTAL_COOKIES"
+        echo "- Useable cookies: $USEABLE_COOKIES"
+        echo "- Active cookie: $ACTIVE_COOKIE"
+        echo "- Cookie info: $COOKIE_INFO"
+        echo "- UP name: $UP_NAME"
+        echo "- Total videos: $TOTAL_VIDEOS"
+        echo "- Total comments: $TOTAL_COMMENTS"
+        echo "- Errors count: $ERRORS_COUNT"
+        echo "- Duration: $TASK_DURATION seconds"
+        
+        # Send notification based on task result
+        if [ "$TASK_EXIT_CODE" -ne 0 ]; then
+          echo "Sending failure notification..."
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            ERROR_TEXT="❌ ${TASK_TYPE}数据采集失败\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n请查看工作流日志"
-            curl -X POST -H "Content-Type: application/json" \
-              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$ERROR_TEXT\"}}" \
-              "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+            ERROR_MSG="❌ ${TASK_TYPE} Daily Data Collection Failed\\n\\nTime: $(date '+%Y-%m-%d %H:%M:%S')\\nRun: #${{ github.run_number }}\\nBranch: ${{ github.ref_name }}\\n\\n📊 Cookie Status:\\nTotal: ${TOTAL_COOKIES}\\nUseable: ${USEABLE_COOKIES}\\nActive: ${ACTIVE_COOKIE}\\nInfo: ${COOKIE_INFO}\\n\\n📈 Task Stats:\\nUP: ${UP_NAME}\\nVideos: ${TOTAL_VIDEOS}\\nComments: ${TOTAL_COMMENTS}\\nErrors: ${ERRORS_COUNT}\\nDuration: ${TASK_DURATION}s\\n\\n🔗 Check workflow logs for details"
+            curl -X POST "$FEISHU_WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$ERROR_MSG\"}}" \
+              || echo "Failed to send Feishu notification"
           fi
           exit 1
         else
-          echo "✅ ${TASK_TYPE} data collection completed"
-          echo "Checking generated data files:"
-          find data/ -type f | head -10
+          echo "Sending success notification..."
+          # Count generated files
+          JSON_COUNT=$(find data/ -name "*.json" 2>/dev/null | wc -l || echo "0")
+          TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "Unknown")
           
-          # 统计生成的文件
-          JSON_COUNT=$(find data/ -name "*.json" | wc -l)
-          TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "未知")
-          
-          # 发送成功通知
           if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            SUCCESS_TEXT="✅ ${TASK_TYPE}数据采集成功\\n时间: $(date '+%Y-%m-%d %H:%M:%S')\\n运行: #${{ github.run_number }}\\n分支: ${{ github.ref_name }}\\n\\n📊 Cookie状态:\\ntotal_cookies: $TOTAL_COOKIES\\nuseable_cookies: $USEABLE_COOKIES\\nactive_cookie: $ACTIVE_COOKIE\\ncookie_info: $COOKIE_INFO\\n\\n📈 任务统计:\\nup_name: $UP_NAME\\ntotal_videos: $TOTAL_VIDEOS\\ntotal_comments: $TOTAL_COMMENTS\\nerrors_count: $ERRORS_COUNT\\nduration_seconds: $TASK_DURATION\\n\\n📁 文件信息:\\nJSON文件: $JSON_COUNT 个\\n数据大小: $TOTAL_SIZE"
-            curl -X POST -H "Content-Type: application/json" \
-              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$SUCCESS_TEXT\"}}" \
-              "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
+            SUCCESS_MSG="✅ ${TASK_TYPE} Daily Data Collection Success\\n\\nTime: $(date '+%Y-%m-%d %H:%M:%S')\\nRun: #${{ github.run_number }}\\nBranch: ${{ github.ref_name }}\\n\\n📊 Cookie Status:\\nTotal: ${TOTAL_COOKIES}\\nUseable: ${USEABLE_COOKIES}\\nActive: ${ACTIVE_COOKIE}\\nInfo: ${COOKIE_INFO}\\n\\n📈 Task Stats:\\nUP: ${UP_NAME}\\nVideos: ${TOTAL_VIDEOS}\\nComments: ${TOTAL_COMMENTS}\\nErrors: ${ERRORS_COUNT}\\nDuration: ${TASK_DURATION}s\\n\\n📁 Generated Files:\\nJSON files: ${JSON_COUNT}\\nData size: ${TOTAL_SIZE}"
+            curl -X POST "$FEISHU_WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$SUCCESS_MSG\"}}" \
+              || echo "Failed to send Feishu notification"
           fi
         fi
         
     - name: Commit and push data
       run: |
-        # Redefine time variables for commit message
+        # Determine task type for commit message
         CURRENT_HOUR=$(date -u +%H)
         if [ "$CURRENT_HOUR" = "00" ]; then
-          TASK_TYPE="早晨"
           TASK_EMOJI="🌅"
+          TASK_TYPE="Morning"
         else
-          TASK_TYPE="晚间"  
           TASK_EMOJI="🌙"
+          TASK_TYPE="Evening"
         fi
         
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
           git add data/
           if ! git diff --staged --quiet; then
-            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date +'%Y-%m-%d %H:%M:%S')"
+            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
             git push
             echo "✅ Data committed and pushed successfully"
           else
@@ -175,10 +197,10 @@ jobs:
         touch cleanup_cookies.sh
         
         # Add basic content to empty files
-        [ ! -s cookie_management_report.json ] && echo '{"status": "no_report_generated", "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > cookie_management_report.json
-        [ ! -s cookie_cleanup_report.json ] && echo '{"status": "no_cleanup_performed", "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > cookie_cleanup_report.json
-        [ ! -s failed_cookies_report.json ] && echo '{"failed_cookies": [], "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > failed_cookies_report.json
-        [ ! -s cleanup_cookies.sh ] && echo '#!/bin/bash\necho "No cleanup script generated - '$(date)'"' > cleanup_cookies.sh
+        [ ! -s cookie_management_report.json ] && echo "{\"status\": \"no_report_generated\", \"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}" > cookie_management_report.json
+        [ ! -s cookie_cleanup_report.json ] && echo "{\"status\": \"no_cleanup_performed\", \"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}" > cookie_cleanup_report.json
+        [ ! -s failed_cookies_report.json ] && echo "{\"failed_cookies\": [], \"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}" > failed_cookies_report.json
+        [ ! -s cleanup_cookies.sh ] && echo "#!/bin/bash\necho \"No cleanup script generated - $(date)\"" > cleanup_cookies.sh
         
     - name: Upload cookie management reports
       if: always()
