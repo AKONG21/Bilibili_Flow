@@ -58,10 +58,14 @@ jobs:
       run: |
         playwright install chromium
         
-    - name: Configure git
+    - name: Configure git for data conflicts
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
+        # Configure git to handle database file conflicts
+        git config merge.ours.driver true
+        echo "data/database/bilibili_tracking.db merge=ours" >> .gitattributes
+        git add .gitattributes || true
         
     - name: Enhanced cookie rotation and selection
       env:
@@ -173,15 +177,55 @@ jobs:
         
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
+          # Stash any local changes first (especially database files)
+          git stash push -u -m "Temporary stash before pull - $(date)"
+          
           # Pull any remote changes first
           git fetch origin sync-current-files
           git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
           
+          # Pop stash if it exists, with conflict resolution
+          if git stash list | grep -q "Temporary stash before pull"; then
+            git stash pop || {
+              echo "⚠️ Merge conflict detected, resolving automatically..."
+              # For database files, prefer the local version (newly generated)
+              git checkout --theirs data/database/bilibili_tracking.db 2>/dev/null || true
+              # For JSON files, try to merge or prefer local
+              git add data/ || true
+              git stash drop || true
+            }
+          fi
+          
           git add data/
           if ! git diff --staged --quiet; then
             git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
-            git push origin sync-current-files
-            echo "✅ Data committed and pushed successfully"
+            
+            # Try to push, with retry mechanism for conflicts
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if git push origin sync-current-files; then
+                echo "✅ Data committed and pushed successfully"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "⚠️ Push failed (attempt $RETRY_COUNT/$MAX_RETRIES), trying to resolve..."
+                
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  # Fetch and rebase for the retry
+                  git fetch origin sync-current-files
+                  git rebase origin/sync-current-files || {
+                    echo "🔧 Rebase conflict, resolving automatically..."
+                    git rebase --abort
+                    git pull origin sync-current-files --no-edit --strategy-option=ours
+                  }
+                else
+                  echo "❌ Failed to push after $MAX_RETRIES attempts"
+                  exit 1
+                fi
+              fi
+            done
           else
             echo "ℹ️ No changes to commit in data directory"
           fi

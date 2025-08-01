@@ -1,0 +1,15 @@
+# Git attributes for Bilibili Flow project
+
+# Database files - prefer local version (ours) during merge conflicts
+data/database/bilibili_tracking.db merge=ours
+
+# Binary files
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# JSON files - try to merge, but prefer local if conflict
+*.json merge=union
+
+# Log files - prefer local version
+*.log merge=ours

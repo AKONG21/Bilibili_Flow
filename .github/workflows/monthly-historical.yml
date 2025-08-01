@@ -51,10 +51,14 @@ jobs:
       run: |
         playwright install chromium
         
-    - name: Configure git
+    - name: Configure git for data conflicts
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
+        # Configure git to handle database file conflicts
+        git config merge.ours.driver true
+        echo "data/database/bilibili_tracking.db merge=ours" >> .gitattributes
+        git add .gitattributes || true
         
     - name: Debug environment and configuration
       run: |
