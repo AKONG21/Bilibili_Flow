@@ -89,126 +89,50 @@ jobs:
         echo "🗑️ Checking for failed cookies cleanup"
         python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
         
-    - name: Run monthly historical data processing with enhanced notification
+    - name: Run monthly historical data processing with notification
       env:
         UP_ID: ${{ secrets.UP_ID }}
         FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         PYTHONPATH: ${{ github.workspace }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
       run: |
-        echo "Starting weekly historical data processing with enhanced notification"
-        echo "Current working directory: $(pwd)"
-        echo "Python path: $PYTHONPATH"
-        echo "Contents of current directory:"
-        ls -la
+        echo "Starting monthly historical data processing"
         
-        # 提取执行环境信息
-        EXECUTION_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-        WORKFLOW_NAME="Monthly Historical Data Processing"
-        RUN_NUMBER="${{ github.run_number }}"
-        BRANCH_NAME="${{ github.ref_name }}"
-        RETURN_CODE="0"
+        # Run monthly task and capture all output
+        echo "Running monthly task..."
+        TASK_OUTPUT_FILE="monthly_task_output_$(date +%s).log"
         
-        # 发送开始通知
-        if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-          echo "📤 发送任务开始通知..."
-          curl -X POST -H "Content-Type: application/json" -d "{
-            \"msg_type\": \"interactive\",
-            \"card\": {
-              \"elements\": [
-                {
-                  \"tag\": \"div\",
-                  \"text\": {
-                    \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🚀 状态**: 开始执行月度历史数据处理\",
-                    \"tag\": \"lark_md\"
-                  }
-                }
-              ],
-              \"header\": {
-                \"title\": {
-                  \"content\": \"🚀 月度数据处理开始\",
-                  \"tag\": \"plain_text\"
-                },
-                \"template\": \"blue\"
-              }
-            }
-          }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败，继续执行任务"
-        fi
-        
-        # 运行月任务并记录结果
-        TASK_START_TIME=$(date +%s)
-        if ! python run_monthly_task.py; then
-          TASK_END_TIME=$(date +%s)
-          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
-          RETURN_CODE="1"
-          echo "❌ Monthly task execution failed"
-          echo "Checking for any generated files:"
-          find . -name "*.json" -o -name "*.db" | head -10
+        if python run_monthly_task.py > "$TASK_OUTPUT_FILE" 2>&1; then
+          echo "✅ Monthly task completed successfully"
           
-          # 发送失败通知
-          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            echo "📤 发送任务失败通知..."
-            curl -X POST -H "Content-Type: application/json" -d "{
-              \"msg_type\": \"interactive\",
-              \"card\": {
-                \"elements\": [
-                  {
-                    \"tag\": \"div\",
-                    \"text\": {
-                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🔢 返回码**: ${RETURN_CODE}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**❌ 状态**: 任务执行失败\\n\\n**错误信息**: 请查看工作流日志获取详细信息\",
-                      \"tag\": \"lark_md\"
-                    }
-                  }
-                ],
-                \"header\": {
-                  \"title\": {
-                    \"content\": \"❌ 月度数据处理失败\",
-                    \"tag\": \"plain_text\"
-                  },
-                  \"template\": \"red\"
-                }
-              }
-            }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
-          fi
-          exit 1
+          # Send success notification with extracted data
+          echo "Sending success notification..."
+          python .github/scripts/feishu_notifier.py "Monthly Historical Data Processing" "success" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed but task succeeded"
+          
         else
-          TASK_END_TIME=$(date +%s)
-          TASK_DURATION=$((TASK_END_TIME - TASK_START_TIME))
-          RETURN_CODE="0"
-          echo "✅ Monthly task execution completed"
-          echo "Checking generated data files:"
-          find data/ -type f | head -10
+          echo "❌ Monthly task failed"
           
-          # 统计生成的文件
-          JSON_COUNT=$(find data/ -name "*.json" | wc -l)
-          DB_COUNT=$(find data/ -name "*.db" | wc -l)
-          TOTAL_SIZE=$(du -sh data/ 2>/dev/null | cut -f1 || echo "未知")
+          # Send failure notification with extracted data
+          echo "Sending failure notification..."
+          python .github/scripts/feishu_notifier.py "Monthly Historical Data Processing" "failure" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed and task failed"
           
-          # 发送成功通知
-          if [ -n "$FEISHU_WEBHOOK_URL" ]; then
-            echo "📤 发送任务成功通知..."
-            curl -X POST -H "Content-Type: application/json" -d "{
-              \"msg_type\": \"interactive\",
-              \"card\": {
-                \"elements\": [
-                  {
-                    \"tag\": \"div\",
-                    \"text\": {
-                      \"content\": \"**📦 仓库**: Bilibili_Flow\\n**🔄 工作流**: ${WORKFLOW_NAME}\\n**📅 时间**: ${EXECUTION_TIME}\\n**🏷️ 运行**: #${RUN_NUMBER}\\n**🌿 分支**: ${BRANCH_NAME}\\n**🔢 返回码**: ${RETURN_CODE}\\n**⏱️ 执行时长**: $(($TASK_DURATION / 60)) 分钟\\n**✅ 状态**: 任务执行成功\\n\\n**📊 数据统计**\\n📄 JSON文件: $JSON_COUNT 个\\n🗄️ 数据库文件: $DB_COUNT 个\\n💾 数据总大小: $TOTAL_SIZE\\n\\n**🎯 任务完成**: 月度历史数据处理完成，数据已保存到仓库\",
-                      \"tag\": \"lark_md\"
-                    }
-                  }
-                ],
-                \"header\": {
-                  \"title\": {
-                    \"content\": \"✅ 月度数据处理成功\",
-                    \"tag\": \"plain_text\"
-                  },
-                  \"template\": \"green\"
-                }
-              }
-            }" "$FEISHU_WEBHOOK_URL" || echo "飞书通知发送失败"
-          fi
+          # Display output for debugging
+          echo "=== Task Output ==="
+          cat "$TASK_OUTPUT_FILE"
+          echo "=================="
+          
+          exit 1
         fi
+        
+        # Display output for debugging (success case)
+        echo "=== Task Output ==="
+        cat "$TASK_OUTPUT_FILE"
+        echo "=================="
+        
+        # Cleanup
+        rm -f "$TASK_OUTPUT_FILE"
         
     - name: Commit and push data
       run: |

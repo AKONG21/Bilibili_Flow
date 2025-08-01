@@ -13,8 +13,11 @@ import os
 import sys
 import re
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional, List, Tuple
+
+# 北京时区
+BEIJING_TZ = timezone(timedelta(hours=8))
 
 class EnhancedFeishuNotifier:
     """增强版飞书通知器"""
@@ -46,9 +49,10 @@ class EnhancedFeishuNotifier:
             if total_cookies_match:
                 extracted_data['cookie_status']['total_cookies'] = int(total_cookies_match.group(1))
             
-            useable_cookies_match = re.search(r'useable_cookies["\s]*:["\s]*(\d+)', line)
-            if useable_cookies_match:
-                extracted_data['cookie_status']['useable_cookies'] = int(useable_cookies_match.group(1))
+            # 可用Cookie - 支持多种格式
+            available_cookies_match = re.search(r'(?:available_cookies|useable_cookies)["\s]*:["\s]*(\d+)', line)
+            if available_cookies_match:
+                extracted_data['cookie_status']['available_cookies'] = int(available_cookies_match.group(1))
             
             active_cookie_match = re.search(r'active_cookie["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
             if active_cookie_match:
@@ -57,6 +61,15 @@ class EnhancedFeishuNotifier:
             cookie_info_match = re.search(r'cookie_info["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
             if cookie_info_match:
                 extracted_data['cookie_status']['cookie_info'] = cookie_info_match.group(1)
+            
+            # 禁用/过期Cookie
+            disabled_cookies_match = re.search(r'disabled_cookies["\s]*:["\s]*(\d+)', line)
+            if disabled_cookies_match:
+                extracted_data['cookie_status']['disabled_cookies'] = int(disabled_cookies_match.group(1))
+                
+            expired_cookies_match = re.search(r'expired_cookies["\s]*:["\s]*(\d+)', line)
+            if expired_cookies_match:
+                extracted_data['cookie_status']['expired_cookies'] = int(expired_cookies_match.group(1))
             
             # 任务统计解析
             up_name_match = re.search(r'up_name["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
@@ -75,7 +88,28 @@ class EnhancedFeishuNotifier:
             if errors_count_match:
                 extracted_data['task_statistics']['errors_count'] = int(errors_count_match.group(1))
             
-            # 旧格式兼容（保留中文匹配作为后备）
+            # 旧格式兼容 - 支持中文输出（主要格式）
+            if '总Cookie数量:' in line or '总Cookie数量：' in line:
+                match = re.search(r'总Cookie数量[：:]\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['total_cookies'] = int(match.group(1))
+            
+            if '可用Cookie数量:' in line or '可用Cookie数量：' in line:
+                match = re.search(r'可用Cookie数量[：:]\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['available_cookies'] = int(match.group(1))
+                    
+            if '过期Cookie数量:' in line or '过期Cookie数量：' in line:
+                match = re.search(r'过期Cookie数量[：:]\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['expired_cookies'] = int(match.group(1))
+                    
+            if '禁用Cookie数量:' in line or '禁用Cookie数量：' in line:
+                match = re.search(r'禁用Cookie数量[：:]\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['disabled_cookies'] = int(match.group(1))
+            
+            # 旧格式兼容（保留原有的匹配作为后备）
             if '发现' in line and '个Cookie配置' in line:
                 match = re.search(r'发现 (\d+) 个Cookie配置', line)
                 if match:
@@ -152,15 +186,19 @@ class EnhancedFeishuNotifier:
             
             if cs.get('total_cookies'):
                 cookie_info.append(f"• Total: {cs['total_cookies']}")
-            if cs.get('useable_cookies'):
-                cookie_info.append(f"• Useable: {cs['useable_cookies']}")
+            if cs.get('available_cookies'):  # 修正字段名
+                cookie_info.append(f"• Available: {cs['available_cookies']}")
+            if cs.get('expired_cookies'):
+                cookie_info.append(f"• Expired: {cs['expired_cookies']}")
+            if cs.get('disabled_cookies'):
+                cookie_info.append(f"• Disabled: {cs['disabled_cookies']}")
             if cs.get('active_cookie'):
                 cookie_info.append(f"• Active: {cs['active_cookie']}")
             if cs.get('cookie_info'):
                 cookie_info.append(f"• Info: {cs['cookie_info']}")
             
             if cookie_info:
-                sections.append("**📊 Cookie Status:**\n" + "\n".join(cookie_info))
+                sections.append("**🍪 Cookie Status:**\n" + "\n".join(cookie_info))
         
         # 任务统计部分
         if data.get('task_statistics'):
@@ -217,10 +255,11 @@ class EnhancedFeishuNotifier:
         title = f"{config['icon']} {workflow_name} - {status.upper()}"
         
         # 构建基本信息
+        beijing_time = datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S')
         basic_info = [
             f"**📦 仓库**: {repository}",
             f"**🔄 工作流**: {workflow_name}", 
-            f"**📅 时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"**📅 时间**: {beijing_time}",
             f"**🏷️ 运行**: #{os.environ.get('GITHUB_RUN_NUMBER', 'N/A')}",
             f"**🌿 分支**: {os.environ.get('GITHUB_REF_NAME', 'main')}"
         ]
@@ -289,7 +328,7 @@ def safe_send_notification(workflow_name: str, status: str, output: str = "") ->
         
         # 添加执行时间信息
         extracted_data['execution_info'] = extracted_data.get('execution_info', {})
-        extracted_data['execution_info']['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        extracted_data['execution_info']['timestamp'] = datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S')
         
         return notifier.send_enhanced_notification(
             workflow_name=workflow_name,
