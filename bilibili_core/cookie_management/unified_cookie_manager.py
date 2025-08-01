@@ -73,7 +73,71 @@ class UnifiedCookieManager:
     def load_config(self) -> bool:
         """加载配置文件"""
         self.config = ConfigUtils.load_yaml_config(self.config_file)
+        
+        # 在GitHub Actions环境中，检查是否需要从环境变量加载Cookie
+        if EnvironmentDetector.is_github_actions() and self.config:
+            self._load_cookies_from_env()
+            
         return self.config is not None
+    
+    def _load_cookies_from_env(self):
+        """从环境变量加载Cookie（GitHub Actions环境）"""
+        try:
+            # 确保配置结构存在
+            if "login" not in self.config:
+                self.config["login"] = {}
+            if "cookies" not in self.config["login"]:
+                self.config["login"]["cookies"] = {}
+            if "cookie_pool" not in self.config["login"]["cookies"]:
+                self.config["login"]["cookies"]["cookie_pool"] = {
+                    "enabled": True,
+                    "selection_mode": "random",
+                    "cookies": []
+                }
+            
+            pool_config = self.config["login"]["cookies"]["cookie_pool"]
+            
+            # 检查环境变量中的Cookie
+            env_cookies = []
+            
+            # 主Cookie
+            main_cookie = os.environ.get("BILIBILI_COOKIES")
+            if main_cookie:
+                env_cookies.append({
+                    "name": "main",
+                    "cookie": main_cookie,
+                    "priority": 1,
+                    "enabled": True,
+                    "last_used": "",
+                    "failure_count": 0,
+                    "max_failures": 3
+                })
+            
+            # 备用Cookie池 (BILIBILI_COOKIES_1 到 BILIBILI_COOKIES_10)
+            for i in range(1, 11):
+                env_key = f"BILIBILI_COOKIES_{i}"
+                cookie_value = os.environ.get(env_key)
+                if cookie_value:
+                    env_cookies.append({
+                        "name": f"env_cookie_{i}",
+                        "cookie": cookie_value,
+                        "priority": i + 1,
+                        "enabled": True,
+                        "last_used": "",
+                        "failure_count": 0,
+                        "max_failures": 3
+                    })
+            
+            if env_cookies:
+                # 启用Cookie池并设置从环境变量加载的Cookie
+                pool_config["enabled"] = True
+                pool_config["cookies"] = env_cookies
+                logger.info(f"从环境变量加载了 {len(env_cookies)} 个Cookie")
+            else:
+                logger.warning("GitHub Actions环境中未找到Cookie环境变量")
+                
+        except Exception as e:
+            logger.error(f"从环境变量加载Cookie失败: {e}")
     
     def _initialize_cookie_pool(self):
         """初始化Cookie池"""
@@ -389,6 +453,11 @@ class UnifiedCookieManager:
                 if smart_config.get("auto_disable_failed", True):
                     cookie_info.enabled = False
                     logger.error(f"Cookie已自动禁用: {cookie_info.name} (失败次数过多)")
+    
+    @property
+    def cookies(self) -> List[Dict]:
+        """向后兼容的cookies属性"""
+        return self.current_cookies
     
     def get_cookie_string(self) -> str:
         """获取当前Cookie字符串"""
