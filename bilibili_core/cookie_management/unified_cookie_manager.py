@@ -487,6 +487,11 @@ class UnifiedCookieManager:
             "backup_files_count": 0
         }
         
+        # 添加活跃Cookie信息（用于飞书通知）
+        if self.current_source and ":" in self.current_source:
+            active_cookie = self.current_source.split(":", 1)[1]
+            current_status["active_cookie"] = active_cookie
+        
         # 备份文件统计
         if self.backup_cookies_dir and self.backup_cookies_dir.strip():
             pattern = os.path.join(self.backup_cookies_dir, "cookies_*.json")

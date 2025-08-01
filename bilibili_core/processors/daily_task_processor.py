@@ -71,9 +71,6 @@ class DailyTaskProcessor:
             backup_cookies_dir=self.config.get("login", {}).get("backup_cookies_dir", "data/backup_cookies")
         )
 
-        # 显示Cookie状态并清理过期Cookie
-        self._display_cookie_status_and_cleanup()
-
         # 统一存储模式：JSON + 数据库同时保存
         storage_config = self.config.get("storage", {})
         task_config = self.config.get("task_config", {})
@@ -116,6 +113,9 @@ class DailyTaskProcessor:
         # 显示Cookie状态
         status = self.cookie_manager.get_comprehensive_status()
         self.logger.info(f"Cookie状态: {status}")
+        
+        # 显示Cookie状态报告和清理
+        self._display_cookie_status_and_cleanup()
 
         # 初始化浏览器
         await self.init_browser()
