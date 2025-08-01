@@ -39,9 +39,10 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/bilibili-cookie-usage-history.json
-        key: cookie-usage-${{ runner.os }}-${{ github.repository }}-v1
+        key: cookie-usage-${{ runner.os }}-v2
         restore-keys: |
-          cookie-usage-${{ runner.os }}-${{ github.repository }}-
+          cookie-usage-${{ runner.os }}-v1
+          cookie-usage-${{ runner.os }}-
           
     - name: Install dependencies
       run: |

@@ -104,7 +104,7 @@ class UnifiedCookieManager:
             main_cookie = os.environ.get("BILIBILI_COOKIES")
             if main_cookie:
                 env_cookies.append({
-                    "name": "main",
+                    "name": "BILIBILI_COOKIES",  # 保留原始环境变量名
                     "cookie": main_cookie,
                     "priority": 1,
                     "enabled": True,
@@ -119,7 +119,7 @@ class UnifiedCookieManager:
                 cookie_value = os.environ.get(env_key)
                 if cookie_value:
                     env_cookies.append({
-                        "name": f"env_cookie_{i}",
+                        "name": env_key,  # 保留原始环境变量名
                         "cookie": cookie_value,
                         "priority": i + 1,
                         "enabled": True,
@@ -133,6 +133,10 @@ class UnifiedCookieManager:
                 pool_config["enabled"] = True
                 pool_config["cookies"] = env_cookies
                 logger.info(f"从环境变量加载了 {len(env_cookies)} 个Cookie")
+                
+                # 显示加载的Cookie名称
+                cookie_names = [c["name"] for c in env_cookies]
+                logger.info(f"可用Cookie: {', '.join(cookie_names)}")
             else:
                 logger.warning("GitHub Actions环境中未找到Cookie环境变量")
                 
@@ -195,21 +199,22 @@ class UnifiedCookieManager:
         if selection_mode == "random":
             import random
             selected = random.choice(available_cookies)
-            logger.info(f"随机选择Cookie: {selected.name}")
+            logger.info(f"🎯 随机选择Cookie: {selected.name}")
         elif selection_mode == "round_robin":
             if self.current_index >= len(available_cookies):
                 self.current_index = 0
             selected = available_cookies[self.current_index]
             self.current_index += 1
-            logger.info(f"轮询选择Cookie: {selected.name}")
+            logger.info(f"🔄 轮询选择Cookie: {selected.name}")
         elif selection_mode == "priority":
             sorted_cookies = sorted(available_cookies, key=lambda x: x.priority)
             selected = sorted_cookies[0]
-            logger.info(f"优先级选择Cookie: {selected.name} (优先级: {selected.priority})")
+            logger.info(f"⭐ 优先级选择Cookie: {selected.name} (优先级: {selected.priority})")
         else:
             logger.warning(f"未知的选择模式: {selection_mode}，使用随机模式")
             import random
             selected = random.choice(available_cookies)
+            logger.info(f"🎯 随机选择Cookie: {selected.name}")
         
         return selected
     
