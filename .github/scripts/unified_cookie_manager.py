@@ -741,6 +741,47 @@ class UnifiedCookieManager:
         
         # 打印统计摘要
         self.print_usage_statistics()
+        
+        # 打印需要更换的Cookie清单
+        self.print_replacement_guide()
+    
+    def print_replacement_guide(self):
+        """打印Cookie更换指南"""
+        needs_replacement = []
+        
+        # 收集需要更换的Cookie
+        for cookie_key in self.failed_cookies:
+            needs_replacement.append(f"❌ {cookie_key} - 多次失败，建议立即更换")
+        
+        for cookie_key in self.expired_cookies:
+            needs_replacement.append(f"⏰ {cookie_key} - 已过期，需要更换")
+        
+        for cookie_key in self.warning_cookies:
+            days_left = self.cookies_data.get(cookie_key, {}).get('days_left', 0)
+            needs_replacement.append(f"⚠️ {cookie_key} - 即将过期({days_left}天)，建议及时更换")
+        
+        if needs_replacement:
+            print("\n" + "=" * 60)
+            print("🔧 Cookie更换指南")
+            print("=" * 60)
+            print("需要在GitHub Secrets中更换以下Cookie:")
+            print()
+            
+            for item in needs_replacement:
+                print(f"  {item}")
+            
+            print(f"\n📍 GitHub Secrets设置页面:")
+            print(f"   https://github.com/AKONG21/Bilibili_Flow/settings/secrets/actions")
+            print()
+            print("🔗 操作步骤:")
+            print("   1. 点击上方链接进入Secrets设置页面")
+            print("   2. 找到对应的Cookie名称")
+            print("   3. 点击 'Update' 按钮")
+            print("   4. 粘贴新的Cookie值")
+            print("   5. 点击 'Update secret' 保存")
+            print("=" * 60)
+        else:
+            print("\n✅ 所有Cookie状态良好，无需更换")
 
 def cookie_rotation_mode(manager: UnifiedCookieManager) -> int:
     """Cookie轮换模式"""

@@ -112,10 +112,46 @@ class EnhancedFeishuNotifier:
                 if match:
                     extracted_data['cookie_status']['current_cookie_failures'] = int(match.group(1))
                     
-            # Cookie健康评分 (如果实现了的话)
-            cookie_health_match = re.search(r'cookie_health_score["\s]*:["\s]*([0-9.]+)', line)
-            if cookie_health_match:
-                extracted_data['cookie_status']['cookie_health_score'] = float(cookie_health_match.group(1))
+            # Cookie更换指南解析
+            if '🔧 Cookie更换指南' in line:
+                extracted_data['cookie_status']['replacement_guide_detected'] = True
+            
+            # 需要更换的Cookie解析
+            if '❌' in line and ('多次失败' in line or '建议立即更换' in line):
+                cookie_match = re.search(r'❌ (BILIBILI_COOKIES[_\d]*) - (.+)', line)
+                if cookie_match:
+                    if 'failed_cookies_list' not in extracted_data['cookie_status']:
+                        extracted_data['cookie_status']['failed_cookies_list'] = []
+                    extracted_data['cookie_status']['failed_cookies_list'].append({
+                        'name': cookie_match.group(1),
+                        'reason': cookie_match.group(2)
+                    })
+            
+            if '⏰' in line and ('已过期' in line or '需要更换' in line):
+                cookie_match = re.search(r'⏰ (BILIBILI_COOKIES[_\d]*) - (.+)', line)
+                if cookie_match:
+                    if 'expired_cookies_list' not in extracted_data['cookie_status']:
+                        extracted_data['cookie_status']['expired_cookies_list'] = []
+                    extracted_data['cookie_status']['expired_cookies_list'].append({
+                        'name': cookie_match.group(1),
+                        'reason': cookie_match.group(2)
+                    })
+            
+            if '⚠️' in line and ('即将过期' in line or '建议及时更换' in line):
+                cookie_match = re.search(r'⚠️ (BILIBILI_COOKIES[_\d]*) - (.+)', line)
+                if cookie_match:
+                    if 'warning_cookies_list' not in extracted_data['cookie_status']:
+                        extracted_data['cookie_status']['warning_cookies_list'] = []
+                    extracted_data['cookie_status']['warning_cookies_list'].append({
+                        'name': cookie_match.group(1),
+                        'reason': cookie_match.group(2)
+                    })
+            
+            # GitHub Secrets页面链接解析
+            if 'github.com' in line and 'settings/secrets/actions' in line:
+                url_match = re.search(r'(https://github\.com/[^/]+/[^/]+/settings/secrets/actions)', line)
+                if url_match:
+                    extracted_data['cookie_status']['secrets_url'] = url_match.group(1)
                 
             expired_cookies_match = re.search(r'expired_cookies["\s]*:["\s]*(\d+)', line)
             if expired_cookies_match:
@@ -303,6 +339,24 @@ class EnhancedFeishuNotifier:
                 cookie_info.append(f"• Last Used: {cs['last_used'][:19]}")
             if cs.get('cookie_health_score') is not None:
                 cookie_info.append(f"• Health Score: {cs['cookie_health_score']:.1f}")
+            
+            # Cookie更换指南信息
+            replacement_items = []
+            if cs.get('failed_cookies_list'):
+                for item in cs['failed_cookies_list']:
+                    replacement_items.append(f"❌ {item['name']}: {item['reason']}")
+            if cs.get('expired_cookies_list'):
+                for item in cs['expired_cookies_list']:
+                    replacement_items.append(f"⏰ {item['name']}: {item['reason']}")
+            if cs.get('warning_cookies_list'):
+                for item in cs['warning_cookies_list']:
+                    replacement_items.append(f"⚠️ {item['name']}: {item['reason']}")
+            
+            if replacement_items:
+                cookie_info.append("• **需要更换的Cookie:**")
+                cookie_info.extend([f"  {item}" for item in replacement_items])
+                if cs.get('secrets_url'):
+                    cookie_info.append(f"• [点击进入Secrets设置页面]({cs['secrets_url']})")
             
             if cookie_info:
                 sections.append("**🍪 Cookie Status:**\n" + "\n".join(cookie_info))
