@@ -13,3 +13,4 @@ data/database/bilibili_tracking.db merge=ours
 
 # Log files - prefer local version
 *.log merge=oursdata/database/bilibili_tracking.db merge=ours
+data/database/bilibili_tracking.db merge=ours
