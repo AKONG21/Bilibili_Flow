@@ -27,6 +27,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
+        ref: sync-current-files  # Explicitly checkout the latest sync-current-files branch
       
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
@@ -67,6 +68,11 @@ jobs:
         echo "data/database/bilibili_tracking.db merge=ours" >> .gitattributes
         git add .gitattributes || true
         
+        # Ensure we're on the latest version before starting tasks
+        echo "🔄 Ensuring latest codebase..."
+        git fetch origin sync-current-files
+        git reset --hard origin/sync-current-files
+        
     - name: Enhanced cookie rotation and selection
       env:
         UP_ID: ${{ secrets.UP_ID }}
@@ -87,6 +93,18 @@ jobs:
         
     - name: Cookie cleanup check
       if: always()
+      env:
+        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
+        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
+        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
+        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
+        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
+        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
+        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
+        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
+        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
+        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
+        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
       run: |
         echo "🗑️ Checking for failed cookies cleanup"
         python .github/scripts/unified_cookie_manager.py cleanup || echo "Cleanup check completed with warnings"
@@ -99,6 +117,18 @@ jobs:
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
         GITHUB_REF_NAME: ${{ github.ref_name }}
         GITHUB_REPOSITORY: ${{ github.repository }}
+        # Add Cookie environment variables for data collection
+        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
+        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
+        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
+        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
+        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
+        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
+        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
+        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
+        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
+        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
+        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
       run: |
         echo "Starting daily data collection"
         
@@ -177,22 +207,32 @@ jobs:
         
         # Check if data directory exists and has files
         if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
-          # Stash any local changes first (especially database files)
-          git stash push -u -m "Temporary stash before pull - $(date)"
+          echo "📊 Found data files to commit"
           
-          # Pull any remote changes first
+          # Check if we have any changes to stash
+          if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "💾 Stashing local changes before sync..."
+            git add data/ || true  # Add data files to index first
+            git stash push -u -m "Temporary stash before pull - $(date)" || echo "Nothing to stash"
+          fi
+          
+          # Fetch and pull the latest changes
+          echo "🔄 Syncing with remote repository..."
           git fetch origin sync-current-files
           git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
           
-          # Pop stash if it exists, with conflict resolution
+          # Restore our stashed changes if any
           if git stash list | grep -q "Temporary stash before pull"; then
+            echo "📂 Restoring local changes..."
             git stash pop || {
               echo "⚠️ Merge conflict detected, resolving automatically..."
               # For database files, prefer the local version (newly generated)
-              git checkout --theirs data/database/bilibili_tracking.db 2>/dev/null || true
-              # For JSON files, try to merge or prefer local
+              git checkout --ours data/database/bilibili_tracking.db 2>/dev/null || true
+              # Add all data files
               git add data/ || true
+              # Drop the problematic stash
               git stash drop || true
+              echo "✅ Conflicts resolved"
             }
           fi
           
