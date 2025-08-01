@@ -40,6 +40,14 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
+    
+    - name: Cache cookie usage history
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/bilibili-cookie-usage-history.json
+        key: cookie-usage-${{ runner.os }}-${{ github.repository }}-v1
+        restore-keys: |
+          cookie-usage-${{ runner.os }}-${{ github.repository }}-
           
     - name: Install dependencies
       run: |
@@ -70,14 +78,14 @@ jobs:
         BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
         BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
       run: |
-        echo "🔄 Starting enhanced cookie rotation with fallback mechanism"
-        python .github/scripts/enhanced_cookie_rotation.py
+        echo "🔄 Starting unified cookie rotation with enhanced statistics"
+        python .github/scripts/unified_cookie_manager.py rotation
         
     - name: Cookie cleanup check
       if: always()
       run: |
         echo "🗑️ Checking for failed cookies cleanup"
-        python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
+        python .github/scripts/unified_cookie_manager.py cleanup || echo "Cleanup check completed with warnings"
         
     - name: Run daily data collection with notification
       env:

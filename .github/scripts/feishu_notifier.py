@@ -62,10 +62,60 @@ class EnhancedFeishuNotifier:
             if cookie_info_match:
                 extracted_data['cookie_status']['cookie_info'] = cookie_info_match.group(1)
             
-            # 禁用/过期Cookie
-            disabled_cookies_match = re.search(r'disabled_cookies["\s]*:["\s]*(\d+)', line)
-            if disabled_cookies_match:
-                extracted_data['cookie_status']['disabled_cookies'] = int(disabled_cookies_match.group(1))
+            # 使用统计信息解析
+            usage_count_match = re.search(r'usage_count["\s]*:["\s]*(\d+)', line)
+            if usage_count_match:
+                extracted_data['cookie_status']['usage_count'] = int(usage_count_match.group(1))
+            
+            success_rate_match = re.search(r'success_rate["\s]*:["\s]*([0-9.]+)', line)
+            if success_rate_match:
+                extracted_data['cookie_status']['success_rate'] = float(success_rate_match.group(1))
+            
+            first_used_match = re.search(r'first_used["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if first_used_match:
+                extracted_data['cookie_status']['first_used'] = first_used_match.group(1)
+            
+            last_used_match = re.search(r'last_used["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if last_used_match:
+                extracted_data['cookie_status']['last_used'] = last_used_match.group(1)
+            
+            most_used_cookie_match = re.search(r'most_used_cookie["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if most_used_cookie_match:
+                extracted_data['cookie_status']['most_used_cookie'] = most_used_cookie_match.group(1)
+            
+            # 解析总体成功率
+            if '📈 总体成功率:' in line or '总体成功率:' in line:
+                match = re.search(r'总体成功率[：:]\s*([0-9.]+)%', line)
+                if match:
+                    extracted_data['cookie_status']['overall_success_rate'] = float(match.group(1))
+            
+            # 解析活跃Cookie数量
+            if '📊 活跃Cookie数:' in line or '活跃Cookie数:' in line:
+                match = re.search(r'活跃Cookie数[：:]\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['active_cookies_count'] = int(match.group(1))
+                    
+            # 解析使用统计详细信息
+            if '总使用次数:' in line:
+                match = re.search(r'总使用次数:\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['current_cookie_usage'] = int(match.group(1))
+            
+            # 解析成功次数和失败次数
+            if '成功次数:' in line:
+                match = re.search(r'成功次数:\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['current_cookie_success'] = int(match.group(1))
+            
+            if '失败次数:' in line:
+                match = re.search(r'失败次数:\s*(\d+)', line)
+                if match:
+                    extracted_data['cookie_status']['current_cookie_failures'] = int(match.group(1))
+                    
+            # Cookie健康评分 (如果实现了的话)
+            cookie_health_match = re.search(r'cookie_health_score["\s]*:["\s]*([0-9.]+)', line)
+            if cookie_health_match:
+                extracted_data['cookie_status']['cookie_health_score'] = float(cookie_health_match.group(1))
                 
             expired_cookies_match = re.search(r'expired_cookies["\s]*:["\s]*(\d+)', line)
             if expired_cookies_match:
@@ -88,32 +138,66 @@ class EnhancedFeishuNotifier:
             if errors_count_match:
                 extracted_data['task_statistics']['errors_count'] = int(errors_count_match.group(1))
             
-            # 旧格式兼容 - 支持中文输出（主要格式）
-            if '总Cookie数量:' in line or '总Cookie数量：' in line:
+            # 主要格式 - 支持中文输出和emoji
+            if '📊 总Cookie数量:' in line or '总Cookie数量:' in line or '总Cookie数量：' in line:
                 match = re.search(r'总Cookie数量[：:]\s*(\d+)', line)
                 if match:
                     extracted_data['cookie_status']['total_cookies'] = int(match.group(1))
             
-            if '可用Cookie数量:' in line or '可用Cookie数量：' in line:
+            if '✅ 可用Cookie数量:' in line or '可用Cookie数量:' in line or '可用Cookie数量：' in line:
                 match = re.search(r'可用Cookie数量[：:]\s*(\d+)', line)
                 if match:
                     extracted_data['cookie_status']['available_cookies'] = int(match.group(1))
                     
-            if '过期Cookie数量:' in line or '过期Cookie数量：' in line:
+            if '❌ 过期Cookie数量:' in line or '过期Cookie数量:' in line or '过期Cookie数量：' in line:
                 match = re.search(r'过期Cookie数量[：:]\s*(\d+)', line)
                 if match:
                     extracted_data['cookie_status']['expired_cookies'] = int(match.group(1))
                     
-            if '禁用Cookie数量:' in line or '禁用Cookie数量：' in line:
+            if '🚫 禁用Cookie数量:' in line or '禁用Cookie数量:' in line or '禁用Cookie数量：' in line:
                 match = re.search(r'禁用Cookie数量[：:]\s*(\d+)', line)
                 if match:
                     extracted_data['cookie_status']['disabled_cookies'] = int(match.group(1))
             
-            # 旧格式兼容（保留原有的匹配作为后备）
+            # 支持实际工作流输出格式
             if '发现' in line and '个Cookie配置' in line:
                 match = re.search(r'发现 (\d+) 个Cookie配置', line)
                 if match:
                     extracted_data['cookie_status']['total_cookies'] = int(match.group(1))
+            
+            # Cookie状态分析格式
+            if 'Cookie状态分析:' in line:
+                extracted_data['cookie_status']['analysis_started'] = True
+                
+            # 匹配 BILIBILI_COOKIES_X: ✅ 有效 格式
+            if ('BILIBILI_COOKIES' in line and ('✅ 有效' in line or '❌ 失效' in line)):
+                if '✅ 有效' in line:
+                    # 提取有效天数
+                    days_match = re.search(r'✅ 有效\((\d+)天\)', line)
+                    if days_match:
+                        days = int(days_match.group(1))
+                        # 累加可用cookie数量
+                        extracted_data['cookie_status']['available_cookies'] = extracted_data['cookie_status'].get('available_cookies', 0) + 1
+                        # 记录最长有效期作为cookie_info
+                        if 'max_valid_days' not in extracted_data['cookie_status'] or days > extracted_data['cookie_status']['max_valid_days']:
+                            extracted_data['cookie_status']['max_valid_days'] = days
+                            extracted_data['cookie_status']['cookie_info'] = f"{days}天有效期"
+                elif '❌ 失效' in line:
+                    extracted_data['cookie_status']['expired_cookies'] = extracted_data['cookie_status'].get('expired_cookies', 0) + 1
+            
+            # 随机选择Cookie信息
+            if '🎲 随机选择了' in line and '个Cookie进行轮换' in line:
+                match = re.search(r'随机选择了 (\d+) 个Cookie进行轮换', line)
+                if match:
+                    selected_count = int(match.group(1))
+                    extracted_data['cookie_status']['selected_for_rotation'] = selected_count
+            
+            # Cookie测试成功信息 - 提取当前活跃用户
+            if '✅ Cookie' in line and '测试成功' in line and '连接成功:' in line:
+                match = re.search(r'连接成功: ([^(]+)', line)
+                if match:
+                    username = match.group(1).strip()
+                    extracted_data['cookie_status']['active_cookie'] = username
             
             if 'UP主:' in line:
                 match = re.search(r'UP主: (.+)', line)
@@ -184,18 +268,41 @@ class EnhancedFeishuNotifier:
             cookie_info = []
             cs = data['cookie_status']
             
-            if cs.get('total_cookies'):
+            if cs.get('total_cookies') is not None:
                 cookie_info.append(f"• Total: {cs['total_cookies']}")
-            if cs.get('available_cookies'):  # 修正字段名
+            if cs.get('available_cookies') is not None:
                 cookie_info.append(f"• Available: {cs['available_cookies']}")
-            if cs.get('expired_cookies'):
+            if cs.get('expired_cookies') is not None:
                 cookie_info.append(f"• Expired: {cs['expired_cookies']}")
-            if cs.get('disabled_cookies'):
+            if cs.get('disabled_cookies') is not None:
                 cookie_info.append(f"• Disabled: {cs['disabled_cookies']}")
+            if cs.get('selected_for_rotation'):
+                cookie_info.append(f"• Selected: {cs['selected_for_rotation']}")
             if cs.get('active_cookie'):
                 cookie_info.append(f"• Active: {cs['active_cookie']}")
             if cs.get('cookie_info'):
                 cookie_info.append(f"• Info: {cs['cookie_info']}")
+            
+            # 新增统计字段
+            if cs.get('overall_success_rate') is not None:
+                cookie_info.append(f"• Success Rate: {cs['overall_success_rate']:.1f}%")
+            if cs.get('active_cookies_count') is not None:
+                cookie_info.append(f"• Active Count: {cs['active_cookies_count']}")
+            if cs.get('most_used_cookie'):
+                cookie_info.append(f"• Most Used: {cs['most_used_cookie']}")
+            if cs.get('current_cookie_usage') is not None:
+                cookie_info.append(f"• Current Usage: {cs['current_cookie_usage']}")
+            if cs.get('current_cookie_success') is not None and cs.get('current_cookie_failures') is not None:
+                total_current = cs['current_cookie_success'] + cs['current_cookie_failures']
+                if total_current > 0:
+                    current_rate = (cs['current_cookie_success'] / total_current) * 100
+                    cookie_info.append(f"• Current Rate: {current_rate:.1f}%")
+            if cs.get('first_used'):
+                cookie_info.append(f"• First Used: {cs['first_used'][:19]}")
+            if cs.get('last_used'):
+                cookie_info.append(f"• Last Used: {cs['last_used'][:19]}")
+            if cs.get('cookie_health_score') is not None:
+                cookie_info.append(f"• Health Score: {cs['cookie_health_score']:.1f}")
             
             if cookie_info:
                 sections.append("**🍪 Cookie Status:**\n" + "\n".join(cookie_info))

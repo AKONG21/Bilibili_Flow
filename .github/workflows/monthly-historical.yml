@@ -33,6 +33,14 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
+    
+    - name: Cache cookie usage history
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/bilibili-cookie-usage-history.json
+        key: cookie-usage-${{ runner.os }}-${{ github.repository }}-v1
+        restore-keys: |
+          cookie-usage-${{ runner.os }}-${{ github.repository }}-
           
     - name: Install dependencies
       run: |
@@ -49,18 +57,6 @@ jobs:
         git config --global user.email "actions@github.com"
         
     - name: Debug environment and configuration
-      env:
-        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
-        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
-        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
-        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
-        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
-        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
-        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
-        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
-        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
-        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
-        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
       run: |
         echo "🔍 Running environment debug check"
         python .github/scripts/debug_data_collection.py
@@ -80,14 +76,14 @@ jobs:
         BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
         BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
       run: |
-        echo "🔄 Starting enhanced cookie rotation with fallback mechanism"
-        python .github/scripts/enhanced_cookie_rotation.py
+        echo "🔄 Starting unified cookie rotation with enhanced statistics"
+        python .github/scripts/unified_cookie_manager.py rotation
         
     - name: Cookie cleanup check
       if: always()
       run: |
         echo "🗑️ Checking for failed cookies cleanup"
-        python .github/scripts/cookie_cleanup_manager.py || echo "Cleanup check completed with warnings"
+        python .github/scripts/unified_cookie_manager.py cleanup || echo "Cleanup check completed with warnings"
         
     - name: Run monthly historical data processing with notification
       env:
