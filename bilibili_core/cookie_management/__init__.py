@@ -3,15 +3,21 @@
 
 """
 Cookie管理模块
-提供自动Cookie管理、智能Cookie池、增强Cookie管理等功能
+提供统一Cookie管理功能
 """
 
-from .auto_cookie_manager import AutoCookieManager
-from .enhanced_cookie_manager import EnhancedCookieManager
-from .smart_cookie_pool import SmartCookiePool
+# 统一接口
+from .unified_cookie_manager import UnifiedCookieManager
+from .cookie_utils import (
+    CookieValidator, CookieParser, ConfigUtils, 
+    CookieStatus, EnvironmentDetector
+)
 
 __all__ = [
-    'AutoCookieManager',
-    'EnhancedCookieManager', 
-    'SmartCookiePool'
+    'UnifiedCookieManager',
+    'CookieValidator',
+    'CookieParser', 
+    'ConfigUtils',
+    'CookieStatus',
+    'EnvironmentDetector'
 ]

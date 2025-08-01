@@ -1,0 +1,283 @@
+name: Manual Daily Data Collection
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_description:
+        description: '手动执行任务描述'
+        required: false
+        default: '手动数据收集'
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+# 独立的并发控制组，避免与定时任务冲突
+concurrency:
+  group: manual-daily-data-collection-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  manual-daily-data-collection:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        ref: sync-current-files  # Explicitly checkout the latest sync-current-files branch
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Cache cookie usage history
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/bilibili-cookie-usage-history.json
+        key: manual-cookie-usage-${{ runner.os }}-${{ github.repository }}-v1
+        restore-keys: |
+          manual-cookie-usage-${{ runner.os }}-${{ github.repository }}-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Playwright browsers
+      run: |
+        playwright install chromium
+        
+    - name: Configure git for manual data collection
+      run: |
+        git config --global user.name "GitHub Actions (Manual)"
+        git config --global user.email "actions@github.com"
+        # Configure git to handle database file conflicts - prefer local version
+        git config merge.ours.driver true
+        echo "data/database/bilibili_tracking.db merge=ours" >> .gitattributes
+        git add .gitattributes || true
+        
+        # 手动执行时使用更谨慎的同步策略
+        echo "🔄 Preparing for manual data collection..."
+        git fetch origin sync-current-files
+        
+        # 检查是否有未提交的更改
+        if ! git diff --quiet HEAD~1 HEAD; then
+          echo "⚠️ Detected recent changes, using careful merge strategy"
+          git pull origin sync-current-files --no-edit --strategy-option=ours
+        else
+          git reset --hard origin/sync-current-files
+        fi
+        
+    - name: Debug environment and configuration
+      run: |
+        echo "🔍 Manual execution - running environment debug check"
+        echo "Task description: ${{ github.event.inputs.task_description }}"
+        echo "Triggered by: ${{ github.actor }}"
+        echo "Run number: ${{ github.run_number }}"
+        python .github/scripts/debug_data_collection.py
+        
+    - name: Run manual daily data collection with notification
+      env:
+        UP_ID: ${{ secrets.UP_ID }}
+        FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+        PYTHONPATH: ${{ github.workspace }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        MANUAL_TASK_DESCRIPTION: ${{ github.event.inputs.task_description }}
+        # Core组件需要的Cookie环境变量
+        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
+        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
+        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
+        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
+        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
+        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
+        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
+        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
+        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
+        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
+        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
+      run: |
+        echo "🔧 Starting manual daily data collection"
+        echo "Triggered by: ${{ github.actor }}"
+        echo "Description: ${{ github.event.inputs.task_description }}"
+        
+        TASK_TYPE="Manual"
+        TASK_EMOJI="🔧"
+        
+        # 添加执行者信息到任务类型
+        if [ -n "${{ github.actor }}" ]; then
+          TASK_TYPE="Manual by ${{ github.actor }}"
+        fi
+        
+        echo "Task type: $TASK_TYPE ($TASK_EMOJI)"
+        
+        # Run daily task and capture all output
+        echo "Running manual daily task..."
+        TASK_OUTPUT_FILE="manual_task_output_$(date +%s).log"
+        
+        if python run_daily_task.py > "$TASK_OUTPUT_FILE" 2>&1; then
+          TASK_EXIT_CODE=0
+          echo "✅ Manual daily task completed successfully"
+          
+          # Send success notification with extracted data
+          echo "Sending success notification..."
+          python .github/scripts/feishu_notifier.py "$TASK_TYPE Daily Data Collection" "success" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed but task succeeded"
+          
+        else
+          TASK_EXIT_CODE=1
+          echo "❌ Manual daily task failed"
+          
+          # Send failure notification with extracted data
+          echo "Sending failure notification..."
+          python .github/scripts/feishu_notifier.py "$TASK_TYPE Daily Data Collection" "failure" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed and task failed"
+          
+          # Display output for debugging
+          echo "=== Task Output ==="
+          cat "$TASK_OUTPUT_FILE"
+          echo "=================="
+          
+          exit 1
+        fi
+        
+        # Display output for debugging (success case)
+        echo "=== Task Output ==="
+        cat "$TASK_OUTPUT_FILE"
+        echo "=================="
+        
+        # Cleanup
+        rm -f "$TASK_OUTPUT_FILE"
+        
+    - name: Commit and push manual data collection
+      run: |
+        TASK_EMOJI="🔧"
+        TASK_TYPE="Manual"
+        ACTOR_INFO=""
+        
+        if [ -n "${{ github.actor }}" ]; then
+          ACTOR_INFO=" by ${{ github.actor }}"
+        fi
+        
+        # Check if data directory exists and has files
+        if [ -d "data/" ] && [ "$(find data/ -type f | wc -l)" -gt 0 ]; then
+          echo "📊 Found data files to commit (manual execution)"
+          
+          # 手动执行时的特殊处理：先备份当前数据
+          BACKUP_DIR="manual_backup_$(date +%s)"
+          mkdir -p "/tmp/$BACKUP_DIR"
+          cp -r data/ "/tmp/$BACKUP_DIR/" 2>/dev/null || true
+          echo "💾 Backed up current data to /tmp/$BACKUP_DIR"
+          
+          # 获取最新远程更改，但保护本地数据
+          echo "🔄 Syncing with remote (protecting local data)..."
+          git fetch origin sync-current-files
+          
+          # 检查远程是否有冲突的数据库文件更新
+          if git diff HEAD origin/sync-current-files --name-only | grep -q "data/database/bilibili_tracking.db"; then
+            echo "⚠️ Remote database changes detected, using local version"
+            git pull origin sync-current-files --no-edit --strategy-option=ours
+          else
+            git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
+          fi
+          
+          # 恢复我们的数据（如果被覆盖）
+          if [ -d "/tmp/$BACKUP_DIR/data" ]; then
+            echo "🔄 Restoring manual execution data..."
+            cp -r "/tmp/$BACKUP_DIR/data/"* data/ 2>/dev/null || true
+            rm -rf "/tmp/$BACKUP_DIR"
+          fi
+          
+          git add data/
+          if ! git diff --staged --quiet; then
+            COMMIT_MSG="${TASK_EMOJI} ${TASK_TYPE} data collection${ACTOR_INFO}"
+            if [ -n "${{ github.event.inputs.task_description }}" ]; then
+              COMMIT_MSG="$COMMIT_MSG - ${{ github.event.inputs.task_description }}"
+            fi
+            COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M:%S')"
+            
+            git commit -m "$COMMIT_MSG"
+            
+            # 手动执行的推送策略：更积极的重试
+            MAX_RETRIES=5
+            RETRY_COUNT=0
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if git push origin sync-current-files; then
+                echo "✅ Manual data committed and pushed successfully"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "⚠️ Push failed (attempt $RETRY_COUNT/$MAX_RETRIES), retrying..."
+                
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  sleep 2  # 短暂等待
+                  git fetch origin sync-current-files
+                  # 对于手动执行，强制使用本地版本
+                  git pull origin sync-current-files --no-edit --strategy-option=ours
+                else
+                  echo "❌ Failed to push manual data after $MAX_RETRIES attempts"
+                  echo "💡 Manual data has been committed locally but not pushed to remote"
+                  exit 1
+                fi
+              fi
+            done
+          else
+            echo "ℹ️ No changes to commit in data directory"
+          fi
+        else
+          echo "⚠️ Data directory is empty or doesn't exist - no data to commit"
+        fi
+
+    - name: Generate manual execution report
+      if: always()
+      run: |
+        echo "## Manual Data Collection Report - $(date +'%Y-%m-%d %H:%M:%S')" > manual_report.md
+        echo "### Execution Details" >> manual_report.md
+        echo "- **Triggered by**: ${{ github.actor }}" >> manual_report.md
+        echo "- **Description**: ${{ github.event.inputs.task_description }}" >> manual_report.md
+        echo "- **Run number**: ${{ github.run_number }}" >> manual_report.md
+        echo "- **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> manual_report.md
+        echo "" >> manual_report.md
+        
+        echo "### Execution Summary" >> manual_report.md
+        if [ -d "data/" ] && [ "$(find data/ -name "*.json" -o -name "*.db" | wc -l)" -gt 0 ]; then
+          echo "- ✅ Data collection completed successfully" >> manual_report.md
+          echo "- ✅ Files generated and committed" >> manual_report.md
+          
+          # 数据文件统计
+          json_count=$(find data/ -name "*.json" | wc -l)
+          db_count=$(find data/ -name "*.db" | wc -l)
+          echo "- 📊 Generated $json_count JSON files and $db_count database files" >> manual_report.md
+        else
+          echo "- ❌ Data collection may have failed" >> manual_report.md
+          echo "- ⚠️ No data files found" >> manual_report.md
+        fi
+        
+        echo "" >> manual_report.md
+        echo "### Notes" >> manual_report.md
+        echo "- This was a manual execution separate from scheduled tasks" >> manual_report.md
+        echo "- Used independent concurrency control to avoid conflicts" >> manual_report.md
+        echo "- Applied conservative Git merge strategy for data protection" >> manual_report.md
+
+    - name: Upload manual execution artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: manual-execution-report-${{ github.run_number }}
+        path: |
+          manual_report.md
+        retention-days: 30

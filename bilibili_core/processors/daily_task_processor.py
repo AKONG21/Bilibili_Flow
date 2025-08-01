@@ -28,7 +28,7 @@ from bilibili_core.storage.simple_storage import SimpleStorage
 from bilibili_core.utils.logger import get_logger
 from bilibili_core.utils.time_utils import get_pubtime_datetime
 from bilibili_core.utils.login_helper import BilibiliLoginHelper
-from bilibili_core.cookie_management import EnhancedCookieManager, AutoCookieManager
+from bilibili_core.cookie_management import UnifiedCookieManager
 from bilibili_core.client.field import SearchOrderType, CommentOrderType
 
 
@@ -65,9 +65,11 @@ class DailyTaskProcessor:
         # 设置日志
         self.logger = get_logger()
 
-        # 初始化自动Cookie管理器
-        self.auto_cookie_manager = AutoCookieManager(self.config_file)
-        self.auto_cookie_manager.load_config()
+        # 初始化统一Cookie管理器
+        self.unified_cookie_manager = UnifiedCookieManager(
+            config_file=self.config_file,
+            backup_cookies_dir=self.config.get("login", {}).get("backup_cookies_dir", "data/backup_cookies")
+        )
 
         # 显示Cookie状态并清理过期Cookie
         self._display_cookie_status_and_cleanup()
@@ -105,20 +107,14 @@ class DailyTaskProcessor:
 
         self.logger.info("统一存储模式初始化完成：JSON + 数据库")
 
-        # 初始化增强版Cookie管理器
-        login_config = self.config.get("login", {})
-        self.cookie_manager = EnhancedCookieManager(
-            config=self.config,  # 传递完整配置
-            raw_cookie=login_config.get("cookies", {}).get("raw_cookie", ""),
-            backup_cookies_dir=login_config.get("backup_cookies_dir", "data/backup_cookies"),
-            check_interval_hours=login_config.get("cookie_check_interval", 24)
-        )
-
-        # 加载Cookie（按优先级：原始Cookie > 备用文件）
+        # 使用统一Cookie管理器（已在初始化时加载）
+        self.cookie_manager = self.unified_cookie_manager
+        
+        # 加载Cookie（按优先级：Cookie池 > 原始Cookie > 备用文件）
         self.cookie_manager.load_cookies()
 
         # 显示Cookie状态
-        status = self.cookie_manager.get_status_info()
+        status = self.cookie_manager.get_comprehensive_status()
         self.logger.info(f"Cookie状态: {status}")
 
         # 初始化浏览器
@@ -204,19 +200,11 @@ class DailyTaskProcessor:
     def _display_cookie_status_and_cleanup(self):
         """显示Cookie状态并清理过期Cookie"""
         try:
-            # 清理过期Cookie
-            cleanup_results = self.auto_cookie_manager.cleanup_all_expired()
-
-            # 显示Cookie状态
-            status = self.auto_cookie_manager.display_cookie_status()
-
-            # 记录清理结果
-            if cleanup_results["config_cookies"] > 0 or cleanup_results["backup_files"] > 0:
-                self.logger.info(f"清理完成: 配置Cookie {cleanup_results['config_cookies']}个, 备份文件 {cleanup_results['backup_files']}个")
-
-            # 检查Cookie数量并提醒
-            if status['available'] < 2:
-                self.logger.warning("⚠️ 可用Cookie数量不足2个，建议及时补充！")
+            # 使用统一Cookie管理器显示状态
+            self.unified_cookie_manager.display_status_report()
+            
+            # 清理旧的备份文件
+            self.unified_cookie_manager.cleanup_old_backup_files()
 
         except Exception as e:
             self.logger.error(f"Cookie状态检查失败: {e}")

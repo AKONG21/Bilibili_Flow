@@ -71,42 +71,6 @@ jobs:
         echo "🔍 Running environment debug check"
         python .github/scripts/debug_data_collection.py
         
-    - name: Enhanced cookie rotation and selection
-      env:
-        UP_ID: ${{ secrets.UP_ID }}
-        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
-        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
-        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
-        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
-        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
-        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
-        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
-        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
-        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
-        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
-        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
-      run: |
-        echo "🔄 Starting unified cookie rotation with enhanced statistics"
-        python .github/scripts/unified_cookie_manager.py rotation
-        
-    - name: Cookie cleanup check
-      if: always()
-      env:
-        BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
-        BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
-        BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
-        BILIBILI_COOKIES_3: ${{ secrets.BILIBILI_COOKIES_3 }}
-        BILIBILI_COOKIES_4: ${{ secrets.BILIBILI_COOKIES_4 }}
-        BILIBILI_COOKIES_5: ${{ secrets.BILIBILI_COOKIES_5 }}
-        BILIBILI_COOKIES_6: ${{ secrets.BILIBILI_COOKIES_6 }}
-        BILIBILI_COOKIES_7: ${{ secrets.BILIBILI_COOKIES_7 }}
-        BILIBILI_COOKIES_8: ${{ secrets.BILIBILI_COOKIES_8 }}
-        BILIBILI_COOKIES_9: ${{ secrets.BILIBILI_COOKIES_9 }}
-        BILIBILI_COOKIES_10: ${{ secrets.BILIBILI_COOKIES_10 }}
-      run: |
-        echo "🗑️ Checking for failed cookies cleanup"
-        python .github/scripts/unified_cookie_manager.py cleanup || echo "Cleanup check completed with warnings"
-        
     - name: Run monthly historical data processing with notification
       env:
         UP_ID: ${{ secrets.UP_ID }}
@@ -115,7 +79,7 @@ jobs:
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
         GITHUB_REF_NAME: ${{ github.ref_name }}
         GITHUB_REPOSITORY: ${{ github.repository }}
-        # Add Cookie environment variables for data collection
+        # Core组件需要的Cookie环境变量
         BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
         BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
         BILIBILI_COOKIES_2: ${{ secrets.BILIBILI_COOKIES_2 }}
@@ -226,28 +190,18 @@ jobs:
         echo "- Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> weekly_report.md
         
         # Create placeholder files if they don't exist
-        touch cookie_management_report.json
-        touch cookie_cleanup_report.json  
-        touch failed_cookies_report.json
-        touch cleanup_cookies.sh
+        touch debug_report.json
         
         # Add basic content to empty files with timestamps
         timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        [ ! -s cookie_management_report.json ] && echo "{\"status\": \"no_report_generated\", \"timestamp\": \"$timestamp\", \"workflow\": \"weekly-historical\"}" > cookie_management_report.json
-        [ ! -s cookie_cleanup_report.json ] && echo "{\"status\": \"no_cleanup_performed\", \"timestamp\": \"$timestamp\", \"workflow\": \"weekly-historical\"}" > cookie_cleanup_report.json
-        [ ! -s failed_cookies_report.json ] && echo "{\"failed_cookies\": [], \"timestamp\": \"$timestamp\", \"workflow\": \"weekly-historical\"}" > failed_cookies_report.json
-        [ ! -s cleanup_cookies.sh ] && echo "#!/bin/bash\necho \"No cleanup script generated for weekly-historical workflow - $timestamp\"" > cleanup_cookies.sh
+        [ ! -s debug_report.json ] && echo "{\"status\": \"no_debug_report_generated\", \"timestamp\": \"$timestamp\", \"workflow\": \"monthly-historical\"}" > debug_report.json
         
-    - name: Upload report and cookie reports
+    - name: Upload monthly report
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: weekly-report-${{ github.run_number }}
+        name: monthly-report-${{ github.run_number }}
         path: |
           weekly_report.md
           debug_report.json
-          cookie_management_report.json
-          cookie_cleanup_report.json
-          failed_cookies_report.json
-          cleanup_cookies.sh
-        retention-days: 30
+        retention-days: 90
