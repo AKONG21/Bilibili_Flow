@@ -58,6 +58,29 @@ class EnhancedFeishuNotifier:
             if active_cookie_match:
                 extracted_data['cookie_status']['active_cookie'] = active_cookie_match.group(1)
             
+            # 解析current_source信息来获取当前Cookie
+            current_source_match = re.search(r'current_source["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
+            if current_source_match:
+                source_info = current_source_match.group(1)
+                # 如果是cookie_pool:BILIBILI_COOKIES_1格式，提取Cookie名称
+                if ':' in source_info:
+                    cookie_name = source_info.split(':', 1)[1]
+                    extracted_data['cookie_status']['active_cookie'] = cookie_name
+            
+            # 解析"Cookie源:"格式输出
+            if 'Cookie源:' in line or 'Cookie源：' in line:
+                match = re.search(r'Cookie源[：:]\s*(.+)', line)
+                if match:
+                    source_info = match.group(1).strip()
+                    # 如果是cookie_pool:BILIBILI_COOKIES格式，提取Cookie名称
+                    if ':' in source_info:
+                        cookie_name = source_info.split(':', 1)[1]
+                        extracted_data['cookie_status']['active_cookie'] = cookie_name
+                        extracted_data['cookie_status']['cookie_source'] = source_info
+                    else:
+                        extracted_data['cookie_status']['active_cookie'] = source_info
+                        extracted_data['cookie_status']['cookie_source'] = source_info
+            
             cookie_info_match = re.search(r'cookie_info["\s]*:["\s]*["\x27]([^"\x27,}]+)', line)
             if cookie_info_match:
                 extracted_data['cookie_status']['cookie_info'] = cookie_info_match.group(1)
@@ -235,10 +258,17 @@ class EnhancedFeishuNotifier:
                     username = match.group(1).strip()
                     extracted_data['cookie_status']['active_cookie'] = username
             
-            if 'UP主:' in line:
-                match = re.search(r'UP主: (.+)', line)
+            if 'UP主:' in line or 'UP主信息获取成功:' in line:
+                # 匹配 "UP主: 小王Albert" 或 "UP主信息获取成功: 小王Albert (粉丝: 4151201)"
+                match = re.search(r'UP主[：:]?\s*(.+?)(?:\s*\(粉丝[：:]?\s*(\d+)\))?', line)
                 if match:
-                    extracted_data['task_statistics']['up_name'] = match.group(1)
+                    up_name = match.group(1).strip()
+                    extracted_data['task_statistics']['up_name'] = up_name
+                    
+                    # 如果有粉丝数信息
+                    if match.group(2):
+                        fans_count = int(match.group(2))
+                        extracted_data['task_statistics']['up_fans'] = fans_count
             
             if '处理视频数:' in line:
                 match = re.search(r'处理视频数: (\d+)', line)
@@ -316,6 +346,8 @@ class EnhancedFeishuNotifier:
                 cookie_info.append(f"• Selected: {cs['selected_for_rotation']}")
             if cs.get('active_cookie'):
                 cookie_info.append(f"• Active: {cs['active_cookie']}")
+            if cs.get('cookie_source'):
+                cookie_info.append(f"• Source: {cs['cookie_source']}")
             if cs.get('cookie_info'):
                 cookie_info.append(f"• Info: {cs['cookie_info']}")
             
@@ -367,7 +399,28 @@ class EnhancedFeishuNotifier:
             ts = data['task_statistics']
             
             if ts.get('up_name'):
-                task_info.append(f"• UP: {ts['up_name']}")
+                up_display = ts['up_name']
+                if ts.get('up_fans') is not None:
+                    # 格式化粉丝数显示
+                    fans_count = ts['up_fans']
+                    if fans_count >= 1000000:
+                        fans_display = f"{fans_count/1000000:.1f}M"
+                    elif fans_count >= 1000:
+                        fans_display = f"{fans_count/1000:.1f}K"
+                    else:
+                        fans_display = str(fans_count)
+                    up_display += f" ({fans_display} 粉丝)"
+                task_info.append(f"• UP: {up_display}")
+            elif ts.get('up_fans') is not None:
+                # 如果只有粉丝数没有UP主名称
+                fans_count = ts['up_fans']
+                if fans_count >= 1000000:
+                    fans_display = f"{fans_count/1000000:.1f}M"
+                elif fans_count >= 1000:
+                    fans_display = f"{fans_count/1000:.1f}K"
+                else:
+                    fans_display = str(fans_count)
+                task_info.append(f"• Fans: {fans_display}")
             if ts.get('total_videos') is not None:
                 task_info.append(f"• Videos: {ts['total_videos']}")
             if ts.get('total_comments') is not None:

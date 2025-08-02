@@ -43,12 +43,12 @@ jobs:
           ${{ runner.os }}-pip-
     
     - name: Cache cookie usage history
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/bilibili-cookie-usage-history.json
-        key: cookie-usage-${{ runner.os }}-v2
+        key: cookie-usage-${{ runner.os }}-v3
         restore-keys: |
-          cookie-usage-${{ runner.os }}-v1
+          cookie-usage-${{ runner.os }}-v2
           cookie-usage-${{ runner.os }}-
           
     - name: Install dependencies
@@ -69,15 +69,11 @@ jobs:
         echo "data/database/bilibili_tracking.db merge=ours" >> .gitattributes
         git add .gitattributes || true
         
-        # Ensure we're on the latest version before starting tasks
+        # Ensure we're on the correct branch and up to date
         echo "🔄 Ensuring latest codebase..."
         git fetch origin sync-current-files
-        git reset --hard origin/sync-current-files
-        
-    - name: Debug environment and configuration
-      run: |
-        echo "🔍 Running environment debug check"
-        python .github/scripts/debug_data_collection.py
+        git checkout sync-current-files
+        git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
         
     - name: Run daily data collection with notification
       env:
@@ -111,12 +107,32 @@ jobs:
         else
           # Scheduled trigger - determine by UTC time
           CURRENT_HOUR=$(date -u +%H)
+          CURRENT_MINUTE=$(date -u +%M)
+          echo "Current UTC time: ${CURRENT_HOUR}:${CURRENT_MINUTE}"
+          
           if [ "$CURRENT_HOUR" = "00" ]; then
             TASK_TYPE="Morning"
             TASK_EMOJI="🌅"
-          else
+            echo "Morning task detected (UTC 00:07 = Beijing 08:07)"
+          elif [ "$CURRENT_HOUR" = "12" ]; then
             TASK_TYPE="Evening"
-            TASK_EMOJI="🌙"
+            TASK_EMOJI="🌙" 
+            echo "Evening task detected (UTC 12:07 = Beijing 20:07)"
+          else
+            # Fallback for other times - more detailed analysis
+            if [ "$CURRENT_HOUR" -ge "00" ] && [ "$CURRENT_HOUR" -le "06" ]; then
+              TASK_TYPE="Morning"
+              TASK_EMOJI="🌅"
+              echo "Morning period detected (UTC ${CURRENT_HOUR}:${CURRENT_MINUTE} = Beijing early hours)"
+            elif [ "$CURRENT_HOUR" -ge "10" ] && [ "$CURRENT_HOUR" -le "16" ]; then
+              TASK_TYPE="Evening"
+              TASK_EMOJI="🌙"
+              echo "Evening period detected (UTC ${CURRENT_HOUR}:${CURRENT_MINUTE} = Beijing evening)"
+            else
+              TASK_TYPE="Scheduled"
+              TASK_EMOJI="⏰"
+              echo "Other scheduled time detected (UTC ${CURRENT_HOUR}:${CURRENT_MINUTE})"
+            fi
           fi
         fi
         
@@ -142,18 +158,13 @@ jobs:
           echo "Sending failure notification..."
           python .github/scripts/feishu_notifier.py "$TASK_TYPE Daily Data Collection" "failure" < "$TASK_OUTPUT_FILE" || echo "⚠️ Notification failed and task failed"
           
-          # Display output for debugging
-          echo "=== Task Output ==="
+          # Display output only for debugging failures
+          echo "=== Task Output (Error) ==="
           cat "$TASK_OUTPUT_FILE"
-          echo "=================="
+          echo "=========================="
           
           exit 1
         fi
-        
-        # Display output for debugging (success case)
-        echo "=== Task Output ==="
-        cat "$TASK_OUTPUT_FILE"
-        echo "=================="
         
         # Cleanup
         rm -f "$TASK_OUTPUT_FILE"
@@ -169,9 +180,21 @@ jobs:
           if [ "$CURRENT_HOUR" = "00" ]; then
             TASK_EMOJI="🌅"
             TASK_TYPE="Morning"
-          else
+          elif [ "$CURRENT_HOUR" = "12" ]; then
             TASK_EMOJI="🌙"
             TASK_TYPE="Evening"
+          else
+            # Fallback for other times - consistent with above logic
+            if [ "$CURRENT_HOUR" -ge "00" ] && [ "$CURRENT_HOUR" -le "06" ]; then
+              TASK_EMOJI="🌅"
+              TASK_TYPE="Morning"
+            elif [ "$CURRENT_HOUR" -ge "10" ] && [ "$CURRENT_HOUR" -le "16" ]; then
+              TASK_EMOJI="🌙"
+              TASK_TYPE="Evening"
+            else
+              TASK_EMOJI="⏰"
+              TASK_TYPE="Scheduled"
+            fi
           fi
         fi
         

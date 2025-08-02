@@ -36,12 +36,12 @@ jobs:
           ${{ runner.os }}-pip-
     
     - name: Cache cookie usage history
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/bilibili-cookie-usage-history.json
-        key: cookie-usage-${{ runner.os }}-v2
+        key: cookie-usage-${{ runner.os }}-v3
         restore-keys: |
-          cookie-usage-${{ runner.os }}-v1
+          cookie-usage-${{ runner.os }}-v2
           cookie-usage-${{ runner.os }}-
           
     - name: Install dependencies
@@ -66,11 +66,6 @@ jobs:
         echo "🔄 Ensuring latest codebase..."
         git fetch origin sync-current-files
         git reset --hard origin/sync-current-files
-        
-    - name: Debug environment and configuration
-      run: |
-        echo "🔍 Running environment debug check"
-        python .github/scripts/debug_data_collection.py
         
     - name: Run monthly historical data processing with notification
       env:
