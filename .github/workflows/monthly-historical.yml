@@ -35,14 +35,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     
-    - name: Cache cookie usage history
+    - name: Cache data files
       uses: actions/cache@v4
       with:
-        path: ~/.cache/bilibili-cookie-usage-history.json
-        key: cookie-usage-${{ runner.os }}-v3
+        path: |
+          data/cookies.json
+          data/backup_cookies
+        key: bilibili-data-${{ runner.os }}-${{ hashFiles('data/cookies.json') }}-v1
         restore-keys: |
-          cookie-usage-${{ runner.os }}-v2
-          cookie-usage-${{ runner.os }}-
+          bilibili-data-${{ runner.os }}-v1
+          bilibili-data-${{ runner.os }}-
           
     - name: Install dependencies
       run: |

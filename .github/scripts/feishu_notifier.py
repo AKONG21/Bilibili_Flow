@@ -258,17 +258,40 @@ class EnhancedFeishuNotifier:
                     username = match.group(1).strip()
                     extracted_data['cookie_status']['active_cookie'] = username
             
-            if 'UP主:' in line or 'UP主信息获取成功:' in line:
-                # 匹配 "UP主: 小王Albert" 或 "UP主信息获取成功: 小王Albert (粉丝: 4151201)"
-                match = re.search(r'UP主[：:]?\s*(.+?)(?:\s*\(粉丝[：:]?\s*(\d+)\))?', line)
-                if match:
-                    up_name = match.group(1).strip()
-                    extracted_data['task_statistics']['up_name'] = up_name
-                    
-                    # 如果有粉丝数信息
-                    if match.group(2):
-                        fans_count = int(match.group(2))
+            if 'UP主:' in line or 'UP主：' in line or 'UP主信息获取成功:' in line or 'UP主信息获取成功：' in line:
+                # 匹配多种格式的UP主信息
+                # 支持中英文标点符号：: 和 ：，括号 () 和 （）
+                
+                # 首先尝试匹配带粉丝数的格式
+                fans_patterns = [
+                    r'UP主[：:信息获取成功]*[：:]\s*([^(（]+?)\s*[（(]粉丝[：:]?\s*(\d+)[）)]',
+                    r'UP主[：:信息获取成功]*[：:]\s*([^(（]+?)\s*\(粉丝[：:]?\s*(\d+)\)'
+                ]
+                
+                matched = False
+                for pattern in fans_patterns:
+                    fans_match = re.search(pattern, line)
+                    if fans_match:
+                        up_name = fans_match.group(1).strip()
+                        fans_count = int(fans_match.group(2))
+                        extracted_data['task_statistics']['up_name'] = up_name
                         extracted_data['task_statistics']['up_fans'] = fans_count
+                        matched = True
+                        break
+                
+                if not matched:
+                    # 匹配不带粉丝数的格式
+                    name_patterns = [
+                        r'UP主[：:信息获取成功]*[：:]\s*([^(（\s]+(?:\s+[^(（\s]+)*)',
+                        r'UP主[：:信息获取成功]*[：:]\s*(.+?)(?:\s*$)'
+                    ]
+                    
+                    for pattern in name_patterns:
+                        name_match = re.search(pattern, line)
+                        if name_match:
+                            up_name = name_match.group(1).strip()
+                            extracted_data['task_statistics']['up_name'] = up_name
+                            break
             
             if '处理视频数:' in line:
                 match = re.search(r'处理视频数: (\d+)', line)
