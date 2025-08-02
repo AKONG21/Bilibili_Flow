@@ -138,16 +138,18 @@ class SimpleStorage:
         duration = (end_time - start_time).total_seconds()
         self.current_task_data["statistics"]["duration_seconds"] = duration
 
-        # 生成文件名（使用配置的时间戳格式）
-        timestamp = datetime.now().strftime(self.timestamp_format)
+        # 生成文件名（使用配置的时间戳格式，使用北京时间）
+        from datetime import timezone, timedelta
+        beijing_tz = timezone(timedelta(hours=8))
+        beijing_now = datetime.now(beijing_tz)
+        timestamp = beijing_now.strftime(self.timestamp_format)
         up_id = self.current_task_data["task_info"]["up_id"]
         filename = self.filename_format.format(timestamp=timestamp, up_id=up_id)
 
         # 根据任务类型确定最终存储路径
         if self.task_type == "daily":
-            # 日任务：按周分文件夹存储
-            now = datetime.now()
-            year, week_num, _ = now.isocalendar()
+            # 日任务：按周分文件夹存储（使用北京时间计算周数）
+            year, week_num, _ = beijing_now.isocalendar()
             weekly_dir = f"{self.data_dir}/{year}-W{week_num:02d}"
             os.makedirs(weekly_dir, exist_ok=True)
             filepath = os.path.join(weekly_dir, filename)
