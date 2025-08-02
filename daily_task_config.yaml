@@ -34,6 +34,9 @@ system:
 task_config:
   daily_task:
     enabled: true
+    filename:
+      format: "{up_id}_{timestamp}_daily.json"
+      timestamp_format: "%Y%m%d_%H%M"
     hot_comments_json:
       enabled: true
       fields:
@@ -76,6 +79,9 @@ task_config:
       video_url: true
   monthly_task:
     enabled: true
+    filename:
+      format: "{up_id}_{timestamp}_monthly.json"
+      timestamp_format: "%Y%m%d"
     hot_comments_json:
       enabled: false
       fields:

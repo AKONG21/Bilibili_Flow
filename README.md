@@ -1,228 +1,231 @@
-# 🚀 B站数据采集器 (Bilibili Data Collector)
+# 🚀 B站数据采集器 (Bilibili Flow)
 
-一个功能完整的B站UP主数据采集工具，支持多账号Cookie管理、智能过期检测、自动故障切换等高级功能。
+一个功能完整的B站UP主数据采集工具，支持热评采集、多账号Cookie管理、智能过期检测等功能。
 
-> ⚠️ **免责声明**: 本项目仅供学习和研究目的使用，请遵守相关平台的使用条款和robots.txt规则，不得用于商业用途或大规模爬取。
+> ⚠️ **免责声明**: 本项目仅供学习和研究目的使用，请遵守相关平台的使用条款，不得用于商业用途。
 
 ## ✨ 主要特性
 
-- 🎯 **智能数据采集**: 支持日任务和月任务，自动分类存储
-- 🍪 **多账号管理**: 支持多个Cookie账号轮换使用
-- 🔄 **增量更新**: 智能识别新视频和数据更新
-- 📊 **数据库存储**: 使用SQLite存储，支持数字时间戳
-- 🗂️ **分类存储**: 日任务按周分文件夹，月任务独立存储
-- 🛡️ **故障切换**: Cookie失效时自动切换到其他可用账号
+- 🎯 **双模式采集**: 日任务(28天内+热评) + 月任务(全量视频)  
+- 🔥 **热评采集**: 自动采集视频热门评论并存储到数据库
+- 🍪 **智能Cookie管理**: 多账号轮换、自动过期检测、故障切换
+- 📊 **数据库存储**: SQLite + JSON双重存储，支持增量更新
+- 🗂️ **智能分类**: 按时间自动分文件夹存储
+- 📱 **飞书通知**: 实时推送任务执行状态
+
+## 🚀 快速开始
+
+### 1. 环境准备
+
+```bash
+# 克隆项目
+git clone <repository-url>
+cd Bilibili_Flow
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+### 2. 配置设置
+
+编辑 `daily_task_config.yaml`：
+
+```yaml
+# 基本配置
+task_config:
+  up_id:   # 要监控的UP主ID
+
+# Cookie配置 (三选一)
+login:
+  cookies:
+    # 方式1: 单Cookie
+    raw_cookie: "你的完整Cookie字符串"
+    
+    # 方式2: Cookie池 (推荐)
+    cookie_pool:
+      enabled: true
+      cookies:
+        - name: "账号1"
+          cookie: "Cookie字符串1"
+        - name: "账号2" 
+          cookie: "Cookie字符串2"
+
+# 数据采集配置
+daily_task:
+  hot_comments_json:
+    enabled: true    # 启用热评采集
+    max_count: 10    # 每个视频最多采集10条热评
+  time_range:
+    days: 28        # 采集28天内的视频
+
+monthly_task:
+  hot_comments_json:
+    enabled: false   # 月任务不采集热评(性能考虑)
+  time_range:
+    get_all_videos: true  # 获取全量视频
+```
+
+### 3. 执行任务
+
+```bash
+# 日任务 (推荐用于日常监控)
+python run_daily_task.py
+
+# 月任务 (推荐用于初始化数据库)
+python run_monthly_task.py
+
+# 通用入口
+python main.py --task daily
+python main.py --task monthly
+```
 
 ## 📁 项目结构
 
 ```
 Bilibili_Flow/
-├── main.py                     # 🎯 主执行入口（推荐使用）
-├── run_daily_task.py          # 📅 日任务执行入口（兼容性保留）
-├── daily_task_processor.py    # 🔧 核心任务处理器
-├── daily_task_config.yaml     # ⚙️ 主配置文件
-├── requirements.txt           # 📦 依赖包列表
+├── run_daily_task.py              # 📅 日任务入口
+├── run_monthly_task.py             # 📆 月任务入口  
+├── daily_task_config.yaml         # ⚙️ 主配置文件
+├── requirements.txt               # 📦 依赖包
 │
-├── bilibili_core/            # 🏗️ 核心功能模块
-│   ├── cookie_management/    # 🍪 Cookie管理模块
-│   │   ├── auto_cookie_manager.py      # 自动Cookie管理
-│   │   ├── enhanced_cookie_manager.py  # 增强Cookie管理
-│   │   └── smart_cookie_pool.py        # 智能Cookie池
-│   ├── client/              # 🌐 API客户端
-│   ├── storage/             # 💾 数据存储
-│   └── utils/               # 🛠️ 工具函数
+├── bilibili_core/                # 🏗️ 核心模块
+│   ├── client/                   # 🔗 API客户端
+│   ├── processors/               # ⚙️ 任务处理器
+│   ├── cookie_management/        # 🍪 Cookie管理
+│   ├── storage/                  # 💾 数据存储
+│   └── utils/                    # 🛠️ 工具函数
 │
-├── tools/                   # 🔧 管理工具
-│   ├── cookie_manager_tool.py    # Cookie管理工具
-│   └── cookie_pool_monitor.py    # Cookie池监控工具
-│
-├── data/                    # 📊 数据输出目录
-├── cookies/                 # 🍪 Cookie备份目录
-└── venv/                    # 🐍 Python虚拟环境
+└── data/                         # 📊 数据输出
+    ├── daily/2025-W31/          # 日任务数据(按周分组)
+    ├── monthly/                 # 月任务数据
+    └── database/                # SQLite数据库
 ```
 
-## 🚀 快速开始
+## 📊 数据输出格式
 
-### 1. 环境准备
-```bash
-# 安装依赖
-pip install -r requirements.txt
+### 文件命名规则
+- JSON: `{up_id}_{timestamp}_{类型}.json`
+- 数据库: `{up_id}_{timestamp}_数据库.db`
+- 示例: `1140672573_20250802_daily.json`
 
-# 安装Playwright浏览器
-playwright install chromium
+### 数据结构
+```json
+{
+  "task_info": {
+    "up_id": "1140672573",
+    "collection_time": "2025-08-02T15:30:00",
+    "time_range": {"start_date": "2025-07-05", "end_date": "2025-08-02"}
+  },
+  "up_info": {
+    "name": "UP主名称",
+    "fans": 150000,
+    "up_video_count": 242
+  },
+  "videos": [
+    {
+      "aid": 1234567,
+      "title": "视频标题",
+      "view": 50000,
+      "like": 2000,
+      "hot_comments": [
+        {
+          "message": "评论内容",
+          "like": 100,
+          "ctime": "2025-08-01T10:30:00"
+        }
+      ]
+    }
+  ]
+}
 ```
 
-### 2. 基本使用
+## 🍪 Cookie 获取方法
 
-#### 方式一：使用新的主入口（推荐）
-```bash
-# 运行日任务（默认）
-python main.py
+1. **登录B站**: 在浏览器中正常登录
+2. **打开开发者工具**: F12 → Network
+3. **刷新页面**: 找到任意请求
+4. **复制Cookie**: Request Headers → Cookie字段的完整值
 
-# 运行月任务
-python main.py --type monthly
+## 🔧 GitHub Actions 配置
 
-# 使用自定义配置文件
-python main.py --config custom_config.yaml
+### 设置 Secrets
 
-# 查看帮助
-python main.py --help
-```
+在 GitHub 仓库的 Settings → Secrets and variables → Actions 中添加：
 
-#### 方式二：使用原有入口（兼容性）
-```bash
-# 运行日任务
-python run_daily_task.py
-```
+| Secret名称 | 说明 | 示例 |
+|------------|------|------|
+| `UP_ID` | UP主ID | `1140672573` |
+| `BILIBILI_COOKIES` | 主Cookie | `完整Cookie字符串` |
+| `BILIBILI_COOKIES_1~10` | 备用Cookie池 | `备用Cookie字符串` |
+| `FEISHU_WEBHOOK_URL` | 飞书通知地址(可选) | `https://open.feishu.cn/...` |
 
-### 3. Cookie管理工具
-```bash
-# Cookie管理工具
-python tools/cookie_manager_tool.py
+### 工作流说明
 
-# Cookie池监控
-python tools/cookie_pool_monitor.py
-```
+- **月任务**: 每月1号执行，初始化数据库
+- **日任务**: 每天定时执行，采集最新数据
+- **手动触发**: 支持手动运行任务
 
-## 🔧 配置说明
+## 📱 飞书通知配置
 
-### 主配置文件：`daily_task_config.yaml`
+### 1. 创建飞书群机器人
+1. 飞书群 → 设置 → 机器人 → 添加机器人
+2. 选择"自定义机器人" → 添加
+3. 复制 Webhook 地址
 
-```yaml
-# 🎯 UP主配置
-daily_task:
-  up_id: "1140672573"  # UP主ID
-  time_range:
-    days: 28           # 采集天数
+### 2. 配置通知内容
+系统会自动推送：
+- 🍪 Cookie状态和切换信息
+- 📊 采集统计(视频数、评论数等)
+- ⏱️ 执行时间和性能指标
+- ❌ 错误信息和异常提醒
 
-# 🍪 Cookie管理
-login:
-  cookies:
-    cookie_pool:
-      enabled: true    # 启用Cookie池
-      selection_mode: "random"  # 随机选择
-      cookies: []      # Cookie列表（扫码后自动添加）
-```
+## 🛠️ 高级功能
 
-## 🤖 GitHub Actions部署
+### Cookie池管理
+- **自动轮换**: 按配置策略切换账号
+- **健康检查**: 定期验证Cookie有效性
+- **故障切换**: Cookie失效时自动使用备用账号
+- **过期检测**: 智能识别Cookie过期并发出警告
 
-### 环境变量配置
-- `TASK_TYPE`: 任务类型（daily/monthly/custom）
-- `CONFIG_FILE`: 配置文件路径
+### 数据增量更新
+- **智能识别**: 自动区分新视频和已知视频
+- **数据版本**: 支持同一视频的多次数据快照
+- **时间戳**: 精确记录每次采集的时间点
 
-### Workflow示例
-```yaml
-name: Bilibili Data Collection
-on:
-  schedule:
-    - cron: '0 2 * * *'  # 每天凌晨2点
-  workflow_dispatch:
+### 任务模式对比
 
-jobs:
-  collect:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-      
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          playwright install chromium
-      
-      - name: Run collection
-        env:
-          TASK_TYPE: daily
-        run: python main.py
-```
+| 特性 | 日任务 | 月任务 |
+|------|--------|--------|
+| 视频范围 | 28天内 | 全量视频 |
+| 热评采集 | ✅ 启用 | ❌ 禁用 |
+| 执行频率 | 每日 | 每月 |
+| 适用场景 | 日常监控 | 数据初始化 |
+| 性能消耗 | 低 | 高 |
 
-## 🍪 Cookie管理功能
+## 🚨 注意事项
 
-### 自动Cookie管理
-- ✅ 扫码后自动保存到配置文件
-- ✅ 支持多账号轮换使用
-- ✅ 智能过期检测和自动切换
-- ✅ 失效Cookie自动禁用
-
-### Cookie池特性
-- 🎲 **随机选择**：避免检测
-- 🔄 **轮询选择**：均匀使用
-- 📊 **优先级选择**：按重要性使用
-- 🧠 **智能故障切换**：自动处理失效
-
-### 状态监控
-```
-🍪 Cookie状态报告
-📊 总Cookie数量: 3
-✅ 可用Cookie数量: 3
-❌ 过期Cookie数量: 0
-🚫 禁用Cookie数量: 0
-✨ Cookie数量充足，系统运行良好
-```
-
-## 📊 数据输出
-
-### 输出格式
-- JSON格式数据文件
-- 包含UP主信息、视频数据、热门评论
-- 自动时间戳命名：`daily_task_20250726_053000_1140672573.json`
-
-### 数据字段
-- UP主信息：昵称、粉丝数、视频总数
-- 视频信息：标题、描述、播放量、点赞数等
-- 热门评论：评论内容、用户ID、点赞数等
-
-## 🛠️ 开发说明
-
-### 核心模块
-- `DailyTaskProcessor`: 主要任务处理器
-- `AutoCookieManager`: 自动Cookie管理
-- `SmartCookiePool`: 智能Cookie池
-- `EnhancedCookieManager`: 增强Cookie管理
-
-### 扩展开发
-1. 在`bilibili_core`中添加新功能模块
-2. 在`main.py`中添加新的任务类型
-3. 更新配置文件支持新功能
+1. **请求频率**: 已内置延时机制，避免频繁请求
+2. **Cookie安全**: 不要在公开场所暴露Cookie信息
+3. **数据合规**: 仅用于学习研究，请遵守平台规定
+4. **资源消耗**: 月任务会消耗更多时间和网络资源
 
 ## 📝 更新日志
 
-### v2.0.0 (2025-07-26)
-- ✅ 重构项目结构，模块化设计
-- ✅ 新增统一主入口`main.py`
-- ✅ 完善Cookie自动管理系统
-- ✅ 支持多任务类型（日任务/月任务）
-- ✅ 优化GitHub Actions支持
-- ✅ 清理无用脚本，保留核心功能
+### v2.0.0 (2025-08-02)
+- ✅ 新增热评采集功能
+- ✅ 优化数据库结构(添加hot_comments_json字段)
+- ✅ 统一文件命名格式({up_id}_{timestamp}_{类型})
+- ✅ 精简项目结构，清理无用文件
 
-### v1.x.x
-- 基础数据采集功能
-- Cookie管理功能
-- 配置文件支持
+### v1.0.0 
+- ✅ 基础数据采集功能
+- ✅ Cookie管理系统
+- ✅ 双重存储机制
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目基于学习研究目的开发，使用时请遵守相关法律法规和平台服务条款。
 
 ## 🤝 贡献
 
-欢迎提交Issue和Pull Request！请确保：
-
-1. 遵守代码规范
-2. 添加适当的测试
-3. 更新相关文档
-4. 遵守免责声明中的使用原则
-
-## ⚠️ 注意事项
-
-- 请合理控制请求频率，避免给目标平台带来负担
-- 仅用于学习和研究目的，不得用于商业用途
-- 使用时请遵守相关法律法规和平台规则
-- 本项目不承担任何使用风险和法律责任
-
-## 📞 联系方式
-
-如有问题或建议，请通过GitHub Issues联系。
+欢迎提交 Issue 和 Pull Request 来改进项目！

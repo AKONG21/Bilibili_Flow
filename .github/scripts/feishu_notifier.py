@@ -424,25 +424,15 @@ class EnhancedFeishuNotifier:
             if ts.get('up_name'):
                 up_display = ts['up_name']
                 if ts.get('up_fans') is not None:
-                    # 格式化粉丝数显示
+                    # 显示精确粉丝数，用逗号分隔千位数便于阅读
                     fans_count = ts['up_fans']
-                    if fans_count >= 1000000:
-                        fans_display = f"{fans_count/1000000:.1f}M"
-                    elif fans_count >= 1000:
-                        fans_display = f"{fans_count/1000:.1f}K"
-                    else:
-                        fans_display = str(fans_count)
+                    fans_display = f"{fans_count:,}"  # 添加千位分隔符
                     up_display += f" ({fans_display} 粉丝)"
                 task_info.append(f"• UP: {up_display}")
             elif ts.get('up_fans') is not None:
                 # 如果只有粉丝数没有UP主名称
                 fans_count = ts['up_fans']
-                if fans_count >= 1000000:
-                    fans_display = f"{fans_count/1000000:.1f}M"
-                elif fans_count >= 1000:
-                    fans_display = f"{fans_count/1000:.1f}K"
-                else:
-                    fans_display = str(fans_count)
+                fans_display = f"{fans_count:,}"  # 添加千位分隔符
                 task_info.append(f"• Fans: {fans_display}")
             if ts.get('total_videos') is not None:
                 task_info.append(f"• Videos: {ts['total_videos']}")

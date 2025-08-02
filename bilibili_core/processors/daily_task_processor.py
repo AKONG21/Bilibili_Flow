@@ -99,7 +99,9 @@ class DailyTaskProcessor:
         )
 
         # 初始化数据库存储
-        self.db_path = "data/database/bilibili_tracking.db"
+        up_id = self.config.get("task_config", {}).get("up_id", "unknown")
+        timestamp = datetime.now().strftime("%Y%m%d")
+        self.db_path = f"data/database/{up_id}_{timestamp}_数据库.db"
         self._init_database()
 
         self.logger.info("统一存储模式初始化完成：JSON + 数据库")
@@ -176,6 +178,7 @@ class DailyTaskProcessor:
                 share_count INTEGER DEFAULT 0,
                 reply_count INTEGER DEFAULT 0,
                 danmaku_count INTEGER DEFAULT 0,
+                hot_comments_json TEXT,
                 up_id INTEGER,
                 collection_time INTEGER NOT NULL,
                 task_type TEXT DEFAULT 'unknown',
@@ -513,8 +516,8 @@ class DailyTaskProcessor:
                     INSERT INTO video_records
                     (aid, bvid, title, description, cover_url, publish_time, duration, category,
                      view_count, like_count, coin_count, favorite_count, share_count, reply_count, danmaku_count,
-                     up_id, collection_time, task_type, parent_aid)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     hot_comments_json, up_id, collection_time, task_type, parent_aid)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     aid,
                     video.get('bvid', ''),
@@ -531,6 +534,7 @@ class DailyTaskProcessor:
                     video.get('share', 0),
                     video.get('reply', 0),
                     video.get('danmaku', 0),
+                    self._serialize_hot_comments(video.get('hot_comments', [])),
                     up_id,
                     current_timestamp,
                     self.task_type,
@@ -1218,6 +1222,16 @@ class DailyTaskProcessor:
                 return int(dt.timestamp())
             return None
         except (ValueError, TypeError):
+            return None
+
+    def _serialize_hot_comments(self, hot_comments: List[Dict]) -> Optional[str]:
+        """序列化热评数据为JSON字符串"""
+        try:
+            if not hot_comments:
+                return None
+            return json.dumps(hot_comments, ensure_ascii=False)
+        except Exception as e:
+            self.logger.warning(f"序列化热评数据失败: {e}")
             return None
 
     def _get_unique_filename(self, base_filename: str) -> str:
