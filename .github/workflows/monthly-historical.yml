@@ -3,7 +3,14 @@ name: Monthly Historical Data Processing (01:37)
 on:
   schedule:
     # UTC 时间 17:37 每月第四个周四 = 北京时间 01:37 每月第四个周五 (避免冲突)
-    - cron: '37 17 22-28 * 4'
+    # 使用具体日期避免范围表达式的bug
+    - cron: '37 17 22 * 4'  # 22号如果是周四
+    - cron: '37 17 23 * 4'  # 23号如果是周四  
+    - cron: '37 17 24 * 4'  # 24号如果是周四
+    - cron: '37 17 25 * 4'  # 25号如果是周四
+    - cron: '37 17 26 * 4'  # 26号如果是周四
+    - cron: '37 17 27 * 4'  # 27号如果是周四
+    - cron: '37 17 28 * 4'  # 28号如果是周四
   workflow_dispatch:
 
 permissions:
