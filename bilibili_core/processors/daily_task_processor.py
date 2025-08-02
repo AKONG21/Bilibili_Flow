@@ -100,8 +100,7 @@ class DailyTaskProcessor:
 
         # 初始化数据库存储
         up_id = self.config.get("task_config", {}).get("up_id", "unknown")
-        timestamp = datetime.now().strftime("%Y%m%d")
-        self.db_path = f"data/database/{up_id}_{timestamp}_数据库.db"
+        self.db_path = f"data/database/{up_id}_数据库.db"
         self._init_database()
 
         self.logger.info("统一存储模式初始化完成：JSON + 数据库")
@@ -163,8 +162,9 @@ class DailyTaskProcessor:
         # 创建视频记录表
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS video_records (
+                parent_aid INTEGER,
                 aid INTEGER NOT NULL,
-                bvid TEXT,
+                video_url TEXT,
                 title TEXT,
                 description TEXT,
                 cover_url TEXT,
@@ -182,7 +182,6 @@ class DailyTaskProcessor:
                 up_id INTEGER,
                 collection_time INTEGER NOT NULL,
                 task_type TEXT DEFAULT 'unknown',
-                parent_aid INTEGER,
                 PRIMARY KEY (aid, collection_time)
             )
         ''')
@@ -514,13 +513,14 @@ class DailyTaskProcessor:
                 # 插入视频记录
                 cursor.execute('''
                     INSERT INTO video_records
-                    (aid, bvid, title, description, cover_url, publish_time, duration, category,
+                    (parent_aid, aid, video_url, title, description, cover_url, publish_time, duration, category,
                      view_count, like_count, coin_count, favorite_count, share_count, reply_count, danmaku_count,
-                     hot_comments_json, up_id, collection_time, task_type, parent_aid)
+                     hot_comments_json, up_id, collection_time, task_type)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
+                    parent_aid,
                     aid,
-                    video.get('bvid', ''),
+                    video.get('video_url') or (f"https://www.bilibili.com/video/{video.get('bvid')}" if video.get('bvid') else None),
                     video.get('title', ''),
                     video.get('description', ''),
                     video.get('cover_url', ''),
@@ -537,8 +537,7 @@ class DailyTaskProcessor:
                     self._serialize_hot_comments(video.get('hot_comments', [])),
                     up_id,
                     current_timestamp,
-                    self.task_type,
-                    parent_aid
+                    self.task_type
                 ))
 
             conn.commit()
@@ -781,20 +780,40 @@ class DailyTaskProcessor:
 
     def _format_timestamp(self, timestamp: int) -> str:
         """
-        将时间戳转换为可读的时间格式
+        将时间戳转换为可读的时间格式（北京时间）
         Args:
             timestamp: Unix时间戳
         Returns:
-            str: ISO格式的时间字符串
+            str: ISO格式的时间字符串（北京时间）
         """
         if not timestamp or timestamp <= 0:
             return ""
 
         try:
-            return datetime.fromtimestamp(timestamp).isoformat()
+            # 转换为北京时间 (UTC+8)
+            from datetime import timezone, timedelta
+            beijing_tz = timezone(timedelta(hours=8))
+            dt_utc = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+            dt_beijing = dt_utc.astimezone(beijing_tz)
+            return dt_beijing.isoformat()
         except Exception as e:
             self.logger.warning(f"时间戳转换失败 {timestamp}: {e}")
             return ""
+    
+    def _format_current_time_beijing(self) -> str:
+        """
+        获取当前北京时间的ISO格式字符串
+        Returns:
+            str: 当前北京时间的ISO格式字符串
+        """
+        try:
+            from datetime import timezone, timedelta
+            beijing_tz = timezone(timedelta(hours=8))
+            dt_beijing = datetime.now(beijing_tz)
+            return dt_beijing.isoformat()
+        except Exception as e:
+            self.logger.warning(f"获取北京时间失败: {e}")
+            return datetime.now().isoformat()
         
     async def get_hot_comments(self, video_aid: str) -> List[Dict]:
         """获取视频的热门评论（带重试机制）"""
@@ -819,7 +838,7 @@ class DailyTaskProcessor:
             try:
                 comments_response = await self.bili_client.get_video_comments(
                     video_id=video_aid,
-                    order_mode=CommentOrderType.DEFAULT,
+                    order_mode=CommentOrderType.MIXED,
                     next=0
                 )
                 
@@ -838,10 +857,14 @@ class DailyTaskProcessor:
                     if "mid" in comment_fields:
                         comment_data["mid"] = reply.get("member", {}).get("mid", "")
                     if "ctime" in comment_fields:
-                        # 转换时间戳为可读格式
+                        # 转换时间戳为可读格式（北京时间）
                         ctime_timestamp = reply.get("ctime", 0)
                         if ctime_timestamp:
-                            comment_data["ctime"] = datetime.fromtimestamp(ctime_timestamp).isoformat()
+                            from datetime import timezone, timedelta
+                            beijing_tz = timezone(timedelta(hours=8))
+                            dt_utc = datetime.fromtimestamp(ctime_timestamp, tz=timezone.utc)
+                            dt_beijing = dt_utc.astimezone(beijing_tz)
+                            comment_data["ctime"] = dt_beijing.isoformat()
                         else:
                             comment_data["ctime"] = ""
                     if "like" in comment_fields:
@@ -1086,7 +1109,7 @@ class DailyTaskProcessor:
             result_data = {
                 "task_info": {
                     "up_id": up_id,
-                    "collection_time": start_time.isoformat(),
+                    "collection_time": self._format_current_time_beijing(),
                     "time_range": self._get_time_range_info(),
                     "config": self._get_config_summary()
                 },
@@ -1095,8 +1118,8 @@ class DailyTaskProcessor:
                 "statistics": {
                     "total_videos": len(videos),
                     "total_comments": self.stats["comments_collected"],
-                    "collection_start_time": start_time.isoformat(),
-                    "collection_end_time": datetime.now().isoformat(),
+                    "collection_start_time": self._format_current_time_beijing(),
+                    "collection_end_time": self._format_current_time_beijing(),
                     "time_range": self._get_time_range_info(),
                     "errors_count": self.stats["errors"],
                     "retries_count": self.stats["retries"],

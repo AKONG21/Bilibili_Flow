@@ -234,7 +234,7 @@ class BilibiliClient:
 
     async def get_video_comments(self,
                                  video_id: str,
-                                 order_mode: CommentOrderType = CommentOrderType.DEFAULT,
+                                 order_mode: CommentOrderType = CommentOrderType.MIXED,
                                  next: int = 0
                                  ) -> Dict:
         """get video comments
