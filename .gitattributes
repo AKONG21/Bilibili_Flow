@@ -15,3 +15,4 @@ data/database/bilibili_tracking.db merge=ours
 *.log merge=oursdata/database/bilibili_tracking.db merge=ours
 data/database/bilibili_tracking.db merge=ours
 data/database/bilibili_tracking.db merge=ours
+data/database/bilibili_tracking.db merge=ours
