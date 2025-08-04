@@ -9,7 +9,7 @@ login:
       cookies: []
       enabled: false
       selection_mode: random
-    raw_cookie: ""
+    raw_cookie: "buvid3=0F5E250F-AA6A-963F-25C3-82045968EDD958347infoc; b_nut=1752347158; _uuid=A2101052A5-10E64-7A41-10DEC-5CD10B8F92C8E59699infoc; header_theme_version=OPEN; enable_web_push=DISABLE; buvid4=999C3A37-7A01-038B-97F2-9D99483C12A961142-025071303-gB7KjoTl%2B7AFgYGiWcVoPw%3D%3D; buvid_fp=3d15abdf632bc6c221b0b56acd8452fe; rpdid=|(u~JJYY)kl)0J'u~lkJR~u~u; SESSDATA=320cd924%2C1768881690%2C502f5%2A71CjCT-NnnrPHXqcO2yGM585MbFSNN4_WFnmJL8N6RhYmcrw5i4eCCRuEbPieyf6tv1vwSVlNIdXlVcmQ4LXBhdVpRTlY3bUlJWjFJZzZCb3pELTRzSjlFRnZEU3Fwb3UyNHZoM1VPaTItSG92NXFKdUd1X2hINWEwbG9uSmI5UnNET0ZlMzVUUEhRIIEC; bili_jct=e007f4e034ebb7cc8c4ed339a1891fe5; DedeUserID=173534909; DedeUserID__ckMd5=8e4a65ec54c18a89; theme-tip-show=SHOWED; CURRENT_FNVAL=2000; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTQyOTA3OTUsImlhdCI6MTc1NDAzMTUzNSwicGx0IjotMX0.e_TC5a-pOqrCrfLAn8jcGGtQIEcsFwwAePgreprR3mc; bili_ticket_expires=1754290735; b_lsid=EA10BEAB7_1986F09113C; bmg_af_switch=1; bmg_src_def_domain=i0.hdslb.com; home_feed_column=4; browser_resolution=864-875"
   smart_expiry_detection:
     auto_disable_failed: true
     auto_switch_on_failure: true
@@ -20,6 +20,12 @@ login:
     - https://api.bilibili.com/x/space/myinfo
 storage:
   compress: false
+  export_format: csv  # Options: json, csv, both
+  csv_options:
+    encoding: utf-8
+    delimiter: ','
+    include_headers: true
+    escape_special_chars: true
 system:
   browser:
     headless: false
@@ -34,9 +40,6 @@ system:
 task_config:
   daily_task:
     enabled: true
-    filename:
-      format: "{up_id}_{timestamp}_daily.json"
-      timestamp_format: "%Y%m%d_%H%M"
     hot_comments_json:
       enabled: true
       fields:
@@ -75,15 +78,18 @@ task_config:
         reply: true
         share: true
         view: true
+      tags:
+        enabled: true  # Enable video tag extraction
+        include_tag_id: true
+        include_tag_name: true
+        include_category: true
+        max_tags: 20
       title: true
       video_url: true
   monthly_task:
     enabled: true
-    filename:
-      format: "{up_id}_{timestamp}_monthly.json"
-      timestamp_format: "%Y%m%d"
     hot_comments_json:
-      enabled: false
+      enabled: true  # Enable hot comments for monthly tasks
       fields:
       - message
       - mid
@@ -121,6 +127,12 @@ task_config:
         reply: true
         share: true
         view: true
+      tags:
+        enabled: true  # Enable video tag extraction for monthly tasks
+        include_tag_id: true
+        include_tag_name: true
+        include_category: true
+        max_tags: 20
       title: true
       video_url: true
-  up_id: ${UP_ID}
+  up_id: 23947287

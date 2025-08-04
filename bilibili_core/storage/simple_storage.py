@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from ..utils.logger import get_logger
+from .csv_exporter import CSVExporter
 
 logger = get_logger()
 
@@ -17,15 +18,26 @@ class SimpleStorage:
     """简化存储系统"""
 
     def __init__(self, data_dir: str = "data", filename_format: str = "bilibili_data_{timestamp}_{up_id}.json",
-                 timestamp_format: str = "%Y%m%d_%H%M%S", task_type: str = "daily"):
+                 timestamp_format: str = "%Y%m%d_%H%M%S", task_type: str = "daily", 
+                 export_format: str = "json", csv_options: Optional[Dict[str, Any]] = None):
         self.data_dir = data_dir
         self.filename_format = filename_format
         self.timestamp_format = timestamp_format  # 新增：时间戳格式
         self.task_type = task_type  # 新增：任务类型
+        self.export_format = export_format  # 新增：导出格式 (json, csv, both)
+        self.csv_options = csv_options or {}  # 新增：CSV选项
+        
+        # 初始化CSV导出器
+        if export_format in ["csv", "both"]:
+            csv_encoding = self.csv_options.get("encoding", "utf-8-sig")
+            self.csv_exporter = CSVExporter(data_dir=data_dir, encoding=csv_encoding)
+        else:
+            self.csv_exporter = None
         self.current_task_data = {
             "task_info": {},
             "up_info": {},
             "videos": [],
+            "hot_comments": [],  # 新增：热门评论数据
             "statistics": {
                 "total_videos": 0,
                 "total_comments": 0,
@@ -107,6 +119,16 @@ class SimpleStorage:
         
         logger.info(f"视频数据已存储: {video_data.get('video_title', 'Unknown')} (评论数: {comment_count})")
     
+    def store_hot_comments(self, hot_comments_data: List[Dict[str, Any]]):
+        """
+        存储热门评论数据
+        Args:
+            hot_comments_data: 热门评论数据列表
+        """
+        if hot_comments_data:
+            self.current_task_data["hot_comments"].extend(hot_comments_data)
+            logger.info(f"热门评论数据已存储: {len(hot_comments_data)}条")
+    
     def add_error(self, error_msg: str, error_type: str = "general"):
         """
         添加错误记录
@@ -160,13 +182,40 @@ class SimpleStorage:
         
         # 保存数据
         try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(self.current_task_data, f, indent=2, ensure_ascii=False)
+            saved_files = {}
             
-            logger.info(f"任务数据已保存: {filepath}")
+            # 保存JSON格式（如果需要）
+            if self.export_format in ["json", "both"]:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    json.dump(self.current_task_data, f, indent=2, ensure_ascii=False)
+                saved_files["json"] = filepath
+                logger.info(f"JSON数据已保存: {filepath}")
+            
+            # 保存CSV格式（如果需要）
+            if self.export_format in ["csv", "both"] and self.csv_exporter:
+                # 生成CSV文件的基础路径（去掉.json扩展名）
+                csv_base_path = filepath.replace('.json', '')
+                
+                # 导出各种数据类型到CSV
+                csv_results = self.csv_exporter.export_combined_data_to_csv(
+                    self.current_task_data, csv_base_path
+                )
+                
+                # 记录成功导出的CSV文件
+                for data_type, csv_path in csv_results.items():
+                    if csv_path:
+                        saved_files[f"csv_{data_type}"] = csv_path
+                        logger.info(f"CSV数据已保存 ({data_type}): {csv_path}")
+            
             self.print_task_summary()
             
-            return filepath
+            # 返回主要文件路径（JSON优先，否则返回第一个CSV文件）
+            if "json" in saved_files:
+                return saved_files["json"]
+            elif saved_files:
+                return list(saved_files.values())[0]
+            else:
+                return filepath
             
         except Exception as e:
             logger.error(f"保存任务数据失败: {e}")

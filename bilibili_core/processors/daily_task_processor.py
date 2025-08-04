@@ -91,11 +91,17 @@ class DailyTaskProcessor:
             # 日任务存储到 data/daily 目录（会在finalize_task中进一步细分到周文件夹）
             data_dir = "data/daily"
 
+        # 获取存储配置
+        export_format = storage_config.get("export_format", "json")
+        csv_options = storage_config.get("csv_options", {})
+        
         self.storage = SimpleStorage(
             data_dir=data_dir,
             filename_format=filename_format,
             timestamp_format=timestamp_format,
-            task_type=self.task_type  # 传递任务类型用于路径处理
+            task_type=self.task_type,  # 传递任务类型用于路径处理
+            export_format=export_format,  # 传递导出格式配置
+            csv_options=csv_options  # 传递CSV选项配置
         )
 
         # 初始化数据库存储
@@ -239,17 +245,31 @@ class DailyTaskProcessor:
             self.logger.info("未检测到有效Cookie，使用有头模式启动浏览器进行登录...")
 
         playwright = await async_playwright().start()
-        chromium = playwright.chromium
-
-        # 启动浏览器
-        browser = await chromium.launch(
-            headless=headless_mode,
-            args=[
-                "--no-first-run",
-                "--no-default-browser-check",
-                "--disable-blink-features=AutomationControlled"
-            ]
-        )
+        
+        # 尝试使用Edge浏览器
+        try:
+            # 首先尝试使用系统Edge
+            browser = await playwright.chromium.launch(
+                executable_path="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+                headless=headless_mode,
+                args=[
+                    "--no-first-run",
+                    "--no-default-browser-check",
+                    "--disable-blink-features=AutomationControlled"
+                ]
+            )
+            self.logger.info("使用系统Edge浏览器启动成功")
+        except Exception as edge_error:
+            self.logger.warning(f"Edge启动失败，尝试使用默认浏览器: {edge_error}")
+            # 如果Edge失败，尝试使用默认chromium
+            browser = await playwright.chromium.launch(
+                headless=headless_mode,
+                args=[
+                    "--no-first-run",
+                    "--no-default-browser-check",
+                    "--disable-blink-features=AutomationControlled"
+                ]
+            )
 
         self.browser_context = await browser.new_context(
             viewport={"width": 1920, "height": 1080},
@@ -670,6 +690,18 @@ class DailyTaskProcessor:
 
             view_data = video_detail["View"]
             stat_data = view_data.get("stat", {})
+            
+            # Log tag extraction status
+            enhanced_tags = video_detail.get("EnhancedTags", [])
+            category_info = video_detail.get("CategoryInfo", {})
+            
+            if enhanced_tags:
+                self.logger.info(f"成功提取视频标签: AV{aid}, 标签数量: {len(enhanced_tags)}")
+            else:
+                self.logger.warning(f"视频标签提取为空: AV{aid}")
+                
+            if not category_info or not category_info.get("main_category"):
+                self.logger.warning(f"视频分类信息提取失败或为空: AV{aid}")
 
             stats_fields_config = video_fields_config.get("stats_fields", {})
 
@@ -692,6 +724,9 @@ class DailyTaskProcessor:
                 "share": stat_data.get("share", 0),
                 "reply": stat_data.get("reply", 0),
                 "danmaku": stat_data.get("danmaku", 0),
+                # Enhanced tag and category information
+                "tags": video_detail.get("EnhancedTags", []),
+                "category_info": video_detail.get("CategoryInfo", {}),
             }
 
             # 构建视频数据
@@ -714,6 +749,11 @@ class DailyTaskProcessor:
         except Exception as e:
             self.logger.error(f"获取视频详细信息失败 AV{aid}: {e}")
             self.stats["errors"] += 1
+            
+            # Log specific error type for tag extraction failures
+            if "tag" in str(e).lower() or "category" in str(e).lower():
+                self.logger.warning(f"视频标签/分类提取失败，使用基础信息: AV{aid}")
+            
             return self._extract_basic_video_fields(video_basic)
             
     def _extract_basic_video_fields(self, video_basic: Dict) -> Dict:
@@ -741,6 +781,9 @@ class DailyTaskProcessor:
             "publish_time": self._format_timestamp(video_basic.get("created", 0)),
             "view": video_basic.get("play", 0),
             "danmaku": video_basic.get("video_review", 0),
+            # Add empty enhanced fields for consistency
+            "tags": [],
+            "category_info": {},
         }
 
         video_data = {}
@@ -1054,6 +1097,13 @@ class DailyTaskProcessor:
                     # 获取视频详细信息
                     video_info = await self.get_video_info(video_basic)
                     if video_info:
+                        # 获取热门评论（月任务也支持热评）
+                        video_aid = str(video_info.get("aid", ""))
+                        if video_aid:
+                            hot_comments = await self.get_hot_comments(video_aid)
+                            if hot_comments:
+                                video_info["hot_comments"] = hot_comments
+                        
                         all_videos.append(video_info)
                         self.stats["videos_processed"] += 1
 

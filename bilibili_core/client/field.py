@@ -42,3 +42,6 @@ class CommentOrderType(Enum):
 
     # 按时间
     TIME = 2
+
+    # 热门评论
+    HOT = 3

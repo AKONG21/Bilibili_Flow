@@ -216,10 +216,11 @@ class BilibiliClient:
 
     async def get_video_info(self, aid: Union[int, None] = None, bvid: Union[str, None] = None) -> Dict:
         """
-        Bilibli web video detail api, aid 和 bvid任选一个参数
+        Bilibili web video detail api, aid 和 bvid任选一个参数
+        Enhanced to extract comprehensive video information including tags
         :param aid: 稿件avid
         :param bvid: 稿件bvid
-        :return:
+        :return: Enhanced video information with tags and category data
         """
         if not aid and not bvid:
             raise ValueError("请提供 aid 或 bvid 中的至少一个参数")
@@ -230,7 +231,22 @@ class BilibiliClient:
             params.update({"aid": aid})
         else:
             params.update({"bvid": bvid})
-        return await self.get(uri, params, enable_params_sign=False)
+        
+        try:
+            # Get the original video detail response
+            video_detail = await self.get(uri, params, enable_params_sign=False)
+            
+            # Extract and enhance with tag information
+            # This method is designed to never fail and always return valid data
+            enhanced_detail = await self._extract_video_tags_and_category(video_detail)
+            
+            return enhanced_detail
+            
+        except Exception as e:
+            logger.error(f"[BilibiliClient.get_video_info] Failed to get video info for aid={aid}, bvid={bvid}: {e}")
+            # Re-raise the exception as this is a critical failure
+            # The calling code should handle this appropriately
+            raise
 
     async def get_video_comments(self,
                                  video_id: str,
@@ -281,3 +297,98 @@ class BilibiliClient:
             "mid": creator_id,
         }
         return await self.get(uri, post_data)
+
+    async def _extract_video_tags_and_category(self, video_detail: Dict) -> Dict:
+        """
+        Extract and enhance video detail with tag and category information
+        :param video_detail: Original video detail response
+        :return: Enhanced video detail with tags and category info
+        """
+        # Initialize default enhanced data
+        enhanced_detail = video_detail.copy()
+        enhanced_detail["EnhancedTags"] = []
+        enhanced_detail["CategoryInfo"] = {}
+        
+        try:
+            # Extract view data with error handling
+            view_data = video_detail.get("View", {})
+            if not view_data:
+                logger.warning("[BilibiliClient._extract_video_tags_and_category] No View data found, using empty defaults")
+                return enhanced_detail
+            
+            video_id = view_data.get("bvid", view_data.get("aid", "unknown"))
+            
+            # Extract tags information with comprehensive error handling
+            try:
+                tags_data = video_detail.get("Tags", [])
+                enhanced_tags = []
+                
+                if not isinstance(tags_data, list):
+                    logger.warning(f"[BilibiliClient._extract_video_tags_and_category] Tags data is not a list for video {video_id}, got: {type(tags_data)}")
+                    tags_data = []
+                
+                for i, tag in enumerate(tags_data):
+                    try:
+                        if not isinstance(tag, dict):
+                            logger.warning(f"[BilibiliClient._extract_video_tags_and_category] Tag {i} is not a dict for video {video_id}, skipping")
+                            continue
+                            
+                        enhanced_tag = {
+                            "tag_id": tag.get("tag_id", 0),
+                            "tag_name": tag.get("tag_name", ""),
+                            "category": tag.get("category", ""),
+                            "likes": tag.get("likes", 0),
+                            "hates": tag.get("hates", 0),
+                            "subscribed": tag.get("subscribed", False)
+                        }
+                        
+                        # Validate tag data
+                        if not enhanced_tag["tag_name"]:
+                            logger.warning(f"[BilibiliClient._extract_video_tags_and_category] Empty tag name for video {video_id}, tag {i}")
+                            continue
+                            
+                        enhanced_tags.append(enhanced_tag)
+                        
+                    except Exception as tag_error:
+                        logger.error(f"[BilibiliClient._extract_video_tags_and_category] Error processing tag {i} for video {video_id}: {tag_error}")
+                        continue
+                
+                enhanced_detail["EnhancedTags"] = enhanced_tags
+                
+                if enhanced_tags:
+                    logger.info(f"[BilibiliClient._extract_video_tags_and_category] Successfully extracted {len(enhanced_tags)} tags for video {video_id}")
+                else:
+                    logger.info(f"[BilibiliClient._extract_video_tags_and_category] No valid tags found for video {video_id}")
+                    
+            except Exception as tags_error:
+                logger.error(f"[BilibiliClient._extract_video_tags_and_category] Failed to extract tags for video {video_id}: {tags_error}")
+                enhanced_detail["EnhancedTags"] = []
+            
+            # Extract category information with error handling
+            try:
+                category_info = {
+                    "main_category": view_data.get("tname", ""),
+                    "sub_category": view_data.get("typename", ""),
+                    "tid": view_data.get("tid", 0)
+                }
+                
+                # Validate category data
+                if not category_info["main_category"] and not category_info["sub_category"]:
+                    logger.warning(f"[BilibiliClient._extract_video_tags_and_category] No category information found for video {video_id}")
+                
+                enhanced_detail["CategoryInfo"] = category_info
+                logger.debug(f"[BilibiliClient._extract_video_tags_and_category] Extracted category info for video {video_id}: {category_info}")
+                
+            except Exception as category_error:
+                logger.error(f"[BilibiliClient._extract_video_tags_and_category] Failed to extract category info for video {video_id}: {category_error}")
+                enhanced_detail["CategoryInfo"] = {}
+            
+            return enhanced_detail
+            
+        except Exception as e:
+            logger.error(f"[BilibiliClient._extract_video_tags_and_category] Critical error in tag/category extraction: {e}")
+            # Ensure we always return the original data with empty enhanced fields
+            enhanced_detail = video_detail.copy()
+            enhanced_detail["EnhancedTags"] = []
+            enhanced_detail["CategoryInfo"] = {}
+            return enhanced_detail
