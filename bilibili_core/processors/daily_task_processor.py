@@ -98,10 +98,8 @@ class DailyTaskProcessor:
             task_type=self.task_type  # 传递任务类型用于路径处理
         )
 
-        # 初始化数据库存储
-        up_id = self.config.get("task_config", {}).get("up_id", "unknown")
-        self.db_path = f"data/database/{up_id}_数据库.db"
-        self._init_database()
+        # 初始化数据库存储 - 延迟到环境变量解析后
+        self.db_path = None  # 将在run_task中设置
 
         self.logger.info("统一存储模式初始化完成：JSON + 数据库")
 
@@ -1090,6 +1088,11 @@ class DailyTaskProcessor:
                 up_id = os.environ.get(env_var)
                 if not up_id:
                     raise ValueError(f"环境变量 {env_var} 未设置或为空")
+
+            # 现在有了正确的UP_ID，初始化数据库
+            self.db_path = f"data/database/{up_id}_数据库.db"
+            self._init_database()
+            self.logger.info(f"数据库初始化完成: {self.db_path}")
 
             task_name = "月任务" if self.task_type == "monthly" else "日任务"
             self.logger.info(f"开始执行{task_name}，UP主ID: {up_id}")
