@@ -10,7 +10,7 @@ from .config.config_manager import ConfigManager
 from .utils.time_utils import get_pubtime_datetime, generate_date_range
 from .utils.logger import get_logger
 from .utils.login_helper import BilibiliLoginHelper
-from .utils.cookie_manager import CookieManager
+from .cookie_management.unified_cookie_manager import UnifiedCookieManager as CookieManager
 
 __all__ = [
     'BilibiliClient',

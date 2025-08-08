@@ -183,8 +183,10 @@ class BilibiliClient:
         return ping_flag
 
     async def update_cookies(self, browser_context: BrowserContext):
-        from ..utils.cookie_utils import convert_cookies
-        cookie_str, cookie_dict = convert_cookies(await browser_context.cookies())
+        from ..cookie_management.cookie_utils import CookieParser
+        cookies = await browser_context.cookies()
+        cookie_str = CookieParser.cookies_to_string(cookies)
+        cookie_dict = CookieParser.cookies_to_dict(cookies)
         self.headers["Cookie"] = cookie_str
         self.cookie_dict = cookie_dict
 

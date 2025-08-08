@@ -48,7 +48,6 @@ class DailyTaskProcessor:
         self.context_page = None
         self.login_helper = None
         self.cookie_manager = None
-        self.auto_cookie_manager = None
 
         self.stats = {
             "videos_processed": 0,
@@ -324,23 +323,8 @@ class DailyTaskProcessor:
                 filepath = self.cookie_manager.save_cookies_after_login(cookies)
                 self.logger.info(f"登录完成，Cookie已保存到备用文件: {filepath}")
 
-                # 2. 自动添加到配置文件
-                cookie_string = self.auto_cookie_manager.extract_cookie_string_from_browser(cookies)
-                if cookie_string and self.auto_cookie_manager.validate_cookie_string(cookie_string):
-                    # 生成账号名称
-                    timestamp = datetime.now().strftime("%m%d_%H%M")
-                    account_name = f"scan_{timestamp}"
-
-                    if self.auto_cookie_manager.add_cookie_to_config(cookie_string, account_name):
-                        self.logger.info(f"✅ Cookie已自动添加到配置文件: {account_name}")
-
-                        # 重新加载配置以使用新Cookie
-                        self.auto_cookie_manager.load_config()
-                        self.config = self.auto_cookie_manager.config
-                    else:
-                        self.logger.warning("❌ Cookie添加到配置文件失败")
-                else:
-                    self.logger.warning("❌ 提取的Cookie无效，未添加到配置文件")
+                # 2. Cookie已通过统一管理器保存，无需额外处理
+                self.logger.info("✅ Cookie已通过统一管理器处理")
 
                 # 3. 清理旧的备用文件
                 self.cookie_manager.cleanup_old_backup_files()
@@ -359,23 +343,8 @@ class DailyTaskProcessor:
             filepath = self.cookie_manager.save_cookies_after_login(cookies)
             self.logger.info(f"手动登录完成，Cookie已保存到备用文件: {filepath}")
 
-            # 2. 自动添加到配置文件
-            cookie_string = self.auto_cookie_manager.extract_cookie_string_from_browser(cookies)
-            if cookie_string and self.auto_cookie_manager.validate_cookie_string(cookie_string):
-                # 生成账号名称
-                timestamp = datetime.now().strftime("%m%d_%H%M")
-                account_name = f"manual_{timestamp}"
-
-                if self.auto_cookie_manager.add_cookie_to_config(cookie_string, account_name):
-                    self.logger.info(f"✅ Cookie已自动添加到配置文件: {account_name}")
-
-                    # 重新加载配置以使用新Cookie
-                    self.auto_cookie_manager.load_config()
-                    self.config = self.auto_cookie_manager.config
-                else:
-                    self.logger.warning("❌ Cookie添加到配置文件失败")
-            else:
-                self.logger.warning("❌ 提取的Cookie无效，未添加到配置文件")
+            # 2. Cookie已通过统一管理器保存，无需额外处理
+            self.logger.info("✅ Cookie已通过统一管理器处理")
 
             # 3. 清理旧的备用文件
             self.cookie_manager.cleanup_old_backup_files()

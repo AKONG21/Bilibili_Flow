@@ -1,12 +1,13 @@
-name: Daily Data Collection (07:37 & 19:37)
+name: Daily Data Collection
 
-on:
-  schedule:
-    # UTC 时间 23:37 = 北京时间 07:37
-    - cron: '37 23 * * *'
-    # UTC 时间 11:37 = 北京时间 19:37
-    - cron: '37 11 * * *'
+"on":
   workflow_dispatch:
+    inputs:
+      task_description:
+        description: '手动执行任务描述'
+        required: false
+        default: '手动数据收集'
+        type: string
 
 permissions:
   contents: write
@@ -75,7 +76,14 @@ jobs:
         echo "🔄 Ensuring latest codebase..."
         git fetch origin sync-current-files
         git checkout sync-current-files
-        git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
+        
+        # Use more careful merge strategy for manual executions
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "Manual execution detected, using careful merge strategy"
+          git pull origin sync-current-files --no-edit --strategy-option=ours || echo "No remote changes to pull"
+        else
+          git pull origin sync-current-files --no-edit || echo "No remote changes to pull"
+        fi
         
     - name: Run daily data collection with notification
       env:
@@ -85,6 +93,8 @@ jobs:
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
         GITHUB_REF_NAME: ${{ github.ref_name }}
         GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        MANUAL_TASK_DESCRIPTION: ${{ github.event.inputs.task_description }}
         # Core组件需要的Cookie环境变量
         BILIBILI_COOKIES: ${{ secrets.BILIBILI_COOKIES }}
         BILIBILI_COOKIES_1: ${{ secrets.BILIBILI_COOKIES_1 }}
@@ -102,10 +112,19 @@ jobs:
         
         # Determine task type based on trigger method
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          # Manual trigger - use Manual type
+          # Manual trigger - use Manual type with actor info
           TASK_TYPE="Manual"
           TASK_EMOJI="🔧"
           echo "Manual execution detected"
+          echo "Triggered by: ${{ github.actor }}"
+          if [ -n "${{ github.event.inputs.task_description }}" ]; then
+            echo "Description: ${{ github.event.inputs.task_description }}"
+          fi
+          
+          # Add actor info to task type if available
+          if [ -n "${{ github.actor }}" ]; then
+            TASK_TYPE="Manual by ${{ github.actor }}"
+          fi
         else
           # Scheduled trigger - determine by UTC time
           CURRENT_HOUR=$(date -u +%H)
@@ -177,6 +196,12 @@ jobs:
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           TASK_EMOJI="🔧"
           TASK_TYPE="Manual"
+          ACTOR_INFO=""
+          
+          if [ -n "${{ github.actor }}" ]; then
+            ACTOR_INFO=" by ${{ github.actor }}"
+            TASK_TYPE="Manual${ACTOR_INFO}"
+          fi
         else
           CURRENT_HOUR=$(date -u +%H)
           if [ "$CURRENT_HOUR" = "00" ]; then
@@ -233,7 +258,12 @@ jobs:
           
           git add data/
           if ! git diff --staged --quiet; then
-            git commit -m "${TASK_EMOJI} ${TASK_TYPE} data collection - $(date '+%Y-%m-%d %H:%M:%S')"
+            COMMIT_MSG="${TASK_EMOJI} ${TASK_TYPE} data collection"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.task_description }}" ]; then
+              COMMIT_MSG="$COMMIT_MSG - ${{ github.event.inputs.task_description }}"
+            fi
+            COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M:%S')"
+            git commit -m "$COMMIT_MSG"
             
             # Try to push, with retry mechanism for conflicts
             MAX_RETRIES=3
