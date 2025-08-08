@@ -2,15 +2,8 @@ name: Monthly Historical Data Processing (01:37)
 
 on:
   schedule:
-    # UTC 时间 17:37 每月第四个周四 = 北京时间 01:37 每月第四个周五 (避免冲突)
-    # 使用具体日期避免范围表达式的bug
-    - cron: '37 17 22 * 4'  # 22号如果是周四
-    - cron: '37 17 23 * 4'  # 23号如果是周四  
-    - cron: '37 17 24 * 4'  # 24号如果是周四
-    - cron: '37 17 25 * 4'  # 25号如果是周四
-    - cron: '37 17 26 * 4'  # 26号如果是周四
-    - cron: '37 17 27 * 4'  # 27号如果是周四
-    - cron: '37 17 28 * 4'  # 28号如果是周四
+    # UTC 时间每周四 17:37 运行 = 北京时间周五 01:37
+    - cron: '37 17 * * 4'
   workflow_dispatch:
 
 permissions:
@@ -18,7 +11,31 @@ permissions:
   actions: read
 
 jobs:
+  check-fourth-thursday:
+    runs-on: ubuntu-latest
+    outputs:
+      is_fourth_thursday: ${{ steps.date-check.outputs.is_fourth_thursday }}
+    steps:
+      - name: Check if it is the fourth Thursday of the month
+        id: date-check
+        run: |
+          # 使用 date -u 获取 UTC 日期，并检查是否在 22-28 的范围内
+          # 这个范围确保了当天是当月的第四个周四（因为 cron 已限定了必须是周四）
+          DAY_OF_MONTH=$(date -u +'%d')
+          
+          if [ $DAY_OF_MONTH -ge 22 ] && [ $DAY_OF_MONTH -le 28 ]; then
+            echo "✅ It's the fourth Thursday of the month (UTC Date: $(date -u)). Running the job."
+            echo "is_fourth_thursday=true" >> $GITHUB_OUTPUT
+          else
+            echo "☑️ Not the fourth Thursday (UTC Date: $(date -u)). Skipping."
+            echo "is_fourth_thursday=false" >> $GITHUB_OUTPUT
+          fi
+
   monthly-historical-processing:
+    needs: check-fourth-thursday
+    # 如果是手动触发(workflow_dispatch)，则直接运行
+    # 或者，如果日期检查作业的输出为 'true'，也运行
+    if: github.event_name == 'workflow_dispatch' || needs.check-fourth-thursday.outputs.is_fourth_thursday == 'true'
     runs-on: ubuntu-latest
     
     steps:
