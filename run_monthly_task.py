@@ -39,6 +39,19 @@ async def main():
             print("\n============================================================")
             print("任务执行完成！")
             print("============================================================")
+            
+            # 输出UP主信息（格式化用于飞书通知解析）
+            up_name = result.get('up_info', {}).get('name', 'Unknown')
+            up_fans = result.get('up_info', {}).get('fans', 0)
+            print(f"UP主信息获取成功: {up_name} (粉丝: {up_fans:,})")
+            
+            # 输出任务统计信息
+            total_videos = result.get('videos_processed', 0)
+            total_comments = result.get('comments_collected', 0)
+            print(f"处理视频数: {total_videos}")
+            print(f"收集评论数: {total_comments}")
+            
+            print("============================================================")
             print("月任务: 获取全量242个视频")
             print("数据库: 直接保存全量视频")
             print("JSON: 前28天拆分存储")
